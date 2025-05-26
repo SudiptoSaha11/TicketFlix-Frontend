@@ -1,0 +1,123 @@
+.movieview {
+  padding: 1px 60px;
+  margin-top: 70px;
+  background-image: url('./Image.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: calc(100vh - 60px);
+  box-sizing: border-box;
+}
+
+/* table container */
+.movieview-table-container {
+  max-height: 700px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 2px solid black;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+}
+
+/* table styling */
+.movieview-table1_ {
+  width: 100%;
+  border-collapse: collapse;
+  padding: 20px !important;
+  border-radius: 10px !important;
+}
+
+.movieview-table1_ th,
+.movieview-table1_ td {
+  border: 2px solid black;
+  font-weight: bold;
+  padding: 10px;
+  color: black;
+  text-align: center;
+}
+
+/* poster image */
+.movieview-poster {
+  width: 100px;
+  height: auto;
+}
+
+/* cast images */
+.movieview-cast-container-admin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.movieview-cast-image-admin {
+  width: 25px;
+  height: 25px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+}
+
+/* UPDATE button */
+.movieview-update {
+  background: #ea1538;
+  color: black;
+  border: 2px solid black;
+  padding: 12px 30px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 15px;
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.movieview-update:hover {
+  border-color: whitesmoke;
+  cursor: pointer;
+  color: whitesmoke;
+}
+
+/* DELETE button */
+.movieview-delete {
+  background: linear-gradient(45deg, #e74c3c, #c0392b);
+  color: black;
+  border: 2px solid black;
+  padding: 12px 30px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 15px;
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.movieview-delete:hover {
+  border-color: whitesmoke;
+  cursor: pointer;
+  color: whitesmoke;
+}
+
+/* ADD MOVIE button */
+.movieview-Addbutton {
+  background: #ea1538;
+  color: white;
+  padding: 15px 40px;
+  margin-bottom: 20px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.movieview-Addbutton:hover {
+  border-color: whitesmoke;
+  color: white;
+  transition: color 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+}
+
+/* Add button container */
+.movieview-Add-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}

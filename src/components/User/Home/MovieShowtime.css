@@ -1,0 +1,294 @@
+
+/* Container & Header */
+.movie-showtime-container {
+  max-width: 100%;
+  margin: 100px auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  padding-left: 256px;
+  padding-right: 240px;
+}
+
+.movie-showtime-container h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Movie Title */
+.movie-title {
+  font-size: 2rem;
+  margin: 0;
+}
+
+/* Header for showtime filters */
+.movie-showtime-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.showtime-filters {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Adds spacing between DatePicker and filters */
+  justify-content: space-between;
+}
+
+.filters {
+  display: flex;
+  gap: 15px; /* Keeps spacing between dropdown filters */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .showtime-filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Dropdown filters */
+.dropdown-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dropdown-filter label {
+  font-weight: bold;
+}
+
+/* Dropdown styling */
+.dropdown-filter select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Schedule Cards */
+.schedule-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 20px; /* Space between schedule cards */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Hall Schedule */
+.hall-schedule {
+  display: flex;
+  flex-direction: column; /* Stack hall info and showtimes vertically */
+  padding: 14px 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.hall-schedule:last-child {
+  border-bottom: none;
+}
+
+/* Hall header to align the hall name and showtimes */
+.hall-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Hall info (Name + Cancellation) */
+.hall-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Showtime list aligned horizontally */
+.showtime-list {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+/* Showtime button styling */
+.showtime-button {
+  position: relative;
+  border: 1px solid #007bff;
+  background-color: #fff;
+  color: #007bff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap; /* Prevents text wrapping */
+}
+
+.showtime-button:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Tooltip styling */
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 999;
+  font-size: 0.8rem;
+}
+
+.showtime-button .tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px 10px 0 10px;
+  border-style: solid;
+  border-color: #fff transparent transparent transparent;
+}
+
+.showtime-button:hover .tooltip {
+  display: flex;
+  flex-direction: row;
+  visibility: visible;
+  opacity: 1;
+}
+.available{
+  color: green;
+}
+
+/* Cancellation info properly aligned below the hall name */
+.cancellation-info {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.cancellation-info .bullet {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #FFC107; /* Yellow color */
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* ============================= */
+/* ADDITIONAL RESPONSIVE MEDIA   */
+/* QUERIES (OVERRIDES ONLY)      */
+/* ============================= */
+
+/* For larger tablets and small desktops */
+@media (max-width: 1200px) {
+  .movie-showtime-container {
+    padding-left: 180px;
+    padding-right: 160px;
+  }
+}
+
+/* For medium devices / tablets */
+@media (max-width: 992px) {
+  .movie-showtime-container {
+    padding-left: 80px;
+    padding-right: 80px;
+  }
+  .showtime-filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .dropdown-filter select {
+    padding: 7px 10px;
+  }
+  .movie-showtime-container h1 {
+    font-size: 1.8rem;
+  }
+  .movie-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* For small devices / mobile devices */
+@media (max-width: 768px) {
+  .movie-showtime-container {
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: 50px auto;
+  }
+  .movie-showtime-container h1 {
+    font-size: 1.6rem;
+  }
+  .movie-title {
+    font-size: 1.6rem;
+  }
+  .showtime-filters,
+  .filters {
+    flex-direction: column;
+    align-items: center;
+  }
+  .dropdown-filter {
+    width: 100%;
+    justify-content: center;
+  }
+  .dropdown-filter select {
+    width: 100%;
+    max-width: 300px;
+  }
+  .schedule-card {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  .hall-schedule {
+    padding: 10px 14px;
+  }
+  .showtime-button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  .tooltip {
+    width: 200px;
+    font-size: 0.75rem;
+  }
+}
+
+/* For extra small devices */
+@media (max-width: 480px) {
+  .movie-showtime-container {
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 30px auto;
+  }
+  .movie-showtime-container h1 {
+    font-size: 1.4rem;
+  }
+  .movie-title {
+    font-size: 1.4rem;
+  }
+  .dropdown-filter select {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+  .showtime-button {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+  .tooltip {
+    width: 180px;
+    font-size: 0.7rem;
+  }
+}

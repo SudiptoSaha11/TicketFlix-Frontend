@@ -1,0 +1,42 @@
+/* Overall multimedia page container */
+.multimedia-page {
+  min-height: 100vh;
+  background-color: #f9f9f9;
+  /* Increase top padding to create space for the navbar */
+  padding: 5rem 1rem 2rem 1rem; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Movie title styling */
+.movie-title {
+  margin: 2rem 0 1rem;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Card-like container for the video */
+.video-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  max-width: 800px;
+  width: 100%;
+}
+
+/* Center the video iframe */
+.video-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive iframe styling */
+.video-container iframe {
+  width: 100%;
+  max-width: 800px;
+  height: 450px;
+  border: none;
+}

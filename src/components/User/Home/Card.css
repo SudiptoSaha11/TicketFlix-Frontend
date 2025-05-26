@@ -1,0 +1,32 @@
+/* src/Card.css */
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    margin: 16px;
+    max-width: 250px;
+    text-align: center;
+  }
+  
+  .card-image {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+  
+  .card-content {
+    padding: 8px;
+  }
+  
+  .card-title {
+    font-size: 1.2rem;
+    margin: 8px 0;
+  }
+  
+  .card-genre,
+  .card-language {
+    font-size: 1rem;
+    color: #555;
+  }
+  

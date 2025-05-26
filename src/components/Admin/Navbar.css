@@ -1,0 +1,81 @@
+.Navbar {
+    position: fixed; /* Keep it fixed at the top */
+    top: 0;
+    left: 0;
+    height: 70px; /* Adjust height if necessary */
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8); /* Background color */
+    display: flex;
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    padding: 0 20px; /* Adjust padding if needed */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Optional shadow for depth */
+    z-index: 1000; /* Keep navbar on top */
+    transition: background 0.3s ease; /* Smooth transition for background color */
+}
+
+
+nav {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    justify-content: space-between; /* Space out items within the nav */
+    width: 100%; /* Ensure nav takes full width */
+    max-width: 1200px; /* Optional: limit max width of the content */
+    margin: 0 auto; /* Center nav horizontally if max-width is set */
+}
+
+h2 span {
+    color: #f1f1f1; /* Light color for better contrast */
+    font-weight: bold;
+    font-size: 24px; /* Adjust size as needed */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+    margin: 0; /* Adjust margin if needed */
+    padding: 0; /* Adjust padding if needed */
+    background: rgba(0, 0, 0, 0.3); /* Optional: Background color for emphasis */
+    border-radius: 5px; /* Optional: Rounded corners */
+    padding: 10px 20px; /* Optional: Padding for better spacing */
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+ul li {
+    margin: 0 15px; /* Adjust spacing between items */
+}
+
+.Navbar .nav {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px; /* Adjust font size as needed */
+    transition: color 0.3s ease; /* Smooth transition for color change */
+}
+
+.Navbar .nav.active {
+    color: #ff6f61; /* Color for the active link */
+}
+
+.Navbar .nav:hover {
+    color: #ff6f61; /* Color for links on hover */
+}
+
+.Navbutton {
+    border: none;
+    background: #ea1538; /* Button color */
+    padding: 10px 20px; /* Adjust padding */
+    border-radius: 30px; /* Cylindrical shape */
+    color: white;
+    font-weight: bold;
+    font-size: 14px; /* Adjust font size */
+    transition: transform 0.3s ease, background 0.3s ease; /* Smooth transitions */
+}
+
+.Navbutton:hover {
+    transform: scale(1.1); /* Slight scale effect on hover */
+    background: #d12b45; /* Darker button color on hover */
+    cursor: pointer;
+}

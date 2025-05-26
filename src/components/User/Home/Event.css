@@ -1,0 +1,98 @@
+/* Container styling for the event page */
+.userevent-container.main {
+    padding-top: 90px;
+    padding-left: 20px;
+    padding-right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+/* Title styling inside the container */
+.userevent-container.main h2 {
+    margin-bottom: 20px;
+}
+
+/* Grid container: exactly 4 fixed-size cards per row on larger screens */
+.movie-cards-container {
+    display: grid;
+    grid-template-columns: repeat(4, 220px);
+    gap: 30px;
+    justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .movie-cards-container {
+        grid-template-columns: repeat(3, 220px);
+    }
+}
+
+@media (max-width: 768px) {
+    .movie-cards-container {
+        grid-template-columns: repeat(2, 220px);
+    }
+}
+
+@media (max-width: 480px) {
+    .movie-cards-container {
+        grid-template-columns: 220px;
+    }
+}
+
+/* Link styling for cards */
+.movie-card-link:link,
+.movie-card-link:visited,
+.movie-card-link:hover,
+.movie-card-link:active {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Individual card styling */
+.movie-card {
+    width: 220px;
+    height: 425px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Image styling for posters */
+.movie-poster {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+}
+
+/* Title and text styling for cards */
+.movie-title {
+    margin: 10px 0 5px;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.movie-genre,
+.movie-language {
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+/* Additional title styling */
+.main-movie-name {
+    font-family: sans-serif;
+    color: #444441;
+}

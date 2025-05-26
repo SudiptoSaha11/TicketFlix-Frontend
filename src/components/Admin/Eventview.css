@@ -1,0 +1,154 @@
+/* Apply background image only to the screen page */
+.eventview {
+    padding: 0 60px;
+    margin-top: 70px;
+    background-image: url('./Image.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: calc(100vh - 60px);
+    box-sizing: border-box;
+}
+
+/* Container around the event table */
+.eventview-table-container {
+    max-height: 700px;
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+}
+
+/* Event table styling */
+.eventview-table1 {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+}
+
+/* Table image */
+.eventview-poster {
+    width: 100px;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Table borders */
+table,
+th,
+td {
+    border: 2px solid black;
+}
+
+/* Header cell styling */
+.eventview-table1 thead th {
+    padding: 10px;
+    color: black;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Data cell styling */
+.eventview-table1 tbody td {
+    padding: 10px;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Artist image and name container */
+.eventview-cast-container-admin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Artist image styling */
+.eventview-cast-image-admin {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 5px;
+}
+
+/* Update and Delete button styling */
+.eventview-update,
+.eventview-delete {
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 15px;
+    transition: 0.3s ease;
+    display: inline-block;
+    text-align: center;
+    border: 2px solid black;
+    cursor: pointer;
+}
+
+.eventview-update {
+    background: #ea1538;
+    color: black;
+    border: 2px solid black;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 15px;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.eventview-update:hover {
+    border-color: whitesmoke;
+    cursor: pointer;
+    color: whitesmoke;
+}
+
+.eventview-delete {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    color: black;
+    border: 2px solid black;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 15px;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+.eventview-delete:hover {
+    border-color: whitesmoke;
+    cursor: pointer;
+    color: whitesmoke;
+}
+
+/* Add button */
+.eventview-Addbutton {
+    background: #ea1538;
+    color: white;
+    padding: 15px 40px;
+    margin-bottom: 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+
+.eventview-Addbutton:hover {
+    border-color: whitesmoke;
+    color: white;
+    transition: color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+}
+
+/* Add button container */
+.eventview-Add-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}

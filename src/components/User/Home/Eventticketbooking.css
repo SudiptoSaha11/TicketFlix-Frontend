@@ -1,0 +1,164 @@
+.event-booking-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.event-booking-left {
+  width: 30%;
+  padding: 20px;
+  border-right: 2px solid #ddd;
+  margin-right: 20px;
+}
+
+.event-booking-left h2 {
+  font-weight: bold;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.ticket-pricing-event {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Ticket Item Styling */
+.event-ticket-item {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 12px 16px;
+  background-color: #f5f5f5;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.event-ticket-item.active {
+  background-color: #e0f7fa; /* Active price item highlight */
+}
+
+/* Right Side: Seating layout */
+.event-booking-right {
+  width: 65%;
+}
+
+.event-stage {
+  margin-bottom: 5px;
+  background-color: gray;
+  padding: 10px 200px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Seat selection container */
+.event-seat-selection-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -18px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.seat-type-section-event {
+  margin-bottom: 10px;
+  padding: 10px;
+  transition: border 0.3s ease;
+}
+
+/* Highlighted section style */
+.seat-type-section.highlighted {
+  border: 2px solid #ff5722;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+/* Section titles */
+.seat-type-section-event h4 {
+  font-size: 18px;
+  color: black;
+  margin-bottom: -5px;
+}
+
+/* Row styling */
+.seat-row-event {
+  display: flex;
+  justify-content: center;
+  margin-bottom: -5.5px;
+  flex-wrap: wrap;
+}
+
+/* Individual seat styling */
+.seat-event,
+.event-VIP-seat {
+  width: 25px;           /* Reduced from 35px */
+  height: 25px;          /* Reduced from 35px */
+  margin: 5px;           /* Reduced from 7px */
+  text-align: center;
+  line-height: 25px;     /* Reduced from 35px */
+  cursor: pointer;
+  border-radius: 2px;
+  font-size: 12px;       /* Reduced from 14px */
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.seat-event {
+  background-color: white;
+  border: thin solid #e3e92d;
+}
+
+.seat-event.selected,
+.event-VIP-seat.selected {
+  background-color: #4caf50; /* Green for selected seats */
+  color: white;
+  
+}
+
+.seat-event:hover,
+.event-VIP-seat:hover {
+  background-color: #f1c40f; /* Darker gray on hover */
+  
+}
+
+.event-booking-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.event-pay-btn {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+}
+
+.event-pay-btn:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+.event-login-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.event-login-modal button {
+  margin: 10px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 16px;
+}

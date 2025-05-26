@@ -1,0 +1,128 @@
+/* Apply background image only to the screen page */
+.screen-page {
+    padding: 0 60px; /* Add horizontal padding */
+    margin-top: 60px; /* Adjust to match the height of the Navbar */
+    background-image: url('./Image.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: calc(100vh - 60px); /* Ensure content covers the rest of the viewport */
+    box-sizing: border-box; /* Ensure padding and borders are included in the element’s total width and height */
+}
+
+.table-container_2 {
+    max-height: 700px; /* Adjust height as needed */
+    overflow-y: auto; /* Adds vertical scrolling */
+    overflow-x: auto; /* Adds horizontal scrolling if needed */
+    border: 2px solid black; /* Black border for the container */
+    border-radius: 10px; /* Rounded corners */
+    background-color: rgba(255, 255, 255, 0.3) !important; /* Semi-transparent white background */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2) !important; /* Optional: Shadow for better visibility */
+    backdrop-filter: blur(10px);
+    padding: 20px !important;
+}
+
+.table_3 {
+    width: 100%; /* Ensure the table takes full width */
+    border-collapse: collapse; /* Merges borders for a cleaner look */
+    padding: 20px !important;
+    border-radius: 10px !important;
+}
+
+.table-imagesize {
+    width: 100px; /* Adjust width as needed */
+    height: 100%;
+}
+
+/* Border for the whole table */
+table, th, td {
+    border: 2px solid black; /* Black border for the entire table, header cells, and data cells */
+}
+
+/* Optional: Style table header cells */
+table thead th {
+    padding: 10px; /* Space inside header cells */
+    color: black; /* Text color */
+    text-align: center; /* Center text horizontally */
+    vertical-align: middle; /* Center text vertically */
+}
+
+/* Optional: Style table data cells */
+table tbody td {
+    padding: 10px; /* Space inside data cells */
+    color: black; /* Text color */
+    font: bolder;
+    text-align: center; /* Center text horizontally */
+    vertical-align: middle; /* Center text vertically */
+}
+
+/* Button styling */
+.update {
+    background-color: #ea1538;
+    color: black; /* Black text */
+    border: 2px solid black; /* Black border */
+    padding: 12px 30px; /* Padding inside the button */
+    border-radius: 50px; /* High border-radius for cylindrical shape */
+    font-weight: bold; /* Bold text */
+    font-size: 15px; /* Font size */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    display: inline-block; /* Keeps the button's inline-block shape */
+    text-align: center; /* Centers text horizontally */
+}
+
+.update:hover {
+    background-color: black; /* Background color on hover */
+    color: white; /* Text color on hover */
+    border-color: darkorange; /* Border color on hover */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.delete{
+    background-color: #ee6f1f ;
+    color: black; /* Black text */
+    border: 2px solid black; /* Black border */
+    padding: 12px 30px; /* Padding inside the button */
+    border-radius: 50px; /* High border-radius for cylindrical shape */
+    font-weight: bold; /* Bold text */
+    font-size: 15px; /* Font size */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    display: inline-block; /* Keeps the button's inline-block shape */
+    text-align: center; /* Centers text horizontally */
+}
+
+.delete:hover {
+    background-color: black; /* Background color on hover */
+    color: white; /* Text color on hover */
+    border-color: darkorange; /* Border color on hover */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.Addbutton {
+    background-color: #ea1538;
+    text-decoration: none;
+    color: black; /* Black text */
+    border: 2px solid black; /* Black border */
+    padding: 12px 30px; /* Padding inside the button */
+    border-radius: 50px; /* High border-radius for cylindrical shape */
+    font-weight: bold; /* Bold text */
+    font-size: 15px; /* Font size */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    display: inline-block; /* Keeps the button's inline-block shape */
+}
+
+.Addbutton:hover {
+    color: white;
+    border-color: darkorange;
+    cursor: pointer;
+}
+
+.Add_button_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.add-button-screen-container{
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Add margin if needed */
+}

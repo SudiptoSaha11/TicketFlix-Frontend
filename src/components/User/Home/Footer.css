@@ -1,0 +1,129 @@
+.footer.big-footer {
+  background-color: #222;
+  color: #fff;
+  padding: 40px 20px;
+  margin-top: auto;
+  box-shadow: 15px black;
+}
+
+.footer.big-footer a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer.big-footer a:hover {
+  color: #f39c12;
+}
+/* Use footer-content for main layout; 
+   Each .footer-section will be stacked 
+   and separated by a bottom border. */
+.footer-content {
+  display: block;  /* Ensure stacked layout */
+  margin-bottom: 20px;
+}
+
+/* Each section stacked vertically with a horizontal line in between */
+.footer-section {
+  margin: 10px 0;
+  padding: 0 10px 10px 10px;
+  border-bottom: 1px solid #444; /* Horizontal line */
+}
+
+/* Remove the line from the last section if you prefer */
+.footer-section:last-child {
+  border-bottom: none;
+}
+
+/* Heading styles inside the footer */
+.footer-section h4 {
+  text-align: left;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.footer-section p,
+.footer-section ul {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
+
+.footer-section ul {
+  display: flex;        
+  flex-wrap: wrap;    
+  align-items: center;   
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+}
+
+.footer-section ul li {
+  margin: 4px 8px;   
+  white-space: nowrap;  
+  cursor: pointer;
+}
+
+.footer-section li:hover {
+  color: #f39c12;
+}
+
+.footer-section ul li + span {
+  margin-right: 12px; 
+}
+
+/* The bottom-most portion of the footer */
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid #444;
+  padding-top: 20px;
+  font-size: 14px;
+}
+
+/* Social icons inside the footer bottom */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  margin-bottom: 10px;
+}
+.social-icons i {
+  margin: 0 10px;
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  color: whitesmoke;
+}
+.social-icons i:hover {
+  color: goldenrod;
+}
+
+/* Responsive grid adjustments for the card container */
+@media (max-width: 1200px) {
+  .card-container {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 992px) {
+  .card-container {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-container {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-container {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}

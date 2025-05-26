@@ -1,0 +1,51 @@
+.date-picker-container {
+    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    margin: 0.5rem 0; /* Reduced margin */
+    position: relative;/* Smaller overall container width */
+}
+
+/* Arrows remain unchanged */
+.arrow {
+    font-size: 2rem;
+    cursor: pointer;
+    user-select: none;
+    margin: 0.1rem;
+}
+
+.arrow.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Reduced padding and gap for the date picker */
+.date-picker {
+    display: flex;
+    gap: 0.1rem;            /* Smaller gap between dates */
+    padding: 0.5rem;         /* Reduced padding */
+    background-color: white;
+    border-radius: 1px;
+}
+
+.date-item {
+    font-size: small;
+    flex-direction: column;
+    min-width: 35px;         /* Slightly smaller width */
+    padding: 0.1rem 0.9rem;   /* Reduced padding */
+    border-radius: 10px;
+    text-align: center;
+    background-color: white;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+.date-item:hover {
+    background-color: #e0e0e0;
+}
+
+.date-item.selected {
+    background: linear-gradient(#FFE985, #FA742B);
+    color: #fff;
+}

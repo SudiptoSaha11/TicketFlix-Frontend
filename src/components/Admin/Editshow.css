@@ -1,0 +1,55 @@
+.editshow-body-show{
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(#e66465, #9198e5);
+    display: flex;
+}
+
+.Updatebutton2 {
+    background-color: #ea1538;
+    color: black; /* Black text */
+    border: 2px solid black; /* Black border */
+    padding: 12px 30px; /* Padding inside the button */
+    border-radius: 50px; /* High border-radius for cylindrical shape */
+    font-weight: bold; /* Bold text */
+    font-size: 15px; /* Font size */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    display: inline-block; /* Keeps the button's inline-block shape */
+    text-align: center; /* Centers text horizontally */
+}
+
+.Updatebutton2:hover{
+    
+    color: white;
+    border-color: darkorange; 
+    cursor: pointer;
+}
+
+.Homebutton2 {
+    background-color: #ea1538;
+    color: black; /* Black text */
+    border: 2px solid black; /* Black border */
+    padding: 12px 30px; /* Padding inside the button */
+    border-radius: 50px; /* High border-radius for cylindrical shape */
+    font-weight: bold; /* Bold text */
+    font-size: 15px; /* Font size */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    display: inline-block; /* Keeps the button's inline-block shape */
+    text-align: center; /* Centers text horizontally */
+}
+
+.Homebutton2:hover{
+    
+    color: white;
+    border-color: darkorange; 
+    cursor: pointer;
+}
+.Update_container2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
