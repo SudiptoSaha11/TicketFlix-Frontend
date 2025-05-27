@@ -25,7 +25,7 @@ const UserHome = () => {
   const [data2, setData2] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/movieview')
+    axios.get('https://ticketflix-backend.onrender.com/movieview')
       .then(res => setData(res.data))
       .catch(err => console.error('Error fetching movies:', err));
 
