@@ -8,11 +8,10 @@ const Usernavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
-
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-
   const [showPopup, setShowPopup] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -40,10 +39,9 @@ const Usernavbar = () => {
     setIsLoggedIn(false);
     navigate('/');
   };
-
   const toggleMenu = () => setIsOpen(!isOpen);
-  const closeMenu = () => setIsOpen(false);
-  const goToHome = () => navigate('/');
+  const closeMenu  = () => setIsOpen(false);
+  const goToHome   = () => navigate('/');
 
   // Detect if we're on a movie-related page
   const isMoviePage = location.pathname.toLowerCase().includes('movie');
@@ -54,58 +52,44 @@ const Usernavbar = () => {
       setSuggestions([]);
       return;
     }
-
     try {
       const [movieRes, eventRes] = await Promise.all([
-        axios.get(`https://ticketflix-backend.onrender.com/api/autocomplete?search=${query}`),
-        axios.get(`https://ticketflix-backend.onrender.com/api/eventcomplete?search=${query}`)
+        axios.get(`http://localhost:5000/api/autocomplete?search=${query}`),
+        axios.get(`http://localhost:5000/api/eventcomplete?search=${query}`)
       ]);
-
-      // Combine and label the results
       const movieResults = movieRes.data.map(item => ({ ...item, type: 'movie' }));
       const eventResults = eventRes.data.map(item => ({ ...item, type: 'event' }));
-
-      const combinedResults = [...movieResults, ...eventResults];
-      setSuggestions(combinedResults);
+      setSuggestions([...movieResults, ...eventResults]);
     } catch (err) {
       console.error('❌ Error fetching suggestions:', err);
     }
   };
 
-
-
   const debouncedFetchSuggestions = useCallback(
-    debounce((query) => {
-      fetchSuggestions(query);
-    }, 300),
+    debounce(q => fetchSuggestions(q), 300),
     [isMoviePage]
   );
 
   useEffect(() => {
     debouncedFetchSuggestions(searchTerm);
-    return () => {
-      debouncedFetchSuggestions.cancel();
-    };
+    return () => debouncedFetchSuggestions.cancel();
   }, [searchTerm, debouncedFetchSuggestions]);
 
-  const handleSelectSuggestion = (suggestion) => {
+  const handleSelectSuggestion = (s) => {
     setSearchTerm('');
     setSuggestions([]);
-
-    const detailPath = suggestion.type === 'movie' ? 'moviedetails' : 'eventdetails';
-    navigate(`/${detailPath}/${suggestion._id}`, { state: suggestion });
+    const detailPath = s.type === 'movie' ? 'moviedetails' : 'eventdetails';
+    navigate(`/${detailPath}/${s._id}`, { state: s });
   };
 
-
   const handleSearch = async () => {
+    if (!searchTerm.trim()) return;
     try {
-      if (searchTerm.trim() === '') return;
-
       if (isMoviePage) {
-        const res = await axios.get(`https://ticketflix-backend.onrender.com/movieview?search=${searchTerm}`);
+        const res = await axios.get(`http://localhost:5000/movieview?search=${searchTerm}`);
         navigate('/MoviePage', { state: { searchResults: res.data } });
       } else {
-        const res = await axios.get(`https://ticketflix-backend.onrender.com/event?search=${searchTerm}`);
+        const res = await axios.get(`http://localhost:5000/event?search=${searchTerm}`);
         navigate('/event', { state: { searchResults: res.data } });
       }
     } catch (err) {
@@ -121,15 +105,10 @@ const Usernavbar = () => {
         </div>
 
         <div className="navbar-left">
-          <NavLink className="user-nav" to="/MoviePage">
-            Movies
-          </NavLink>
+          <NavLink className="user-nav" to="/MoviePage">Movies</NavLink>
         </div>
-
         <div className="navbar-left">
-          <NavLink className="user-nav" to="/event">
-            Events
-          </NavLink>
+          <NavLink className="user-nav" to="/event">Events</NavLink>
         </div>
 
         {/* SEARCH BAR */}
@@ -142,26 +121,21 @@ const Usernavbar = () => {
               type="text"
               placeholder="Search for movies or events..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              onChange={e => setSearchTerm(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSearch()}
               className="search-bar"
             />
-            {/* SUGGESTIONS */}
             <ul className="search-suggestions">
-              {suggestions.map((item, index) => {
-                return (
-                  <li
-                    key={index}
-                    onClick={() => handleSelectSuggestion(item)}
-                    className="suggestion-item"
-                  >
-                    {item.movieName || item.eventName || '❌ No Name Found'}
-                  </li>
-                );
-              })}
+              {suggestions.map((item, idx) => (
+                <li
+                  key={idx}
+                  onClick={() => handleSelectSuggestion(item)}
+                  className="suggestion-item"
+                >
+                  {item.movieName || item.eventName || '❌ No Name Found'}
+                </li>
+              ))}
             </ul>
-
-
           </div>
         </div>
 
@@ -181,6 +155,18 @@ const Usernavbar = () => {
 
             <div className={`hamburger-dropdown ${isOpen ? 'open' : ''}`}>
               <ul>
+                {/* MOBILE ONLY: Movies & Events */}
+                <li className="mobile-navlink">
+                  <NavLink className="user-nav" to="/MoviePage" onClick={closeMenu}>
+                    Movies
+                  </NavLink>
+                </li>
+                <li className="mobile-navlink">
+                  <NavLink className="user-nav" to="/event" onClick={closeMenu}>
+                    Events
+                  </NavLink>
+                </li>
+                {/* rest of your menu */}
                 <li>
                   <NavLink className="user-nav" to="/Aboutus" onClick={closeMenu}>
                     About Us
@@ -190,13 +176,11 @@ const Usernavbar = () => {
                   <NavLink
                     className="user-nav"
                     to="/mybooking"
-                    onClick={(e) => {
+                    onClick={e => {
                       if (!isLoggedIn) {
                         e.preventDefault();
                         setShowPopup(true);
-                      } else {
-                        closeMenu();
-                      }
+                      } else closeMenu();
                     }}
                   >
                     My Bookings
@@ -241,7 +225,10 @@ const Usernavbar = () => {
               >
                 <span className="button_top">Login</span>
               </button>
-              <button className="popup-cancel-button-Booking" onClick={() => setShowPopup(false)}>
+              <button
+                className="popup-cancel-button-Booking"
+                onClick={() => setShowPopup(false)}
+              >
                 <span className="button_top">Cancel</span>
               </button>
             </div>

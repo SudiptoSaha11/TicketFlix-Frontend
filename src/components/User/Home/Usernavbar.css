@@ -280,14 +280,6 @@
   font-weight: 700;
  }
 
-/* Mobile Adjustments */
-@media (max-width: 768px) {
-  .hamburger-dropdown {
-    width: 200px;
-    padding: 10px 0;
-  }
-}
-
 .popup-overlay-Booking {
   position: fixed;
   top: 0;
@@ -384,4 +376,129 @@ button:active .button_top {
 
 .search-suggestions li:hover {
   background-color: #f0f0f0;
+}
+
+
+@media (max-width: 480px) {
+  /* tighten navbar padding */
+  .User-Navbar {
+    padding: 0.75rem 1rem;
+  }
+
+  /* hide the top links & welcome */
+  .navbar-left,
+  .navbar-right .user-info {
+    display: none;
+  }
+
+  /* logo smaller & flush left */
+  .navbar-logo {
+    margin-left: 0;
+    height: 50px;     /* was 40px */
+  }
+  .logo-img {
+    height: 120%;
+    padding-bottom: 7px;
+  }
+
+  /* ensure search bar stays visible on mobile */
+  .search-bar-container {
+    display: flex !important;
+    align-items: center;
+    width: 90%;
+    max-width: 300px;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    position: relative;
+    z-index: 1000;
+  }
+
+  /* show the duplicated Movies/Events */
+  .mobile-navlink {
+    display: block;
+  }
+
+  /* hamburger tweaks */
+  .hamburger-wrapper {
+    margin-right: 0.2rem;
+    margin-top: 5px;
+  }
+  .hamburger-menu .bar {
+    width: 24px;
+    height: 2px;
+    margin: 2px 0;
+  }
+  .hamburger-menu{
+    padding-bottom: 4px;
+  }
+.hamburger-dropdown ul li {
+  width: 100%;
+  padding: 12px 4px 12px 13px; /* Change right and left padding */
+}
+
+
+.popup-overlay-Booking {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Popup container */
+.popup-Booking {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  width: 90vw;
+  max-width: 320px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Popup message styling */
+.popup-message-Booking {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Container for buttons */
+/* Container for buttons */
+.popup-buttons-Booking {
+  display: flex;
+  flex-direction: row; /* changed from column to row */
+  gap: 12px; /* increased gap for side-by-side spacing */
+  justify-content: center; /* optional: center buttons horizontally */
+}
+
+/* Buttons */
+.popup-button-Booking,
+.popup-cancel-button-Booking {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0; /* removed margin to align properly */
+  border: none;
+  border-radius: 8px;
+  background-color: #000;
+  color: white;
+  width: auto; /* changed from 100% to auto for side-by-side layout */
+  padding: 2px 1px; /* optional: add some padding */
+  transition: background 0.3s;
+}
+
+
+.popup-button-Booking:hover,
+.popup-cancel-button-Booking:hover {
+  background-color: #222;
+}
+
+
+
 }
