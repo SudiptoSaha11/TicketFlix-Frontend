@@ -66,7 +66,7 @@ const AddEvent = () => {
     };
 
     try {
-      const response = await axios.post("http://localhost:5000/event/add", eventData);
+      const response = await axios.post("https://ticketflix-backend.onrender.com/event/add", eventData);
       console.log(response.data);
       navigate("/eventview");
     } catch (error) {

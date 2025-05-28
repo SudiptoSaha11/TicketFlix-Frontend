@@ -12,7 +12,7 @@ const EventScheduleView = () => {
       ["scheduleId", "scheduleEventName", "scheduleVenues", "scheduleShowTime"]
         .forEach(k => localStorage.removeItem(k));
 
-      const response = await axios.get("http://localhost:5000/eventschedule");
+      const response = await axios.get("https://ticketflix-backend.onrender.com/eventschedule");
       setData(response.data);
       console.log("Fetched schedules:", response.data);
     } catch (error) {
@@ -33,7 +33,7 @@ const EventScheduleView = () => {
 
   const deleted = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/eventschedule/delete/${id}`);
+      await axios.delete(`https://ticketflix-backend.onrender.com/eventschedule/delete/${id}`);
     } catch (err) {
       console.error("Error deleting schedule:", err);
     }

@@ -69,7 +69,7 @@ const Movie = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/movieschema/add', formData, {
+      const response = await axios.post('https://ticketflix-backend.onrender.com/movieschema/add', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

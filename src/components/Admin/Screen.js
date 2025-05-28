@@ -15,7 +15,7 @@ const Screen = () => {
       localStorage.setItem("Gold Seat", "");
       localStorage.setItem("Silver Seat", "");
       localStorage.setItem("Platinum Seat", "");
-      const response = await axios("http://localhost:5000/screen");
+      const response = await axios("https://ticketflix-backend.onrender.com/screen");
       Setdata(response.data);
       console.log(response.data);
     } catch (error) {
@@ -46,7 +46,7 @@ const Screen = () => {
 
   async function deleted(id) {
     try {
-      const response = await axios.delete(`http://localhost:5000/screen/delete/${id}`);
+      const response = await axios.delete(`https://ticketflix-backend.onrender.com/screen/delete/${id}`);
       console.log(response);
     } catch (err) {
       console.log("error");

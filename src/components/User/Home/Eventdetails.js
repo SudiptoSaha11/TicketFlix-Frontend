@@ -41,7 +41,7 @@ function Eventdetails() {
       console.log("Fetching event details for ID:", eventID);
 
       // Fetch event details
-      const eventResponse = await axios.get(`http://localhost:5000/getevent/${eventID}`);
+      const eventResponse = await axios.get(`https://ticketflix-backend.onrender.com/getevent/${eventID}`);
       console.log("Fetched Event Data:", eventResponse.data);
 
       const {
@@ -72,7 +72,7 @@ function Eventdetails() {
 
       // Fetch event schedule
       console.log("Fetching event schedule...");
-      const scheduleResponse = await axios.get(`http://localhost:5000/eventschedule`);
+      const scheduleResponse = await axios.get(`https://ticketflix-backend.onrender.com/eventschedule`);
       console.log("Fetched Schedule Data:", scheduleResponse.data);
 
       // Find matching schedule by event name

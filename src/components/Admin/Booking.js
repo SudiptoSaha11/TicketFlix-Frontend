@@ -8,7 +8,7 @@ const Booking = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/booking");
+      const response = await axios.get("https://ticketflix-backend.onrender.com/booking");
       setData(response.data);
       console.log("Fetched data:", response.data); // Debugging output
     } catch (error) {
@@ -22,7 +22,7 @@ const Booking = () => {
 
   const deleteBooking = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/booking/${id}/cancel`);
+      await axios.patch(`https://ticketflix-backend.onrender.com/booking/${id}/cancel`);
       fetchData(); // Refresh data after deletion
     } catch (error) {
       console.error("Error deleting booking:", error.response?.data?.message || error.message);

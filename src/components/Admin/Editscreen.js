@@ -23,7 +23,7 @@ function Editscreen() {
         event.preventDefault();
 
         try{
-            const response = await axios.patch(`http://localhost:5000/screen/update/${id}`,
+            const response = await axios.patch(`https://ticketflix-backend.onrender.com/screen/update/${id}`,
             {
                 ScreenNumber,
                 MovieName,

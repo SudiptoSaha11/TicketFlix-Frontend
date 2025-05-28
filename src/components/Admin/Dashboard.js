@@ -34,9 +34,9 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const [usersRes, statsRes, moviesRes] = await Promise.all([
-          axios.get("http://localhost:5000/users"),
-          axios.get("http://localhost:5000/dashboard/stats"),
-          axios.get("http://localhost:5000/movieview"),
+          axios.get("https://ticketflix-backend.onrender.com/users"),
+          axios.get("https://ticketflix-backend.onrender.com/dashboard/stats"),
+          axios.get("https://ticketflix-backend.onrender.com/movieview"),
         ]);
 
         // Ensure `users` is always an array
@@ -156,7 +156,7 @@ const Dashboard = () => {
                       src={
                         m.image.startsWith("http")
                           ? m.image
-                          : `http://localhost:5000/uploads/${m.image}`
+                          : `https://ticketflix-backend.onrender.com/uploads/${m.image}`
                       }
                       alt={m.movieName}
                       style={{ width: 60, height: 60 }}

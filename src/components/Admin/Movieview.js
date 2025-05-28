@@ -21,7 +21,7 @@ const Movieview = () => {
       localStorage.setItem("movie Format", "");
       localStorage.setItem("moviereviews", "");
 
-      const response = await axios.get("http://localhost:5000/movieview");
+      const response = await axios.get("https://ticketflix-backend.onrender.com/movieview");
       setData(response.data);
       console.log("Fetched movies:", response.data);
     } catch (error) {
@@ -62,7 +62,7 @@ const Movieview = () => {
 
   async function deleted(id) {
     try {
-      const response = await axios.delete(`http://localhost:5000/movieview/delete/${id}`);
+      const response = await axios.delete(`https://ticketflix-backend.onrender.com/movieview/delete/${id}`);
       console.log("Delete response:", response);
     } catch (err) {
       console.error("Error deleting movie:", err);

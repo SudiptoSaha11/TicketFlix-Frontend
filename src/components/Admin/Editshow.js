@@ -62,7 +62,7 @@ function Editshow() {
     );
 
     try {
-      await axios.patch(`http://localhost:5000/Scheduleschema/update/${id}`, {
+      await axios.patch(`https://ticketflix-backend.onrender.com/Scheduleschema/update/${id}`, {
         MovieName,
         hallName: hallNameArray,
         showTime: showTimeArray,

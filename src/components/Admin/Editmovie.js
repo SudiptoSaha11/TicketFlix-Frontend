@@ -32,7 +32,7 @@ function Editmovie() {
     }
 
     try {
-      await axios.patch(`http://localhost:5000/movieview/update/${id}`, {
+      await axios.patch(`https://ticketflix-backend.onrender.com/movieview/update/${id}`, {
         movieName,
         movieGenre,
         movieLanguage,

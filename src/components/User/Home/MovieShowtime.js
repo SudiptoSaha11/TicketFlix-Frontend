@@ -36,7 +36,7 @@ const MovieShowtime = () => {
   // Get all schedules from server, filter for the correct movie
   const fetchSchedules = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/Scheduleschema");
+      const response = await axios.get("https://ticketflix-backend.onrender.com/Scheduleschema");
       const filtered = response.data.filter(
         (schedule) =>
           schedule.MovieName &&

@@ -93,7 +93,7 @@ const Addshow = () => {
 
     console.log("Submitting New Show:", newShow);
     try {
-      const response = await axios.post("http://localhost:5000/Scheduleschema/add", newShow);
+      const response = await axios.post("https://ticketflix-backend.onrender.com/Scheduleschema/add", newShow);
       console.log("Response:", response.data);
       alert("Show added successfully!");
     } catch (err) {

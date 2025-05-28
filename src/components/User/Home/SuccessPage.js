@@ -44,7 +44,7 @@ const SuccessPage = () => {
   
     isApiCalled.current = true; // Mark API as called
   
-    axios.post("http://localhost:5000/booking/add", bookingDetails)
+    axios.post("https://ticketflix-backend.onrender.com/booking/add", bookingDetails)
       .then(response => {
         console.log("Booking Success:", response.data);
         setBookingMessage("Your booking has been confirmed! 🎉");

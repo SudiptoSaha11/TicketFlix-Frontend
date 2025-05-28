@@ -37,7 +37,7 @@ function Userlogin() {
     const userData = { email, password };
 
     try {
-      const response = await axios.post('http://localhost:5000/userlogin', userData);
+      const response = await axios.post('https://ticketflix-backend.onrender.com/userlogin', userData);
       if (response.status === 201) {
         console.log('Signed in successfully:', response.data);
       
@@ -73,7 +73,7 @@ function Userlogin() {
 
   const handleSignUp = async (name, email, password) => {
     try {
-      const response = await axios.post('http://localhost:5000/userssignup', { name, email, password });
+      const response = await axios.post('https://ticketflix-backend.onrender.com/userssignup', { name, email, password });
       if (response.status === 200) {
         setErrorMessage('Sign up successful! Please log in.');
         setRightPanelActive(false); // Switch to Sign In panel

@@ -12,7 +12,7 @@ const Event = ({ searchTerm, setSearchTerm }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/event");
+        const response = await axios.get("https://ticketflix-backend.onrender.com/event");
         setData(response.data);
       } catch (error) {
         console.error("Error fetching events:", error);

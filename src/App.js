@@ -4,7 +4,6 @@ import {BrowserRouter as Router,Route,Routes,} from 'react-router-dom'
 import Movie from './components/Admin/Movie'
 import Movieview from './components/Admin/Movieview'
 import Login from './components/Admin/Login';
-import Home from './components/Admin/Home';
 import Editmovie from './components/Admin/Editmovie';
 import Showtime from './components/Admin/Showtime';
 import Addshow from './components/Admin/Addshow';
@@ -45,8 +44,6 @@ return (
   <>
   <Router>
   <Routes>
-         <Route path = '/home'
-            element = {<Home/>}/>
           <Route path = '/Userlogin'
             element = {<Logout/>}/>
           <Route path = '/login'

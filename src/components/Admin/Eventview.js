@@ -18,7 +18,7 @@ const Eventview = () => {
       keys.forEach(k => localStorage.removeItem(k));
 
       // Fetch events from the backend
-      const response = await axios.get("http://localhost:5000/event");
+      const response = await axios.get("https://ticketflix-backend.onrender.com/event");
       setData(response.data);
       console.log("Fetched events:", response.data);
     } catch (error) {
@@ -65,7 +65,7 @@ const Eventview = () => {
 
   async function deleted(id) {
     try {
-      await axios.delete(`http://localhost:5000/event/delete/${id}`);
+      await axios.delete(`https://ticketflix-backend.onrender.com/event/delete/${id}`);
     } catch (err) {
       console.error("Error deleting event:", err);
     }

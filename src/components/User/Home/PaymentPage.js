@@ -32,7 +32,7 @@ const CheckoutForm = ({ bookingDetails }) => {
 
       // Send paymentMethod.id and bookingDetails to your server for processing
       try {
-        await axios.post('http://localhost:5000/payment', {
+        await axios.post('https://ticketflix-backend.onrender.com/payment', {
           paymentMethodId: paymentMethod.id,
           amount: bookingDetails.totalAmount * 100, // Amount in cents
           bookingDetails,

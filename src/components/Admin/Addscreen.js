@@ -18,7 +18,7 @@ const Addscreen =() =>{
       console.log(PlatinumSeat);
       
       try{
-        const response = await axios.post('http://localhost:5000/screen/add',
+        const response = await axios.post('https://ticketflix-backend.onrender.com/screen/add',
         {
             ScreenNumber,
             MovieName,

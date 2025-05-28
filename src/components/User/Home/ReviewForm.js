@@ -36,7 +36,7 @@ function ReviewForm() {
     try {
       // POST the review to the server
       const response = await axios.post(
-        `http://localhost:5000/movieview/review/${movieId}`,
+        `https://ticketflix-backend.onrender.com/movieview/review/${movieId}`,
         {
           rating: parseInt(reviewRating, 10),
           review: reviewText,

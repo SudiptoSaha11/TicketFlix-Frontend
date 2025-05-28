@@ -86,7 +86,7 @@ function Editevent() {
     };
 
     try {
-      await axios.patch(`http://localhost:5000/event/update/${id}`, {
+      await axios.patch(`https://ticketflix-backend.onrender.com/event/update/${id}`, {
         eventName,
         image,
         eventLanguage,

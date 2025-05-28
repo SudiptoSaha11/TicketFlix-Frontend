@@ -36,7 +36,7 @@ const MyBooking = () => {
   // Fetch bookings from backend
   const fetchBookings = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/booking");
+      const response = await axios.get("https://ticketflix-backend.onrender.com/booking");
       console.log("Fetched bookings:", response.data);
       setBookings(response.data);
     } catch (error) {
@@ -48,8 +48,8 @@ const MyBooking = () => {
   // Fetch movies and events data from backend
   const fetchMoviesAndEvents = async () => {
     try {
-      const response1 = await axios.get("http://localhost:5000/movieview");
-      const response2 = await axios.get("http://localhost:5000/event");
+      const response1 = await axios.get("https://ticketflix-backend.onrender.com/movieview");
+      const response2 = await axios.get("https://ticketflix-backend.onrender.com/event");
       // Combine both API responses into a single array
       const combinedMovies = [
         ...(response1.data || []),
@@ -87,7 +87,7 @@ const MyBooking = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/booking/${id}/cancel`);
+      await axios.patch(`https://ticketflix-backend.onrender.com/booking/${id}/cancel`);
       fetchBookings();
       closeModal();
     } catch (error) {
@@ -142,7 +142,7 @@ const MyBooking = () => {
             matchedItem && matchedItem.image
               ? matchedItem.image.startsWith("http")
                 ? matchedItem.image
-                : `http://localhost:5000/${matchedItem.image}`
+                : `https://ticketflix-backend.onrender.com/${matchedItem.image}`
               : "";
 
           return (

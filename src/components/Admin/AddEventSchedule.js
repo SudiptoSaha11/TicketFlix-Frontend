@@ -52,7 +52,7 @@ const AddEventSchedule = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/eventschedule/add", {
+      await axios.post("https://ticketflix-backend.onrender.com/eventschedule/add", {
         eventName,
         eventVenue,
         EventshowTime: eventShowTime,

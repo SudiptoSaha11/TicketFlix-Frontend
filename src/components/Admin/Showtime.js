@@ -19,7 +19,7 @@ const Showtime = () => {
       localStorage.setItem("PlatinumTicketPrice", "");
 
       // Fetch schedules from the backend
-      const response = await axios.get("http://localhost:5000/Scheduleschema");
+      const response = await axios.get("https://ticketflix-backend.onrender.com/Scheduleschema");
       setData(response.data);
       console.log(response.data);
     } catch (error) {
@@ -50,7 +50,7 @@ const Showtime = () => {
   // Delete a schedule by ID
   async function deleted(id) {
     try {
-      const response = await axios.delete(`http://localhost:5000/Scheduleschema/delete/${id}`);
+      const response = await axios.delete(`https://ticketflix-backend.onrender.com/Scheduleschema/delete/${id}`);
       console.log(response);
       fetchData();
     } catch (err) {
