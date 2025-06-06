@@ -118,7 +118,7 @@ const Usernavbar = () => {
           <img
             src={require('./logo-png.png')}
             alt="TicketFlix Logo"
-            className="h-[80px] w-[80px] rounded-full pb-2"
+            className="h-[70px] w-[70px] rounded-full pb-2"
           />
         </div>
 
