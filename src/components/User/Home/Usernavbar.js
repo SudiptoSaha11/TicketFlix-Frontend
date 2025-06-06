@@ -56,8 +56,8 @@ const Usernavbar = () => {
 
     try {
       const [movieRes, eventRes] = await Promise.all([
-        axios.get(`https://ticketflix-backend.onrender.com/api/autocomplete?search=${query}`),
-        axios.get(`https://ticketflix-backend.onrender.com/api/eventcomplete?search=${query}`)
+        axios.get(`http://localhost:5000/api/autocomplete?search=${query}`),
+        axios.get(`http://localhost:5000/api/eventcomplete?search=${query}`)
       ]);
 
       const movieResults = movieRes.data.map(item => ({ ...item, type: 'movie' }));
@@ -97,10 +97,10 @@ const Usernavbar = () => {
       if (searchTerm.trim() === '') return;
 
       if (isMoviePage) {
-        const res = await axios.get(`https://ticketflix-backend.onrender.com/movieview?search=${searchTerm}`);
+        const res = await axios.get(`http://localhost:5000/movieview?search=${searchTerm}`);
         navigate('/MoviePage', { state: { searchResults: res.data } });
       } else {
-        const res = await axios.get(`https://ticketflix-backend.onrender.com/event?search=${searchTerm}`);
+        const res = await axios.get(`http://localhost:5000/event?search=${searchTerm}`);
         navigate('/event', { state: { searchResults: res.data } });
       }
     } catch (err) {
@@ -110,19 +110,25 @@ const Usernavbar = () => {
 
   return (
     <>
-      <div className="fixed top-0 w-full h-[80px] bg-[#fff] px-[2px] py-3 z-[1000] flex justify-between items-center shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-colors duration-300 ease">
+      <div className="fixed top-0 w-full h-[80px] bg-[#fff] px-[2px] py-3 z-[1000] flex justify-between items-center shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-colors duration-300 ease md:gap-[10px]">
         <div
-          className="flex  items-center cursor-pointer"
+          className="flex items-center cursor-pointer
+                     sm:left-0
+                     md:ml-[8rem]
+                     lg:ml-[10rem]
+                     xl:ml-[12.2rem]
+                     2xl:ml-[14.2rem]"
           onClick={goToHome}
         >
           <img
             src={require('./logo-png.png')}
             alt="TicketFlix Logo"
-            className="h-[70px] w-[70px] rounded-full pb-2"
+            className="h-[80px] w-[80px] pb-2"
           />
         </div>
 
-        <div className="flex items-center gap-[2px] hidden">
+        <div className="flex items-center gap-[2px] hidden
+                         xl:block xl: flex xl:justify-around xl:pl-[20px]">
           <NavLink
             to="/MoviePage"
             className="text-[1.1rem] font-medium text-[#333333] no-underline transition-colors duration-300 ease hover:text-[#f39c12]"
@@ -131,7 +137,8 @@ const Usernavbar = () => {
           </NavLink>
         </div>
 
-        <div className="flex items-center gap-[1.7rem] ml-[3rem] hidden">
+        <div className="flex items-center  ml-[3rem] hidden
+                         xl:block">
           <NavLink
             to="/event"
             className="text-[1.1rem] font-medium text-[#333333] no-underline transition-colors duration-300 ease hover:text-[#f39c12]"
@@ -142,12 +149,16 @@ const Usernavbar = () => {
 
         {/* SEARCH BAR */}
         <div className="flex-1 flex justify-center">
-          <div className="relative flex items-center w-full max-w-[250px] bg-white border border-[#cccccc] rounded-none px-[15px] py-[5px] shadow-[0_2px_5px_rgba(0,0,0,0.1)]">
+          <div className="relative flex items-center w-full max-w-[250px] bg-white border border-[#cccccc] rounded-none px-[15px] py-[5px] shadow-[0_2px_5px_rgba(0,0,0,0.1)]
+                          sm:max-w-[400px] 
+                          md:max-w-[600px]">
             <div className="flex items-center justify-center pb-[8px] cursor-pointer" onClick={handleSearch}>
               <img
                 src={require('./search.png')}
                 alt="Search"
-                className="w-[15px] h-[15px] mr-[10px]"
+                className="w-[15px] h-[15px] mr-[10px]
+                           sm: w-[20px] h-[20px] mr-[15px]
+                           md: w-[25px] h-[25px] mr-[18px]"
               />
             </div>
             <input
@@ -156,7 +167,8 @@ const Usernavbar = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="flex-1 bg-transparent text-[12px] focus:outline-none border-none p-[8px] placeholder:text-[#aaaaaa]"
+              className="flex-1 bg-transparent text-[12px] focus:outline-none border-none p-[8px] placeholder:text-[#aaaaaa]
+                         sm:text-[20px]"
             />
             {/* SUGGESTIONS */}
             <ul className="absolute top-full left-0 right-0 bg-white border border-[#cccccc] border-t-0 z-[9999] list-none m-0 p-0 block">
@@ -175,12 +187,19 @@ const Usernavbar = () => {
 
         <div className="flex items-center gap-[1rem] relative">
           {isLoggedIn && (
-            <div className="mr-[20px] font-bold">
+            <div className="mr-[20px] font-bold hidden 
+                            sm:hidden
+                            xl:block ">
               <span>Welcome, {username.split(' ')[0]}</span>
             </div>
           )}
 
-          <div className="relative inline-block pr-[10px]">
+          <div className="relative inline-block pr-[10px]
+                          sm:right-0
+                          md:mr-[7rem] pl-[8px]
+                          lg:mr-[10rem]
+                          xl:mr-[12.2rem]
+                          2xl:mr-[14.2rem]">
             <div
               className="flex flex-col cursor-pointer "
               onClick={toggleMenu}
@@ -205,23 +224,25 @@ const Usernavbar = () => {
                 shadow-[0_4px_12px_rgba(0,0,0,0.2)] py-[15px] flex flex-col items-start
                 rounded-[8px] transition-opacity duration-300 ease-in-out transform
                 ${isOpen ? 'translate-y-0 opacity-100 flex' : '-translate-y-[10px] opacity-0 hidden'}
-                md:w-[250px] md:py-[10px]
+                md:w-[300px] md:py-[10px]
               `}
             >
               <ul className="flex flex-col items-center w-full m-0 p-0 list-none">
 
-                <li className="w-full px-[20px] py-[12px]">
+                <li className="w-full px-[20px] py-[12px] xl:hidden">
                   <NavLink
                     to="/MoviePage"
-                    className="text-[1.1rem] font-medium text-[#333333] no-underline transition-colors duration-300 ease hover:text-[#f39c12]"
+                    className="text-[1.1rem] font-medium text-[#333333] no-underline transition-colors duration-300 ease hover:text-[#f39c12]
+                                "
                   >
                     Movies
                   </NavLink>
                 </li>
-                <li className="w-full px-[20px] py-[12px]">
+                <li className="w-full px-[20px] py-[12px] xl:hidden">
                   <NavLink
                     to="/event"
-                    className="text-[1.1rem] font-medium text-[#333333] no-underline transition-colors duration-300 ease hover:text-[#f39c12]"
+                    className="text-[1.1rem] font-medium text-[#333333] no-underline transition-colors duration-300 ease hover:text-[#f39c12]
+                                "
                   >
                     Events
                   </NavLink>
