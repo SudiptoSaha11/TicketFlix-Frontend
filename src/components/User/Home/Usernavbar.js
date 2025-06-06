@@ -112,7 +112,7 @@ const Usernavbar = () => {
     <>
       <div className="fixed top-0 w-full bg-[#fff] px-[2px] py-3 z-[1000] flex justify-between items-center shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-colors duration-300 ease">
         <div
-          className="flex  items-center h-[70px]  cursor-pointer"
+          className="flex  items-center h-[50px]  cursor-pointer"
           onClick={goToHome}
         >
           <img
