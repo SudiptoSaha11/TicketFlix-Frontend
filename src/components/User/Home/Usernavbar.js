@@ -110,15 +110,15 @@ const Usernavbar = () => {
 
   return (
     <>
-      <div className="fixed top-0 w-full bg-[#fff] px-[2px] py-3 z-[1000] flex justify-between items-center shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-colors duration-300 ease">
+      <div className="fixed top-0 w-full h-[80px] bg-[#fff] px-[2px] py-3 z-[1000] flex justify-between items-center shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-colors duration-300 ease">
         <div
-          className="flex  items-center h-[50px]  cursor-pointer"
+          className="flex  items-center cursor-pointer"
           onClick={goToHome}
         >
           <img
             src={require('./logo-png.png')}
             alt="TicketFlix Logo"
-            className="h-[70px] w-[70px] rounded-full"
+            className="h-[80px] w-[80px] rounded-full pb-2"
           />
         </div>
 
