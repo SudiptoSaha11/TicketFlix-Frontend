@@ -1,25 +1,24 @@
 import React from 'react';
-// import './Card.css'; // Ensure you have some basic styling
 
-const EventCard = ({ image, eventName, eventVenue, eventType, onClick }) => {
+const EventCard = ({ image, eventName, eventVenue, onClick }) => {
   return (
-    <div className="card" onClick={onClick} style={{ cursor: 'pointer', border: '1px solid #ddd', padding: '10px', margin: '10px' }}>
+    <div className="border-none rounded-lg shadow-md p-3 m-2 w-[250px] h-[450px] text-start flex flex-col items-start justify-start" onClick={onClick} style={{ cursor: 'pointer', border: '1px solid #ddd', padding: '10px', margin: '10px' }}>
       {image ? (
         <img
           src={image}
           alt={eventName}
-          className="card-image"
+          class="w-[220px] aspect-[12/17] object-cover rounded-[1px] border-none outline-none shadow-none transition-transform duration-300 ease-in-out hover:scale-105"
           style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
         />
       ) : (
-        <div className="card-image" style={{ width: '100%', height: '150px', backgroundColor: '#f0f0f0' }}>
+        <div className="w-full h-auto rounded">
           <p>No image available</p>
         </div>
       )}
-      <div className="card-content">
-        <h2 className="card-title">{eventName}</h2>
-        <p className="card-address">{eventVenue}</p>
-        <p className="card-type">{eventType}</p>
+      <div className="p-2 flex flex-col items-start text-start h-[120px]">
+        <h2 className="text-[1.2rem] font-extrabold my-2 text-[#222] no-underline hover:no-underline">{eventName}</h2>
+        <p className="mt-1 text-sm text-gray-600 w-[220px] no-underline">{eventVenue}</p>
+
       </div>
     </div>
   );

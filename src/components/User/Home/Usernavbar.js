@@ -2,16 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import debounce from 'lodash.debounce';
-import '../Home/Usernavbar.css';
 
 const Usernavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
+
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [showPopup, setShowPopup] = useState(false);
 
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,9 +39,10 @@ const Usernavbar = () => {
     setIsLoggedIn(false);
     navigate('/');
   };
-  const toggleMenu = () => setIsOpen(!isOpen);
-  const closeMenu  = () => setIsOpen(false);
-  const goToHome   = () => navigate('/');
+
+  const toggleMenu = () => setIsOpen(prev => !prev);
+  const closeMenu = () => setIsOpen(false);
+  const goToHome = () => navigate('/');
 
   // Detect if we're on a movie-related page
   const isMoviePage = location.pathname.toLowerCase().includes('movie');
@@ -52,39 +53,49 @@ const Usernavbar = () => {
       setSuggestions([]);
       return;
     }
+
     try {
       const [movieRes, eventRes] = await Promise.all([
         axios.get(`https://ticketflix-backend.onrender.com/api/autocomplete?search=${query}`),
         axios.get(`https://ticketflix-backend.onrender.com/api/eventcomplete?search=${query}`)
       ]);
+
       const movieResults = movieRes.data.map(item => ({ ...item, type: 'movie' }));
       const eventResults = eventRes.data.map(item => ({ ...item, type: 'event' }));
-      setSuggestions([...movieResults, ...eventResults]);
+
+      const combinedResults = [...movieResults, ...eventResults];
+      setSuggestions(combinedResults);
     } catch (err) {
       console.error('❌ Error fetching suggestions:', err);
     }
   };
 
   const debouncedFetchSuggestions = useCallback(
-    debounce(q => fetchSuggestions(q), 300),
+    debounce((query) => {
+      fetchSuggestions(query);
+    }, 300),
     [isMoviePage]
   );
 
   useEffect(() => {
     debouncedFetchSuggestions(searchTerm);
-    return () => debouncedFetchSuggestions.cancel();
+    return () => {
+      debouncedFetchSuggestions.cancel();
+    };
   }, [searchTerm, debouncedFetchSuggestions]);
 
-  const handleSelectSuggestion = (s) => {
+  const handleSelectSuggestion = (suggestion) => {
     setSearchTerm('');
     setSuggestions([]);
-    const detailPath = s.type === 'movie' ? 'moviedetails' : 'eventdetails';
-    navigate(`/${detailPath}/${s._id}`, { state: s });
+
+    const detailPath = suggestion.type === 'movie' ? 'moviedetails' : 'eventdetails';
+    navigate(`/${detailPath}/${suggestion._id}`, { state: suggestion });
   };
 
   const handleSearch = async () => {
-    if (!searchTerm.trim()) return;
     try {
+      if (searchTerm.trim() === '') return;
+
       if (isMoviePage) {
         const res = await axios.get(`https://ticketflix-backend.onrender.com/movieview?search=${searchTerm}`);
         navigate('/MoviePage', { state: { searchResults: res.data } });
@@ -99,38 +110,61 @@ const Usernavbar = () => {
 
   return (
     <>
-      <div className="User-Navbar">
-        <div className="navbar-logo" onClick={goToHome} style={{ cursor: 'pointer' }}>
-          <img src={require('./logo-png.png')} alt="TicketFlix Logo" className="logo-img" />
+      <div className="fixed top-0 w-full bg-[#fff] px-[2px] py-3 z-[1000] flex justify-between items-center shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-colors duration-300 ease">
+        <div
+          className="flex  items-center h-[70px]  cursor-pointer"
+          onClick={goToHome}
+        >
+          <img
+            src={require('./logo-png.png')}
+            alt="TicketFlix Logo"
+            className="h-[70px] w-[70px] rounded-full"
+          />
         </div>
 
-        <div className="navbar-left">
-          <NavLink className="user-nav" to="/MoviePage">Movies</NavLink>
+        <div className="flex items-center gap-[2px] hidden">
+          <NavLink
+            to="/MoviePage"
+            className="text-[1.1rem] font-medium text-[#333333] no-underline transition-colors duration-300 ease hover:text-[#f39c12]"
+          >
+            Movies
+          </NavLink>
         </div>
-        <div className="navbar-left">
-          <NavLink className="user-nav" to="/event">Events</NavLink>
+
+        <div className="flex items-center gap-[1.7rem] ml-[3rem] hidden">
+          <NavLink
+            to="/event"
+            className="text-[1.1rem] font-medium text-[#333333] no-underline transition-colors duration-300 ease hover:text-[#f39c12]"
+          >
+            Events
+          </NavLink>
         </div>
 
         {/* SEARCH BAR */}
-        <div className="navbar-center">
-          <div className="search-bar-container">
-            <div className="search-logo" onClick={handleSearch}>
-              <img src={require('./search.png')} alt="Search" className="search-icon" />
+        <div className="flex-1 flex justify-center">
+          <div className="relative flex items-center w-full max-w-[250px] bg-white border border-[#cccccc] rounded-none px-[15px] py-[5px] shadow-[0_2px_5px_rgba(0,0,0,0.1)]">
+            <div className="flex items-center justify-center pb-[8px] cursor-pointer" onClick={handleSearch}>
+              <img
+                src={require('./search.png')}
+                alt="Search"
+                className="w-[15px] h-[15px] mr-[10px]"
+              />
             </div>
             <input
               type="text"
               placeholder="Search for movies or events..."
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSearch()}
-              className="search-bar"
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              className="flex-1 bg-transparent text-[12px] focus:outline-none border-none p-[8px] placeholder:text-[#aaaaaa]"
             />
-            <ul className="search-suggestions">
-              {suggestions.map((item, idx) => (
+            {/* SUGGESTIONS */}
+            <ul className="absolute top-full left-0 right-0 bg-white border border-[#cccccc] border-t-0 z-[9999] list-none m-0 p-0 block">
+              {suggestions.map((item, index) => (
                 <li
-                  key={idx}
+                  key={index}
                   onClick={() => handleSelectSuggestion(item)}
-                  className="suggestion-item"
+                  className="block px-[10px] py-[10px] cursor-pointer hover:bg-[#f0f0f0]"
                 >
                   {item.movieName || item.eventName || '❌ No Name Found'}
                 </li>
@@ -139,70 +173,119 @@ const Usernavbar = () => {
           </div>
         </div>
 
-        <div className="navbar-right">
+        <div className="flex items-center gap-[1rem] relative">
           {isLoggedIn && (
-            <div className="user-info">
+            <div className="mr-[20px] font-bold">
               <span>Welcome, {username.split(' ')[0]}</span>
             </div>
           )}
 
-          <div className="hamburger-wrapper">
-            <div className={`hamburger-menu ${isOpen ? 'active' : ''}`} onClick={toggleMenu}>
-              <div className="bar"></div>
-              <div className="bar"></div>
-              <div className="bar"></div>
+          <div className="relative inline-block pr-[10px]">
+            <div
+              className="flex flex-col cursor-pointer "
+              onClick={toggleMenu}
+            >
+              <div
+                className={`block w-[30px] h-[2px] my-[3px] bg-[#333333] transition-all duration-300 origin-center ${isOpen ? 'translate-y-[8px] rotate-45' : ''
+                  }`}
+              />
+              <div
+                className={`block w-[30px] h-[2px] my-[3px] bg-[#333333] transition-all duration-300 origin-center ${isOpen ? 'opacity-0' : ''
+                  }`}
+              />
+              <div
+                className={`block w-[30px] h-[2px] my-[3px] bg-[#333333] transition-all duration-300 origin-center ${isOpen ? '-translate-y-[8px] -rotate-45' : ''
+                  }`}
+              />
             </div>
 
-            <div className={`hamburger-dropdown ${isOpen ? 'open' : ''}`}>
-              <ul>
-                {/* MOBILE ONLY: Movies & Events */}
-                <li className="mobile-navlink">
-                  <NavLink className="user-nav" to="/MoviePage" onClick={closeMenu}>
+            <div
+              className={`
+                absolute top-[220%] right-0 w-[250px] bg-white
+                shadow-[0_4px_12px_rgba(0,0,0,0.2)] py-[15px] flex flex-col items-start
+                rounded-[8px] transition-opacity duration-300 ease-in-out transform
+                ${isOpen ? 'translate-y-0 opacity-100 flex' : '-translate-y-[10px] opacity-0 hidden'}
+                md:w-[250px] md:py-[10px]
+              `}
+            >
+              <ul className="flex flex-col items-center w-full m-0 p-0 list-none">
+
+                <li className="w-full px-[20px] py-[12px]">
+                  <NavLink
+                    to="/MoviePage"
+                    className="text-[1.1rem] font-medium text-[#333333] no-underline transition-colors duration-300 ease hover:text-[#f39c12]"
+                  >
                     Movies
                   </NavLink>
                 </li>
-                <li className="mobile-navlink">
-                  <NavLink className="user-nav" to="/event" onClick={closeMenu}>
+                <li className="w-full px-[20px] py-[12px]">
+                  <NavLink
+                    to="/event"
+                    className="text-[1.1rem] font-medium text-[#333333] no-underline transition-colors duration-300 ease hover:text-[#f39c12]"
+                  >
                     Events
                   </NavLink>
                 </li>
-                {/* rest of your menu */}
-                <li>
-                  <NavLink className="user-nav" to="/Aboutus" onClick={closeMenu}>
+                <li className="w-full px-[20px] py-[12px]">
+                  <NavLink
+                    to="/Aboutus"
+                    onClick={closeMenu}
+                    className="no-underline block w-full text-[1rem] font-medium text-[#333333] rounded-[4px] transition-colors duration-300 ease hover:bg-[#f7f7f7] hover:text-[#f39c12]"
+                  >
                     About Us
                   </NavLink>
                 </li>
-                <li>
+                <li className="w-full px-[20px] py-[12px]">
                   <NavLink
-                    className="user-nav"
                     to="/mybooking"
-                    onClick={e => {
+                    onClick={(e) => {
                       if (!isLoggedIn) {
                         e.preventDefault();
                         setShowPopup(true);
-                      } else closeMenu();
+                      } else {
+                        closeMenu();
+                      }
                     }}
+                    className="no-underline block w-full text-[1rem] font-medium text-[#333333] rounded-[4px] transition-colors duration-300 ease hover:bg-[#f7f7f7] hover:text-[#f39c12]"
                   >
                     My Bookings
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink className="user-nav" to="/support" onClick={closeMenu}>
+                <li className="w-full px-[20px] py-[12px]">
+                  <NavLink
+                    to="/support"
+                    onClick={closeMenu}
+                    className="no-underline block w-full text-[1rem] font-medium text-[#333333] rounded-[4px] transition-colors duration-300 ease hover:bg-[#f7f7f7] hover:text-[#f39c12]"
+                  >
                     Help & Support
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink className="user-nav" to="/faq" onClick={closeMenu}>
+                <li className="w-full px-[20px] py-[12px]">
+                  <NavLink
+                    to="/faq"
+                    onClick={closeMenu}
+                    className="no-underline block w-full text-[1rem] font-medium text-[#333333] rounded-[4px] transition-colors duration-300 ease hover:bg-[#f7f7f7] hover:text-[#f39c12]"
+                  >
                     FAQ
                   </NavLink>
                 </li>
-                <li>
+                <li className="w-full px-[20px] py-[12px]">
                   <button
                     type="button"
-                    className="trylog-button"
                     onClick={isLoggedIn ? handleLogout : () => navigate('/trylogin')}
+                    className="
+                      w-full
+                      bg-[#e8e8e8]
+                      text-[1rem]
+                      font-medium
+                      text-[#333333]
+                      rounded-[4px]
+                      py-[8px]
+                      transition-colors duration-300 ease
+                      hover:bg-[#f0f0f0]
+                    "
                   >
-                    <span>{isLoggedIn ? 'Logout' : 'Login'}</span>
+                    {isLoggedIn ? 'Logout' : 'Login'}
                   </button>
                 </li>
               </ul>
@@ -212,24 +295,24 @@ const Usernavbar = () => {
       </div>
 
       {showPopup && (
-        <div className="popup-overlay-Booking">
-          <div className="popup-Booking">
-            <p className="popup-message-Booking">Please log in to view your bookings.</p>
-            <div className="popup-buttons-Booking">
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[1000]">
+          <div className="bg-white p-[30px] rounded-[8px] text-center w-[400px] shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
+            <p className="text-[16px] mb-[20px]">Please log in to view your bookings.</p>
+            <div className="flex justify-around">
               <button
-                className="popup-button-Booking"
+                className="block box-border border-2 border-[#000000] rounded-[0.75em] px-[1.5em] py-[0.75em] bg-[#e8e8e8] text-[#000000] transform -translate-y-[0.2em] transition-transform duration-100 ease-in hover:-translate-y-[0.33em] active:translate-y-0"
                 onClick={() => {
                   setShowPopup(false);
                   navigate('/trylogin');
                 }}
               >
-                <span className="button_top">Login</span>
+                <span className="text-[17px] font-bold">Login</span>
               </button>
               <button
-                className="popup-cancel-button-Booking"
+                className="block box-border border-2 border-[#000000] rounded-[0.75em] px-[1.5em] py-[0.75em] bg-[#e8e8e8] text-[#000000] transform -translate-y-[0.2em] transition-transform duration-100 ease-in hover:-translate-y-[0.33em] active:translate-y-0"
                 onClick={() => setShowPopup(false)}
               >
-                <span className="button_top">Cancel</span>
+                <span className="text-[17px] font-bold">Cancel</span>
               </button>
             </div>
           </div>
