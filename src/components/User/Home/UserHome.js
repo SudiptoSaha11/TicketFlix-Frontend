@@ -27,11 +27,11 @@ const UserHome = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
-    axios.get('https://ticketflix-backend.onrender.com/movieview')
+    axios.get('http://localhost:5000/movieview')
       .then(res => setData(res.data))
       .catch(err => console.error('Error fetching movies:', err));
 
-    axios.get('https://ticketflix-backend.onrender.com/event')
+    axios.get('http://localhost:5000/event')
       .then(res => setData2(res.data))
       .catch(err => console.error('Error fetching events:', err));
 
