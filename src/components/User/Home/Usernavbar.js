@@ -117,7 +117,8 @@ const Usernavbar = () => {
                      md:ml-[8rem]
                      lg:ml-[10rem]
                      xl:ml-[12.2rem]
-                     2xl:ml-[14.2rem]"
+                     2xl:ml-[12.4rem]
+                     antarikh:ml-[14.2rem]"
           onClick={goToHome}
         >
           <img
@@ -199,7 +200,8 @@ const Usernavbar = () => {
                           md:mr-[7rem] pl-[8px]
                           lg:mr-[10rem]
                           xl:mr-[12.2rem]
-                          2xl:mr-[14.2rem]">
+                          2xl:mr-[12.4rem]
+                          antarikh:mr-[14.2rem]">
             <div
               className="flex flex-col cursor-pointer "
               onClick={toggleMenu}

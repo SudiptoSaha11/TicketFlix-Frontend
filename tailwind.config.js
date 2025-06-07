@@ -8,11 +8,15 @@ module.exports = {
   ],
   theme: {
     extend: {
+      // ✅ Custom breakpoints
+      screens: {
+        antarikh: '1680px',
+      },
+
       colors: {
-        // Custom gray:
         "custom-gray": "#222",
 
-        // All Tailwind’s built-in palettes for convenience:
+        // Tailwind palettes
         slate: colors.slate,
         gray: colors.gray,
         zinc: colors.zinc,
@@ -36,7 +40,7 @@ module.exports = {
         pink: colors.pink,
         rose: colors.rose,
 
-        // Additional standalone custom colors:
+        // Custom colors
         "brand-primary": "#1E40AF",
         "brand-secondary": "#9333EA",
         "accent-light": "#FDE047",
@@ -48,15 +52,32 @@ module.exports = {
         "ivory": "#F9FAFB",
         "charcoal": "#334155",
       },
+
       keyframes: {
-        fadeIn: {
-          "0%": { opacity: "0", transform: "translateY(-2px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-      },
-      animation: {
-        fadeIn: "fadeIn 0.3s ease-in-out",
-      },
+  fadeIn: {
+    "0%": { opacity: "0", transform: "translateY(-2px)" },
+    "100%": { opacity: "1", transform: "translateY(0)" },
+  },
+  scroll: {
+    "0%": { transform: "translateX(0%)" },
+    "100%": { transform: "translateX(-200%)" },
+  },
+  scroll160: {
+    "0%": { transform: "translateX(0%)" },
+    "100%": { transform: "translateX(-160%)" },
+  },
+  scroll130: {
+    "0%": { transform: "translateX(0%)" },
+    "100%": { transform: "translateX(-168%)" },
+  },
+},
+animation: {
+  fadeIn: "fadeIn 0.3s ease-in-out",
+  'scroll-slow': 'scroll 50s linear infinite',
+  'scroll-medium': 'scroll130 50s linear infinite',
+  'scroll-fast': 'scroll 20s linear infinite',
+  'scroll-md': 'scroll160 25s linear infinite'
+},
     },
   },
   plugins: [],

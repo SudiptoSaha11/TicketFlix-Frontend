@@ -4,11 +4,12 @@ import { Link } from "react-router-dom";
 import Usernavbar from './Usernavbar';
 import axios from 'axios';
 import Card from './Card';
+import EventCard from './EventCard';
 import Chatbot from './Chatbot';
 import Footer from './Footer';
-import EventCard from './EventCard';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import './UserHome.css'; 
 
 const sliderImages = [
   'https://assets-in-gm.bmscdn.com/promotions/cms/creatives/1742293928527_generalsale1240x300.jpeg',
@@ -19,19 +20,24 @@ const sliderImages = [
 
 const UserHome = () => {
   const [data, setData] = useState([]);
+  const [data2, setData2] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [movieCurrentSlide, setMovieCurrentSlide] = useState(0);
   const [eventCurrentSlide, setEventCurrentSlide] = useState(0);
-  const [data2, setData2] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
-    axios.get('https://ticketflix-backend.onrender.com/movieview')
+    axios.get('http://localhost:5000/movieview')
       .then(res => setData(res.data))
       .catch(err => console.error('Error fetching movies:', err));
 
-    axios.get('https://ticketflix-backend.onrender.com/event')
+    axios.get('http://localhost:5000/event')
       .then(res => setData2(res.data))
       .catch(err => console.error('Error fetching events:', err));
+
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const setID = (_id, movieName, movieGenre, movieLanguage, movieFormat) => {
@@ -87,60 +93,41 @@ const UserHome = () => {
   };
 
   return (
-    // userhome-container
-    <div class="flex flex-col min-h-screen"> 
-    {/* userhome-content */}
-      <div class="flex-1">
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-1">
         <Usernavbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-    
-        <div class="relative overflow-hidden w-full max-w-full mx-auto whitespace-nowrap mb-[10px]"> {/* Continuous Slider */}
-          <div class="flex w-[200%] animate-[scroll_35s_linear_infinite] gap-[6px] items-center">{/*slider-track*/}
-            {[...sliderImages, ...sliderImages].map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={`slide-${index}`}
-                class="mt-[90px] w-[1250px] h-[300px] flex-shrink-0 object-cover rounded-[8px] shadow-[0_4px_6px_rgba(0,0,0,0.15)]" //slider-image
-              />
+
+        <div className="relative overflow-hidden w-full mx-auto whitespace-nowrap mb-[10px]">
+      <div className="flex w-[200%] animate-scroll-fast 
+                      md:animate-scroll-md gap-[6px] items-center
+                      xl:animate-scroll-medium
+                      2xl:animate-scroll-medium">
+        {[...sliderImages, ...sliderImages].map((image, index) => (
+          <img
+            key={index}
+            src={image}  //slider images
+            alt={`slide-${index}`}
+            className="mt-[90px] w-[412px] h-[150px] flex-shrink-0 object-cover rounded-[8px] shadow-[0_4px_6px_rgba(0,0,0,0.15)]
+                       sm:w-[768px] sm:h-[250px]
+                       md:w-[1024px] md:h-[280px]
+                       lg:w-[1280px] lg:h-[300px]"
+                       
+                      
+          />
             ))}
           </div>
         </div>
-
+        {/* Movies Section */}
         <div className="block p-[5px] text-center">
-          <div className="relative w-[90%] mx-auto overflow-hidden flex items-center justify-center">
-            {/* Left Arrow (previous 4 cards) */}
-            <button
-              type="button"
-              className="absolute top-1/2 left-20 z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
-              onClick={handlePrevSlideMovie}
-            >
-              <svg
-                className="w-4 h-4 text-white dark:text-gray-800"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 1 1 5l4 4"
-                />
-              </svg>
-              <span class="sr-only">Previous</span>
-            </button>
-
-            <div class="w-full max-w-[84%] overflow-hidden"> {/* slider-wrapper */}
-              <div
-                class="flex transition-transform duration-[1000ms]"//slider-track-poster
-                style={{
-                  transform: `translateX(-${movieCurrentSlide * 100}%)`
-                }}
+          {isMobile ? (
+            <div className="w-[90%] mx-auto">
+              <Swiper
+                spaceBetween={6}
+                slidesPerView={1.2}
+                centeredSlides={true}
               >
                 {filteredData.map(item => (
-                  <div key={item._id} className="min-w-[25%] box-border flex justify-center items-center flex-shrink-0 no-underline">
+                  <SwiperSlide key={item._id}>
                     <Link
                       to={`/moviedetails/${item._id}`}
                       state={item}
@@ -153,7 +140,6 @@ const UserHome = () => {
                           item.movieFormat
                         )
                       }
-                      className="text-[#222] font-bold no-underline hover:no-underline"
                     >
                       <Card
                         image={item.image}
@@ -161,79 +147,117 @@ const UserHome = () => {
                         movieGenre={item.movieGenre}
                       />
                     </Link>
-                  </div>
+                  </SwiperSlide>
                 ))}
-              </div>
+              </Swiper>
             </div>
-
-            {/* Right Arrow (next 4 cards) */}
-            <button
-              type="button"
-              className="absolute top-1/2 right-20 z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
-              onClick={handleNextSlideMovie}
-            >
-              <svg
-                className="w-4 h-4 text-white dark:text-gray-800"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
+          ) : (
+            <div className="relative w-[90%] mx-auto overflow-hidden flex items-center justify-center">
+              {/* Left Arrow */}
+              <button
+                type="button"
+                className="absolute top-1/2 left-20 z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
+                onClick={handlePrevSlideMovie}
               >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m1 9 4-4-4-4"
-                />
-              </svg>
-              <span className="sr-only">Next</span>
-            </button>
-          </div>
+                <svg
+                  className="w-4 h-4 text-white dark:text-gray-800"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 1 1 5l4 4"
+                  />
+                </svg>
+                <span className="sr-only">Previous</span>
+              </button>
+
+              {/* Desktop Carousel */}
+              <div className="w-full max-w-[84%] overflow-hidden">
+                <div
+                  className="flex transition-transform duration-[1000ms]"
+                  style={{
+                    transform: `translateX(-${movieCurrentSlide * 100}%)`
+                  }}
+                >
+                  {filteredData.map(item => (
+                    <div key={item._id} className="min-w-[25%] box-border flex justify-center items-center flex-shrink-0 no-underline">
+                      <Link
+                        to={`/moviedetails/${item._id}`}
+                        state={item}
+                        onClick={() =>
+                          setID(
+                            item._id,
+                            item.movieName,
+                            item.movieGenre,
+                            item.movieLanguage,
+                            item.movieFormat
+                          )
+                        }
+                        className="text-[#222] font-bold no-underline hover:no-underline"
+                      >
+                        <Card
+                          image={item.image}
+                          movieName={item.movieName}
+                          movieGenre={item.movieGenre}
+                        />
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Arrow */}
+              <button
+                type="button"
+                className="absolute top-1/2 right-20 z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
+                onClick={handleNextSlideMovie}
+              >
+                <svg
+                  className="w-4 h-4 text-white dark:text-gray-800"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m1 9 4-4-4-4"
+                  />
+                </svg>
+                <span className="sr-only">Next</span>
+              </button>
+            </div>
+          )}
         </div>
 
-        <div class="bg-gradient-to-r from-[#1e1e1e] to-[#2a2a2a] text-white p-[20px] flex items-center justify-center mx-auto my-[20px] rounded-[10px] w-[80%] max-w-[1400px]"> {/* ad-banner */}
-          <div class="text-center">{/* ad-content */}
+        {/* Ad Banner */}
+        <div className="bg-gradient-to-r from-[#1e1e1e] to-[#2a2a2a] text-white p-[20px] flex items-center justify-center mx-auto my-[20px] rounded-[10px] w-[80%] max-w-[1400px]">
+          <div className="text-center">
             <h1 className="text-[24px] font-bold mb-[10px]">TICKETFLIX STREAM</h1>
             <p className="text-[18px]">Endless Entertainment Anytime. Anywhere!</p>
           </div>
         </div>
 
+        {/* Events Section */}
         <div className="block p-[5px] text-center">
-          <div className="relative w-[90%] mx-auto overflow-hidden flex items-center justify-center">
-            {/* Left Arrow (previous 4 cards) */}
-            <button
-              type="button"
-              className="absolute top-1/2 left-20 z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
-              onClick={handlePrevSlideEvent}
-            >
-              <svg
-                className="w-4 h-4 text-white dark:text-gray-800"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 1 1 5l4 4"
-                />
-              </svg>
-              <span className="sr-only">Previous</span>
-            </button>
-
-            <div className="w-full max-w-[84%] overflow-hidden">
-              <div
-                className="flex transition-transform duration-[1000ms]"
-                style={{
-                  transform: `translateX(-${eventCurrentSlide * 100}%)`
-                }}
+          {isMobile ? (
+            <div className="w-[90%] mx-auto">
+              <Swiper
+                spaceBetween={6}
+                slidesPerView={1.2}
+                centeredSlides={true}
               >
                 {data2.map(item => (
-                  <div key={item._id} className="min-w-[25%] box-border flex justify-center items-center flex-shrink-0 no-underline">
+                  <SwiperSlide key={item._id}>
                     <Link
                       to={`/eventdetails/${item._id}`}
                       onClick={() =>
@@ -247,7 +271,6 @@ const UserHome = () => {
                           item.eventType
                         )
                       }
-                      className="text-[#222] font-bold no-underline hover:no-underline"
                     >
                       <EventCard
                         image={item.image}
@@ -255,36 +278,99 @@ const UserHome = () => {
                         eventVenue={item.eventVenue}
                       />
                     </Link>
-                  </div>
+                  </SwiperSlide>
                 ))}
-              </div>
+              </Swiper>
             </div>
-
-            {/* Right Arrow (next 4 cards) */}
-            <button
-              type="button"
-              className="absolute top-1/2 right-20 z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
-              onClick={handleNextSlideEvent}
-            >
-              <svg
-                className="w-4 h-4 text-white dark:text-gray-800"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
+          ) : (
+            <div className="relative w-[90%] mx-auto overflow-hidden flex items-center justify-center">
+              {/* Left Arrow */}
+              <button
+                type="button"
+                className="absolute top-1/2 left-20 z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
+                onClick={handlePrevSlideEvent}
               >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m1 9 4-4-4-4"
-                />
-              </svg>
-              <span className="sr-only">Next</span>
-            </button>
-          </div>
+                <svg
+                  className="w-4 h-4 text-white dark:text-gray-800"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 1 1 5l4 4"
+                  />
+                </svg>
+                <span className="sr-only">Previous</span>
+              </button>
+
+              {/* Desktop Carousel */}
+              <div className="w-full max-w-[84%] overflow-hidden">
+                <div
+                  className="flex transition-transform duration-[1000ms]"
+                  style={{
+                    transform: `translateX(-${eventCurrentSlide * 100}%)`
+                  }}
+                >
+                  {data2.map(item => (
+                    <div key={item._id} className="min-w-[25%] box-border flex justify-center items-center flex-shrink-0 no-underline">
+                      <Link
+                        to={`/eventdetails/${item._id}`}
+                        onClick={() =>
+                          setID2(
+                            item._id,
+                            item.eventName,
+                            item.eventLanguage,
+                            item.eventVenue,
+                            item.eventDate,
+                            item.eventTime,
+                            item.eventType
+                          )
+                        }
+                        className="text-[#222] font-bold no-underline hover:no-underline"
+                      >
+                        <EventCard
+                          image={item.image}
+                          eventName={item.eventName}
+                          eventVenue={item.eventVenue}
+                        />
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Arrow */}
+              <button
+                type="button"
+                className="absolute top-1/2 right-20 z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
+                onClick={handleNextSlideEvent}
+              >
+                <svg
+                  className="w-4 h-4 text-white dark:text-gray-800"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m1 9 4-4-4-4"
+                  />
+                </svg>
+                <span className="sr-only">Next</span>
+              </button>
+            </div>
+          )}
         </div>
+
       </div>
 
       <Footer />
