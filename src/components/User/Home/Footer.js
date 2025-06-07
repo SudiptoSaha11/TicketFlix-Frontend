@@ -1,23 +1,22 @@
-import React, {useState, useEffect} from 'react';
+// src/components/Footer.jsx
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from 'axios';
-import '../Home/Footer.css'; 
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import axios from "axios";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 const Footer = () => {
-
   const [data, setData] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState("All");
-  
-  
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://ticketflix-backend.onrender.com/movieview');
+        const response = await axios.get("http://localhost:5000/movieview");
         setData(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
     fetchData();
@@ -39,31 +38,6 @@ const Footer = () => {
     }
   };
 
-  const uniqueLanguages = [...new Set(data.flatMap(movie =>movie.movieLanguage.split(/[\/,]/).map(lang => lang.trim())))];
-
-  const uniqueGenres = [...new Set(data.flatMap(movie =>movie.movieGenre.split(/[\/,]/).map(genre => genre.trim())))];
-
-  const uniqueMovies = data.reduce((acc, movie) => {
-    if (!acc.find(m => m.movieName === movie.movieName)) {
-      acc.push(movie);
-    }
-    return acc;
-  }, []);
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('https://ticketflix-backend.onrender.com/movieview');
-        setData(response.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
-  }, []);
-
   const toggleGenre = (genre) => {
     if (genre === "All") {
       setSelectedGenre("All");
@@ -72,137 +46,174 @@ const Footer = () => {
     }
   };
 
+  // Build unique lists
+  const uniqueLanguages = [
+    ...new Set(
+      data.flatMap((movie) =>
+        movie.movieLanguage
+          .split(/[\/,]/)
+          .map((lang) => lang.trim())
+          .filter(Boolean)
+      )
+    ),
+  ];
+
+  const uniqueGenres = [
+    ...new Set(
+      data.flatMap((movie) =>
+        movie.movieGenre.split(/[\/,]/).map((g) => g.trim()).filter(Boolean)
+      )
+    ),
+  ];
+
+  const uniqueMovies = data.reduce((acc, movie) => {
+    if (!acc.find((m) => m.movieName === movie.movieName)) {
+      acc.push(movie);
+    }
+    return acc;
+  }, []);
 
   return (
-    
-    <footer className="footer big-footer">
-        <div className="footer-top">
-          {/* Movies by Language */}
-          <div className="footer-section">
-            <h4>Movies by Language</h4>
-            <ul>
-              {["All", ...uniqueLanguages].map((lang, index, arr) => (
-                <React.Fragment key={lang}>
-                  <li
-                    onClick={() => toggleLanguage(lang)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {lang}
-                  </li>
-                  {/* Only show the separator if it's NOT the last item */}
-                  {index < arr.length - 1 && (
-                    <span
-                      style={{
-                        margin: "0 4px",
-                        pointerEvents: "none" // ensures "|" is not clickable
-                      }}
-                    >
-                      |
-                    </span>
-                  )}
-                </React.Fragment>
-              ))}
-            </ul>
-          </div>
-
-          {/* Movies by Genre */}
-          <div className="footer-section">
-            <h4>Movies by Genre</h4>
-            <ul>
-              {["All", ...uniqueGenres].map((genre, index, arr) => (
-                <React.Fragment key={genre}>
-                  <li
-                    onClick={() => toggleGenre(genre)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {genre}
-                  </li>
-                  {index < arr.length - 1 && (
-                    <span style={{ margin: "0 4px", pointerEvents: "none" }}>
-                      |
-                    </span>
-                  )}
-                </React.Fragment>
-              ))}
-            </ul>
-          </div>
-
-          {/* Movies Now Showing */}
-          <div className="footer-section">
-            <h4>Movie Now Showing</h4>
-            <ul>
-              {uniqueMovies.map((movie, index, arr) => (
-                <React.Fragment key={movie._id}>
-                  <li>
-                    <Link
-                      to={`/moviedetails/${movie._id}`}
-                      onClick={() =>
-                        setID(
-                          movie._id,
-                          movie.movieName,
-                          movie.movieGenre,
-                          movie.movieLanguage,
-                          movie.movieFormat
-                        )
-                      }
-                      state={{
-                        movieName: movie.movieName,
-                        userEmail: localStorage.getItem("userEmail")
-                      }}
-                    >
-                      {movie.movieName}
-                    </Link>
-                  </li>
-                  {index < arr.length - 1 && (
-                    <span
-                      style={{
-                        margin: "0 4px",
-                        pointerEvents: "none"
-                      }}
-                    >
-                      |
-                    </span>
-                  )}
-                </React.Fragment>
-              ))}
-            </ul>
-          </div>
+    <footer className="bg-[#222] text-white pt-10 pb-8">
+      {/* Container to center & limit width */}
+      <div className="max-w-10xl  px-4 space-y-2">
+        {/* ─── Movies by Language ─── */}
+        <div>
+          <h4 className="text-xl font-semibold mb-2">Movies by Language</h4>
+          <ul className="flex flex-wrap items-center text-xs mb-2.5 pl-1">
+            {["All", ...uniqueLanguages].map((lang, idx, arr) => (
+              <React.Fragment key={`lang-${lang}`}>
+                <li
+                  onClick={() => toggleLanguage(lang)}
+                  className="m-1 whitespace-nowrap cursor-pointer hover:text-yellow-500"
+                >
+                  {lang}
+                </li>
+                {idx < arr.length - 1 && (
+                  <span className="mx-1 text-gray-500 pointer-events-none">|</span>
+                )}
+              </React.Fragment>
+            ))}
+          </ul>
+          <div className="border-t border-gray-700" />
         </div>
 
-        <div className="footer-bottom">
-          <div className="social-icons">
-            <a href="https://www.facebook.com">
+        {/* ─── Movies by Genre ─── */}
+        <div>
+          <h4 className="text-xl font-semibold mb-2">Movies by Genre</h4>
+          <ul className="flex flex-wrap items-center text-xs mb-2.5 pl-1">
+            {["All", ...uniqueGenres].map((genre, idx, arr) => (
+              <React.Fragment key={`genre-${genre}`}>
+                <li
+                  onClick={() => toggleGenre(genre)}
+                  className="m-1 whitespace-nowrap cursor-pointer hover:text-yellow-500"
+                >
+                  {genre}
+                </li>
+                {idx < arr.length - 1 && (
+                  <span className="mx-1 text-gray-500 pointer-events-none">|</span>
+                )}
+              </React.Fragment>
+            ))}
+          </ul>
+          <div className="border-t border-gray-700" />
+        </div>
+
+        {/* ─── Movie Now Showing ─── */}
+        <div>
+          <h4 className="text-xl font-semibold mb-2">Movie Now Showing</h4>
+          <ul className="flex flex-wrap items-center text-xs mb-3 pl-1">
+            {uniqueMovies.map((movie, idx, arr) => (
+              <React.Fragment key={movie._id}>
+                <li className="m-1 whitespace-nowrap">
+                  <Link
+                    to={`/moviedetails/${movie._id}`}
+                    onClick={() =>
+                      setID(
+                        movie._id,
+                        movie.movieName,
+                        movie.movieGenre,
+                        movie.movieLanguage,
+                        movie.movieFormat
+                      )
+                    }
+                    state={{
+                      movieName: movie.movieName,
+                      userEmail: localStorage.getItem("userEmail"),
+                    }}
+                    className="text-white hover:text-yellow-500 no-underline "
+                  >
+                    {movie.movieName}
+                  </Link>
+                </li>
+                {idx < arr.length - 1 && (
+                  <span className="mx-1 text-gray-500 pointer-events-none">|</span>
+                )}
+              </React.Fragment>
+            ))}
+          </ul>
+
+          <div className="border-t border-gray-700" />
+        </div>
+      </div>
+
+      {/* ─── Footer Bottom (Social Icons + Copyright) ─── */}
+      <div className="mt-8">
+        <div className="max-w-6xl mx-auto px-4 text-center space-y-4">
+          {/* Change text-3xl → text-2xl (or text-xl) */}
+          <div className="flex justify-center items-center space-x-5 text-2xl text-gray-200">
+            <a
+              href="https://www.facebook.com"
+              className="hover:text-yellow-500 transition-colors duration-200 text-gray-200"
+            >
               <i className="fab fa-facebook-f" />
             </a>
-            <a href="https://www.twitter.com">
+            <a
+              href="https://www.twitter.com"
+              className="hover:text-yellow-500 transition-colors duration-200 text-gray-200"
+            >
               <i className="fab fa-twitter" />
             </a>
-            <a href="https://www.instagram.com">
+            <a
+              href="https://www.instagram.com"
+              className="hover:text-yellow-500 transition-colors duration-200 text-gray-200"
+            >
               <i className="fab fa-instagram" />
             </a>
-            <a href="https://www.youtube.com/@TicketFlix-d6v">
+            <a
+              href="https://www.youtube.com/@TicketFlix-d6v"
+              className="hover:text-yellow-500 transition-colors duration-200 text-gray-200"
+            >
               <i className="fab fa-youtube" />
             </a>
-            <a
-              href="/Admin"
+            <button
               onClick={(e) => {
                 e.preventDefault();
-                navigate('/login'); 
+                navigate("/login");
               }}
+              className="hover:text-yellow-500 transition-colors duration-200 text-gray-200"
             >
               <i className="fa-solid fa-circle-user" />
-            </a>
-            <a href="https://www.linkedin.com">
+            </button>
+            <a
+              href="https://www.linkedin.com"
+              className="hover:text-yellow-500 transition-colors duration-200 text-gray-200"
+            >
               <i className="fab fa-linkedin" />
             </a>
           </div>
-          <p>&copy; {new Date().getFullYear()} TICKETFLIX. All Rights Reserved.</p>
-          <p>
-            The content and images on this site are protected by copyright 
-            and remain the property of their respective owners.
+
+          <p className="text-sm text-gray-400">
+            © {new Date().getFullYear()} TICKETFLIX. All Rights Reserved.
+          </p>
+          <p className="text-xs text-gray-500">
+            The content and images on this site are protected by copyright and
+            remain the property of their respective owners.
           </p>
         </div>
-      </footer>
+      </div>
+
+    </footer>
   );
 };
 
