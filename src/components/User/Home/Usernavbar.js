@@ -56,8 +56,8 @@ const Usernavbar = () => {
 
     try {
       const [movieRes, eventRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/autocomplete?search=${query}`),
-        axios.get(`http://localhost:5000/api/eventcomplete?search=${query}`)
+        axios.get(`https://ticketflix-backend.onrender.com/api/autocomplete?search=${query}`),
+        axios.get(`https://ticketflix-backend.onrender.com/api/eventcomplete?search=${query}`)
       ]);
 
       const movieResults = movieRes.data.map(item => ({ ...item, type: 'movie' }));
@@ -97,10 +97,10 @@ const Usernavbar = () => {
       if (searchTerm.trim() === '') return;
 
       if (isMoviePage) {
-        const res = await axios.get(`http://localhost:5000/movieview?search=${searchTerm}`);
+        const res = await axios.get(`https://ticketflix-backend.onrender.com/movieview?search=${searchTerm}`);
         navigate('/MoviePage', { state: { searchResults: res.data } });
       } else {
-        const res = await axios.get(`http://localhost:5000/event?search=${searchTerm}`);
+        const res = await axios.get(`https://ticketflix-backend.onrender.com/event?search=${searchTerm}`);
         navigate('/event', { state: { searchResults: res.data } });
       }
     } catch (err) {

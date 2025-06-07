@@ -13,7 +13,7 @@ const Footer = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/movieview");
+        const response = await axios.get("https://ticketflix-backend.onrender.com/movieview");
         setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
