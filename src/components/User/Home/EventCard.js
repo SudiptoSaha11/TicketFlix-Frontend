@@ -2,7 +2,9 @@ import React from 'react';
 
 const EventCard = ({ image, eventName, eventVenue, onClick }) => {
   return (
-    <div className="border-none rounded-lg  p-2 m-2 w-[60%] h-[60%] text-start flex flex-col items-start justify-start" onClick={onClick}>
+    <div className="border-none rounded-lg  p-2 m-2 w-[60%] h-[60%] text-start flex flex-col items-start justify-start
+                    lg:w-[220px] lg:h-[350px]
+                    xl:shadow-md xl:w-[250px] xl:h-[420px] xl:p-3 xl:m-2" onClick={onClick}>
       {image ? (
         <img
           src={image}
@@ -15,8 +17,11 @@ const EventCard = ({ image, eventName, eventVenue, onClick }) => {
           <p>No image available</p>
         </div>
       )}
-      <div className="p-1 flex flex-col items-start text-start ">
-        <h2 className="text-[0.9rem] font-extrabold my-2 text-[#222] no-underline hover:no-underline">{eventName}</h2>
+      <div className="p-1 flex flex-col items-start text-start mb-[15px] ">
+        <h2 className="text-[0.9rem] font-extrabold my-0 text-[#222] no-underline hover:no-underline
+                       sm: text-[1rem]
+                       lg:text-[1rem]
+                       xl:text-[1.2rem]">{eventName}</h2>
         <p className=" text-sm text-gray-600 w-[50%] no-underline hidden">{eventVenue}</p>
 
       </div>

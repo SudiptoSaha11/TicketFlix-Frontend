@@ -107,7 +107,7 @@ const UserHome = () => {
 
         <div className="relative overflow-hidden w-full mx-auto whitespace-nowrap mb-[10px]">
           <div className="flex w-[200%] animate-scroll-fast 
-                      md:animate-scroll-md gap-[6px] items-center
+                      md:animate-scroll-md md:gap-[6px] md:items-center
                       xl:animate-scroll-medium
                       2xl:animate-scroll-medium">
             {[...sliderImages, ...sliderImages].map((image, index) => (
@@ -127,19 +127,35 @@ const UserHome = () => {
         </div>
         {/* Movies Section */}
         <div className="block p-[5px] text-center ml-[-90px]">
-          <h5 className='flex justify-start ml-[7rem] text-[20px] font-500
-                        sm:ml-[8.5rem] sm:text-[22px] sm:font-500
-                        md:ml-[9.5rem] md:text-[22px] text-xl md:font-500'>Recommended Movies</h5>
+          <span className='flex justify-start ml-[7rem] text-[20px] font-500
+                        sm:ml-[8.5rem] sm:text-[22px] sm:font-500 
+                        md:ml-[9.5rem] md:text-[22px] md:text-xl md:font-500
+                        lg:ml-[16rem] lg:text-[26px] lg:font-bold
+                        xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] '>Recommended Movies</span>
           {isLoadingMovies && <LoadingSpinner asOverlay />}
           {isMobile ? (
-            <div className="w-[90%] mx-auto">
-              <Swiper
+            <div className="w-[90%] mx-auto ">
+              <Swiper 
+              
                 slidesPerView={1.8}
                 spaceBetween={-100}
                 centeredSlides={false}
                 slidesOffsetBefore={80}
                 slidesOffsetAfter={-80}
+
+
+                breakpoints={{
+        640: {
+          slidesPerView: 2.65,
+          spaceBetween: -150,
+          slidesOffsetBefore: 80,
+          slidesOffsetAfter: -80,
+        },
+
+
+      }}
               >
+
                 {filteredData.map(item => (
                   <SwiperSlide key={item._id}>
                     <Link
@@ -166,11 +182,13 @@ const UserHome = () => {
               </Swiper>
             </div>
           ) : (
-            <div className="relative w-[90%] mx-auto overflow-hidden flex items-center justify-center">
+            <div className="relative  w-[90%]  overflow-hidden grid place-items-center left-[145px] pr-[55px] 
+                            xl: left-[155px] xl:pr-[55px]
+                            2xl: left-[162px] 2xl:pr-[75px]">
               {/* Left Arrow */}
               <button
                 type="button"
-                className="absolute top-1/2 left-20 z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
+                className="absolute top-1/2 left-[45px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
                 onClick={handlePrevSlideMovie}
               >
                 <svg
@@ -200,7 +218,7 @@ const UserHome = () => {
                   }}
                 >
                   {filteredData.map(item => (
-                    <div key={item._id} className="min-w-[25%] box-border flex justify-center items-center flex-shrink-0 no-underline">
+                    <div key={item._id} className="min-w-[25%] box-border flex justify-center items-center flex-shrink-0 no-underline mb-[20px]">
                       <Link
                         to={`/moviedetails/${item._id}`}
                         state={item}
@@ -229,7 +247,10 @@ const UserHome = () => {
               {/* Right Arrow */}
               <button
                 type="button"
-                className="absolute top-1/2 right-20 z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
+                className="absolute top-1/2 right-[100px] z-30 -translate-y-1/2 flex items-center justify-center w-10 
+                h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 
+                focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none
+                2xl:right-[120px]"
                 onClick={handleNextSlideMovie}
               >
                 <svg
@@ -265,7 +286,9 @@ const UserHome = () => {
         <div className="block p-[5px] text-center ml-[-90px]">
           <h5 className='flex justify-start ml-[7.5rem] text-[20px] font-500 mb-[-2px]
                         sm:ml-[8.5rem] sm:text-[22px] sm:font-500
-                        md:ml-[9.5rem] md:text-[22px] text-xl md:font-500'>Recommended Events</h5>
+                        md:ml-[9.5rem] md:text-[22px] md:text-xl md:font-500
+                        lg:ml-[16rem] lg:text-[26px] lg:font-bold
+                        xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px]'>Recommended Events</h5>
           {isLoadingEvents && <LoadingSpinner asOverlay />}
           {isMobile ? (
             <div className="w-[90%] mx-auto">
@@ -275,6 +298,17 @@ const UserHome = () => {
                 centeredSlides={false}
                 slidesOffsetBefore={80}
                 slidesOffsetAfter={-80}
+
+
+                breakpoints={{
+        640: {
+          slidesPerView: 2.68,
+          spaceBetween: -150,
+          slidesOffsetBefore: 75,
+          slidesOffsetAfter: -80,
+        },
+
+      }}
               >
                 {data2.map(item => (
                   <SwiperSlide key={item._id}>
@@ -303,11 +337,13 @@ const UserHome = () => {
               </Swiper>
             </div>
           ) : (
-            <div className="relative w-[90%] mx-auto overflow-hidden flex items-center justify-center">
+            <div className="relative  w-[90%]  overflow-hidden grid place-items-center left-[145px] pr-[55px]
+                            xl: left-[155px] xl:pr-[55px]
+                            2xl: left-[162px] 2xl:pr-[75px]">
               {/* Left Arrow */}
               <button
                 type="button"
-                className="absolute top-1/2 left-20 z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
+                className="absolute top-1/2 left-[45px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
                 onClick={handlePrevSlideEvent}
               >
                 <svg
@@ -367,7 +403,10 @@ const UserHome = () => {
               {/* Right Arrow */}
               <button
                 type="button"
-                className="absolute top-1/2 right-20 z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
+                className="absolute top-1/2 right-[100px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30
+                 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 
+                 focus:outline-none
+                 2xl:right-[120px]"
                 onClick={handleNextSlideEvent}
               >
                 <svg
@@ -392,8 +431,9 @@ const UserHome = () => {
         </div>
 
       </div>
+<br className='max-md:hidden'/>
 
-      <Footer />
+      <Footer/>
       <Chatbot />
     </div>
   );
