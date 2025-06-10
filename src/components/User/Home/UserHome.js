@@ -7,6 +7,7 @@ import Card from './Card';
 import EventCard from './EventCard';
 import Chatbot from './Chatbot';
 import Footer from './Footer';
+import LoadingSpinner from '../../UIElements/LoadingSpinner';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -24,18 +25,25 @@ const UserHome = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [movieCurrentSlide, setMovieCurrentSlide] = useState(0);
   const [eventCurrentSlide, setEventCurrentSlide] = useState(0);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+  const [isLoadingMovies, setIsLoadingMovies] = useState(false);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
 
   useEffect(() => {
+    setIsLoadingMovies(true);
     axios.get('https://ticketflix-backend.onrender.com/movieview')
       .then(res => setData(res.data))
-      .catch(err => console.error('Error fetching movies:', err));
+      .catch(err => console.error('Error fetching movies:', err))
+      .finally(() => setIsLoadingMovies(false));
 
+    setIsLoadingEvents(true);
     axios.get('https://ticketflix-backend.onrender.com/event')
       .then(res => setData2(res.data))
-      .catch(err => console.error('Error fetching events:', err));
+      .catch(err => console.error('Error fetching events:', err))
+      .finally(() => setIsLoadingEvents(false));
 
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+
+    const handleResize = () => setIsMobile(window.innerWidth <= 1024);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -98,33 +106,39 @@ const UserHome = () => {
         <Usernavbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
         <div className="relative overflow-hidden w-full mx-auto whitespace-nowrap mb-[10px]">
-      <div className="flex w-[200%] animate-scroll-fast 
+          <div className="flex w-[200%] animate-scroll-fast 
                       md:animate-scroll-md gap-[6px] items-center
                       xl:animate-scroll-medium
                       2xl:animate-scroll-medium">
-        {[...sliderImages, ...sliderImages].map((image, index) => (
-          <img
-            key={index}
-            src={image}  //slider images
-            alt={`slide-${index}`}
-            className="mt-[90px] w-[412px] h-[150px] flex-shrink-0 object-cover rounded-[8px] shadow-[0_4px_6px_rgba(0,0,0,0.15)]
+            {[...sliderImages, ...sliderImages].map((image, index) => (
+              <img
+                key={index}
+                src={image}  //slider images
+                alt={`slide-${index}`}
+                className="mt-[90px] w-[412px] h-[150px] flex-shrink-0 object-cover rounded-[8px] shadow-[0_4px_6px_rgba(0,0,0,0.15)]
                        sm:w-[768px] sm:h-[250px]
                        md:w-[1024px] md:h-[280px]
                        lg:w-[1280px] lg:h-[300px]"
-                       
-                      
-          />
+
+
+              />
             ))}
           </div>
         </div>
         {/* Movies Section */}
-        <div className="block p-[5px] text-center">
+        <div className="block p-[5px] text-center ml-[-90px]">
+          <h5 className='flex justify-start ml-[7rem] text-[20px] font-500
+                        sm:ml-[8.5rem] sm:text-[22px] sm:font-500
+                        md:ml-[9.5rem] md:text-[22px] text-xl md:font-500'>Recommended Movies</h5>
+          {isLoadingMovies && <LoadingSpinner asOverlay />}
           {isMobile ? (
             <div className="w-[90%] mx-auto">
               <Swiper
-                spaceBetween={6}
-                slidesPerView={1.2}
-                centeredSlides={true}
+                slidesPerView={1.8}
+                spaceBetween={-100}
+                centeredSlides={false}
+                slidesOffsetBefore={80}
+                slidesOffsetAfter={-80}
               >
                 {filteredData.map(item => (
                   <SwiperSlide key={item._id}>
@@ -248,13 +262,19 @@ const UserHome = () => {
         </div>
 
         {/* Events Section */}
-        <div className="block p-[5px] text-center">
+        <div className="block p-[5px] text-center ml-[-90px]">
+          <h5 className='flex justify-start ml-[7.5rem] text-[20px] font-500 mb-[-2px]
+                        sm:ml-[8.5rem] sm:text-[22px] sm:font-500
+                        md:ml-[9.5rem] md:text-[22px] text-xl md:font-500'>Recommended Events</h5>
+          {isLoadingEvents && <LoadingSpinner asOverlay />}
           {isMobile ? (
             <div className="w-[90%] mx-auto">
               <Swiper
-                spaceBetween={6}
-                slidesPerView={1.2}
-                centeredSlides={true}
+                slidesPerView={1.8}
+                spaceBetween={-100}
+                centeredSlides={false}
+                slidesOffsetBefore={80}
+                slidesOffsetAfter={-80}
               >
                 {data2.map(item => (
                   <SwiperSlide key={item._id}>
