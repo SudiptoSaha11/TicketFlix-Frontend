@@ -56,8 +56,8 @@ const Usernavbar = () => {
 
     try {
       const [movieRes, eventRes] = await Promise.all([
-        axios.get(`https://ticketflix-backend.onrender.com/api/autocomplete?search=${query}`),
-        axios.get(`https://ticketflix-backend.onrender.com/api/eventcomplete?search=${query}`)
+        axios.get(`http://localhost:5000/api/autocomplete?search=${query}`),
+        axios.get(`http://localhost:5000/api/eventcomplete?search=${query}`)
       ]);
 
       const movieResults = movieRes.data.map(item => ({ ...item, type: 'movie' }));
@@ -97,10 +97,10 @@ const Usernavbar = () => {
       if (searchTerm.trim() === '') return;
 
       if (isMoviePage) {
-        const res = await axios.get(`https://ticketflix-backend.onrender.com/movieview?search=${searchTerm}`);
+        const res = await axios.get(`http://localhost:5000/movieview?search=${searchTerm}`);
         navigate('/MoviePage', { state: { searchResults: res.data } });
       } else {
-        const res = await axios.get(`https://ticketflix-backend.onrender.com/event?search=${searchTerm}`);
+        const res = await axios.get(`http://localhost:5000/event?search=${searchTerm}`);
         navigate('/event', { state: { searchResults: res.data } });
       }
     } catch (err) {
@@ -118,7 +118,8 @@ const Usernavbar = () => {
                      lg:ml-[10rem]
                      xl:ml-[12.2rem]
                      2xl:ml-[12.4rem]
-                     antarikh:ml-[14.2rem]"
+                     antarikh:ml-[14.2rem]
+                     debojit:ml-[17rem]"
           onClick={goToHome}
         >
           <img
@@ -139,7 +140,7 @@ const Usernavbar = () => {
         </div>
 
         <div className="flex items-center  ml-[3rem] hidden
-                         xl:block">
+                         xl:block xl:mr-[1.7rem]">
           <NavLink
             to="/event"
             className="text-[1.1rem] font-medium text-[#333333] no-underline transition-colors duration-300 ease hover:text-[#f39c12]"
@@ -152,14 +153,16 @@ const Usernavbar = () => {
         <div className="flex-1 flex justify-center">
           <div className="relative flex items-center w-full max-w-[250px] bg-white border border-[#cccccc] rounded-none px-[15px] py-[5px] shadow-[0_2px_5px_rgba(0,0,0,0.1)]
                           sm:max-w-[400px] 
-                          md:max-w-[600px]">
+                          md:max-w-[600px]
+                          debojit:max-w-[800px]">
             <div className="flex items-center justify-center pb-[8px] cursor-pointer" onClick={handleSearch}>
               <img
                 src={require('./search.png')}
                 alt="Search"
                 className="w-[15px] h-[15px] mr-[10px]
                            sm: w-[20px] h-[20px] mr-[15px]
-                           md: w-[25px] h-[25px] mr-[18px]"
+                           md: w-[25px] h-[25px] mr-[18px]
+                           debojit: w-[30px] debojit:h-[30px] debojit: mr-[20px]"
               />
             </div>
             <input
@@ -201,7 +204,8 @@ const Usernavbar = () => {
                           lg:mr-[10rem]
                           xl:mr-[12.2rem]
                           2xl:mr-[12.4rem]
-                          antarikh:mr-[14.2rem]">
+                          antarikh:mr-[14.2rem]
+                          debojit:mr-[18.8rem]">
             <div
               className="flex flex-col cursor-pointer "
               onClick={toggleMenu}

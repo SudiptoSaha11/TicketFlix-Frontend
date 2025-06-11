@@ -19,6 +19,7 @@ const sliderImages = [
   'https://assetscdn1.paytm.com/images/catalog/view_item/3006085/13825457253829748.jpg?format=webp&imwidth=1750'
 ];
 
+
 const UserHome = () => {
   const [data, setData] = useState([]);
   const [data2, setData2] = useState([]);
@@ -32,13 +33,13 @@ const UserHome = () => {
 
   useEffect(() => {
     setIsLoadingMovies(true);
-    axios.get('https://ticketflix-backend.onrender.com/movieview')
+    axios.get('http://localhost:5000/movieview')
       .then(res => setData(res.data))
       .catch(err => console.error('Error fetching movies:', err))
       .finally(() => setIsLoadingMovies(false));
 
     setIsLoadingEvents(true);
-    axios.get('https://ticketflix-backend.onrender.com/event')
+    axios.get('http://localhost:5000/event')
       .then(res => setData2(res.data))
       .catch(err => console.error('Error fetching events:', err))
       .finally(() => setIsLoadingEvents(false));
@@ -74,8 +75,8 @@ const UserHome = () => {
   );
 
   const MAX_CARDS = 8;
-const displayedMovies = filteredData.slice(0, MAX_CARDS);
-const displayedEvents = data2.slice(0, MAX_CARDS);
+  const displayedMovies = filteredData.slice(0, MAX_CARDS);
+  const displayedEvents = data2.slice(0, MAX_CARDS);
 
   const cardsPerSlideMovie = 4;
   const movieTotalSlides = Math.ceil(displayedMovies.length / cardsPerSlideMovie);
@@ -131,41 +132,47 @@ const displayedEvents = data2.slice(0, MAX_CARDS);
             ))}
           </div>
         </div>
+        <div className='flex justify-center p-[10px] mb-[15px]'>
+          <img src='https://assets-in-gm.bmscdn.com/promotions/cms/creatives/1749191041415_lafangeyslugapp.jpg'
+            alt='ad-banner' />
+        </div>
         {/* Movies Section */}
         <div className="block p-[5px] text-center ml-[-90px]">
+
           <div className='flex justify-between items-center pr-[40px]'>
-          <h5 className='flex justify-start ml-[7.5rem] text-[18px] font-500 mb-[-2px]
+            <h5 className='flex justify-start ml-[7.5rem] text-[18px] font-500 mb-[-2px]
                         sm:ml-[8.5rem] sm:text-[22px] sm:font-500 
                         md:ml-[9.5rem] md:text-[22px] md:text-xl md:font-500
                         lg:ml-[16rem] lg:text-[26px] lg:font-bold
                         xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
-                        antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]'>Recommended Movies</h5>
-                        <button className=' text-orange-500 text-[15px]' onClick={()=>{navigate("/MoviePage")}}>See All&gt;</button>
-                        </div>
+                        antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
+                        debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]'>Recommended Movies</h5>
+            <button className=' text-orange-500 text-[15px]' onClick={() => { navigate("/MoviePage") }}>See All&gt;</button>
+          </div>
           {isLoadingMovies && <LoadingSpinner asOverlay />}
-          
+
           {isMobile ? (
             <div className="w-[90%] mx-auto">
-              <Swiper 
-              
+              <Swiper
+
                 slidesPerView={1.8}
                 spaceBetween={-100}
                 centeredSlides={false}
                 slidesOffsetBefore={80}
                 slidesOffsetAfter={-80}
-                
+
 
 
                 breakpoints={{
-        640: {
-          slidesPerView: 2.65,
-          spaceBetween: -150,
-          slidesOffsetBefore: 80,
-          slidesOffsetAfter: -80,
-        },
+                  640: {
+                    slidesPerView: 2.65,
+                    spaceBetween: -150,
+                    slidesOffsetBefore: 80,
+                    slidesOffsetAfter: -80,
+                  },
 
 
-      }}
+                }}
               >
 
                 {displayedMovies.map(item => (
@@ -205,7 +212,8 @@ const displayedEvents = data2.slice(0, MAX_CARDS);
                 className="absolute top-1/2 left-[45px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full
                  bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white
                  dark:focus:ring-gray-800/70 focus:outline-none
-                 antarikh:left-[60px]"
+                 antarikh:left-[60px]
+                 debojit:left-[100px]"
                 onClick={handlePrevSlideMovie}
               >
                 <svg
@@ -239,7 +247,7 @@ const displayedEvents = data2.slice(0, MAX_CARDS);
                       <Link
                         to={`/moviedetails/${item._id}`}
                         state={item}
-                        
+
                         onClick={() =>
                           setID(
                             item._id,
@@ -247,9 +255,9 @@ const displayedEvents = data2.slice(0, MAX_CARDS);
                             item.movieGenre,
                             item.movieLanguage,
                             item.movieFormat
-                            
+
                           )
-                          
+
                         }
                         className="text-[#222] font-bold no-underline hover:no-underline"
                       >
@@ -272,7 +280,8 @@ const displayedEvents = data2.slice(0, MAX_CARDS);
                 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 
                 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed
                 2xl:right-[120px]
-                antarikh:right-[140px]"
+                antarikh:right-[140px]
+                debojit:right-[170px]"
                 onClick={handleNextSlideMovie}
               >
                 <svg
@@ -303,18 +312,197 @@ const displayedEvents = data2.slice(0, MAX_CARDS);
             <p className="text-[18px]">Endless Entertainment Anytime. Anywhere!</p>
           </div>
         </div>
+        <div className="relative overflow-hidden w-full mx-auto whitespace-nowrap mb-[10px]">
+        </div>
 
-        {/* Events Section */}
+        {/* Action Section */}
         <div className="block p-[5px] text-center ml-[-90px]">
-        <div className='flex justify-between items-center pr-[40px]'>
-          <h5 className='flex justify-start ml-[7.5rem] text-[18px] font-500 mb-[-2px]
+
+          <div className='flex justify-between items-center pr-[40px]'>
+            <h5 className='flex justify-start ml-[7.5rem] text-[18px] font-500 mb-[-2px]
                         sm:ml-[8.5rem] sm:text-[22px] sm:font-500 
                         md:ml-[9.5rem] md:text-[22px] md:text-xl md:font-500
                         lg:ml-[16rem] lg:text-[26px] lg:font-bold
                         xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
-                        antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]'>Recommended Events</h5>
-                        <button className=' text-orange-500 text-[15px]' onClick={()=>{navigate("/event")}}>See All&gt;</button>
-                        </div>
+                        antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
+                        debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]'>Action Movies</h5>
+            <button className=' text-orange-500 text-[15px]' onClick={() => { navigate("/MoviePage") }}>See All&gt;</button>
+          </div>
+
+
+          {isMobile ? (
+            <div className="w-[90%] mx-auto">
+              <Swiper
+                slidesPerView={1.8}
+                spaceBetween={-100}
+                centeredSlides={false}
+                slidesOffsetBefore={80}
+                slidesOffsetAfter={-80}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2.65,
+                    spaceBetween: -150,
+                    slidesOffsetBefore: 80,
+                    slidesOffsetAfter: -80,
+                  },
+                }}
+              >
+                {displayedMovies
+                  .filter(item =>
+                    item.movieGenre
+                      ?.toLowerCase()
+                      .split(',')
+                      .map(g => g.trim())
+                      .includes('action')
+                  )
+                  .map(item => (
+                    <SwiperSlide key={item._id}>
+                      <Link
+                        to={`/moviedetails/${item._id}`}
+                        state={item}
+                        className="no-underline hover:no-underline"
+                        onClick={() =>
+                          setID(
+                            item._id,
+                            item.movieName,
+                            item.movieGenre,
+                            item.movieLanguage,
+                            item.movieFormat
+                          )
+                        }
+                      >
+                        <Card
+                          image={item.image}
+                          movieName={item.movieName}
+                          movieGenre={item.movieGenre}
+                        />
+                      </Link>
+                    </SwiperSlide>
+                  ))}
+              </Swiper>
+            </div>
+          ) : (
+            <div className="relative  w-[90%] overflow-hidden grid place-items-center left-[145px] pr-[55px] 
+                            xl: left-[155px] xl:pr-[55px]
+                            2xl: left-[162px] 2xl:pr-[95px]
+                            antarikh: left-[175px] antarikh:pr-[85px]">
+              {/* Left Arrow */}
+              <button
+                type="button"
+                className="absolute top-1/2 left-[45px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full
+                 bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white
+                 dark:focus:ring-gray-800/70 focus:outline-none
+                 antarikh:left-[60px]
+                 debojit:left-[100px]"
+                onClick={handlePrevSlideMovie}
+              >
+                <svg
+                  className="w-4 h-4 text-white dark:text-gray-800"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 1 1 5l4 4"
+                  />
+                </svg>
+                <span className="sr-only">Previous</span>
+              </button>
+
+              {/* Desktop Carousel */}
+              <div className="w-full max-w-[84%] overflow-hidden">
+                <div
+                  className="flex transition-transform duration-[1000ms]"
+                  style={{
+                    transform: `translateX(-${movieCurrentSlide * 100}%)`
+                  }}
+                >
+                  {displayedMovies.map(item => (
+                    <div key={item._id} className="min-w-[25%] box-border flex justify-center items-center flex-shrink-0 no-underline mb-[20px]">
+                      <Link
+                        to={`/moviedetails/${item._id}`}
+                        state={item}
+
+                        onClick={() =>
+                          setID(
+                            item._id,
+                            item.movieName,
+                            item.movieGenre,
+                            item.movieLanguage,
+                            item.movieFormat
+
+                          )
+
+                        }
+                        className="text-[#222] font-bold no-underline hover:no-underline"
+                      >
+                        <Card
+                          image={item.image}
+                          movieName={item.movieName}
+                          movieGenre={item.movieGenre}
+                        />
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Arrow */}
+              <button
+                type="button"
+                disabled={movieCurrentSlide === movieTotalSlides - 1}
+                className="absolute top-1/2 right-[100px] z-30 -translate-y-1/2 flex items-center justify-center w-10 
+                h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 
+                focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed
+                2xl:right-[120px]
+                antarikh:right-[140px]
+                debojit:right-[170px]"
+                onClick={handleNextSlideMovie}
+              >
+                <svg
+                  className="w-4 h-4 text-white dark:text-gray-800"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m1 9 4-4-4-4"
+                  />
+                </svg>
+                <span className="sr-only">Next</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className='flex justify-center p-[10px] mb-[15px]'>
+          <img src={require('./Food Express Ad.png')}
+            alt='ad-banner' />
+        </div>
+        {/* Events Section */}
+
+        <div className="block p-[5px] text-center ml-[-90px]">
+          <div className='flex justify-between items-center pr-[40px]'>
+            <h5 className='flex justify-start ml-[7.5rem] text-[18px] font-500 mb-[-2px]
+                        sm:ml-[8.5rem] sm:text-[22px] sm:font-500 
+                        md:ml-[9.5rem] md:text-[22px] md:text-xl md:font-500
+                        lg:ml-[16rem] lg:text-[26px] lg:font-bold
+                        xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
+                        antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
+                        debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]'>Recommended Events</h5>
+            <button className=' text-orange-500 text-[15px]
+                                            ' onClick={() => { navigate("/event") }}>See All&gt;</button>
+          </div>
           {isLoadingEvents && <LoadingSpinner asOverlay />}
           {isMobile ? (
             <div className="w-[90%] mx-auto">
@@ -327,14 +515,14 @@ const displayedEvents = data2.slice(0, MAX_CARDS);
 
 
                 breakpoints={{
-        640: {
-          slidesPerView: 2.68,
-          spaceBetween: -150,
-          slidesOffsetBefore: 75,
-          slidesOffsetAfter: -80,
-        },
+                  640: {
+                    slidesPerView: 2.68,
+                    spaceBetween: -150,
+                    slidesOffsetBefore: 75,
+                    slidesOffsetAfter: -80,
+                  },
 
-      }}
+                }}
               >
                 {displayedEvents.map(item => (
                   <SwiperSlide key={item._id}>
@@ -350,7 +538,7 @@ const displayedEvents = data2.slice(0, MAX_CARDS);
                           item.eventTime,
                           item.eventType
                         )
-                        
+
                       }
                       className="no-underline hover:no-underline"
                     >
@@ -375,7 +563,8 @@ const displayedEvents = data2.slice(0, MAX_CARDS);
                 className="absolute top-1/2 left-[45px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full
                  bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white
                  dark:focus:ring-gray-800/70 focus:outline-none
-                 antarikh:left-[60px]"
+                 antarikh:left-[60px]
+                 debojit:left-[100px]"
                 onClick={handlePrevSlideEvent}
               >
                 <svg
@@ -440,7 +629,8 @@ const displayedEvents = data2.slice(0, MAX_CARDS);
                  dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 
                  focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed
                  2xl:right-[120px]
-                 antarikh:right-[140px]"
+                 antarikh:right-[140px]
+                 debojit:right-[170px]"
                 onClick={handleNextSlideEvent}
               >
                 <svg
@@ -465,8 +655,8 @@ const displayedEvents = data2.slice(0, MAX_CARDS);
         </div>
 
       </div>
-<br />
-      <Footer/>
+      <br />
+      <Footer />
       <Chatbot />
     </div>
   );
