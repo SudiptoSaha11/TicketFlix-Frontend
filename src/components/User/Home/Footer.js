@@ -80,7 +80,7 @@ const Footer = () => {
         {/* ─── Movies by Language ─── */}
         <div>
           <h4 className="text-xl font-semibold mb-2">Movies by Language</h4>
-          <ul className="flex flex-wrap items-center text-xs mb-2.5 pl-1">
+          <ul className="flex flex-wrap text-gray-100 items-center text-xs mb-2.5 pl-1">
             {["All", ...uniqueLanguages].map((lang, idx, arr) => (
               <React.Fragment key={`lang-${lang}`}>
                 <li
@@ -106,7 +106,7 @@ const Footer = () => {
               <React.Fragment key={`genre-${genre}`}>
                 <li
                   onClick={() => toggleGenre(genre)}
-                  className="m-1 whitespace-nowrap cursor-pointer hover:text-yellow-500"
+                  className="m-1 whitespace-nowrap text-gray-100 cursor-pointer hover:text-yellow-500"
                 >
                   {genre}
                 </li>
@@ -125,7 +125,7 @@ const Footer = () => {
           <ul className="flex flex-wrap items-center text-xs mb-3 pl-1">
             {uniqueMovies.map((movie, idx, arr) => (
               <React.Fragment key={movie._id}>
-                <li className="m-1 whitespace-nowrap">
+                <li className="m-1 whitespace-nowrap cursor-pointer">
                   <Link
                     to={`/moviedetails/${movie._id}`}
                     onClick={() =>
@@ -141,7 +141,7 @@ const Footer = () => {
                       movieName: movie.movieName,
                       userEmail: localStorage.getItem("userEmail"),
                     }}
-                    className="text-white hover:text-yellow-500 no-underline "
+                    className="text-gray-100 hover:text-yellow-500 no-underline"
                   >
                     {movie.movieName}
                   </Link>
@@ -158,10 +158,11 @@ const Footer = () => {
       </div>
 
       {/* ─── Footer Bottom (Social Icons + Copyright) ─── */}
-      <div className="mt-8">
+      <div className="mt-8 ">
         <div className="max-w-6xl mx-auto px-4 text-center space-y-4">
           {/* Change text-3xl → text-2xl (or text-xl) */}
-          <div className="flex justify-center items-center space-x-5 text-2xl text-gray-200">
+          <div className="flex justify-center items-center space-x-5 text-xl text-gray-200
+                          xl:text-2xl">
             <a
               href="https://www.facebook.com"
               className="hover:text-yellow-500 transition-colors duration-200 text-gray-200"

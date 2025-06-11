@@ -1,6 +1,6 @@
 // UserHome.js
 import React, { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Usernavbar from './Usernavbar';
 import axios from 'axios';
 import Card from './Card';
@@ -28,6 +28,7 @@ const UserHome = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
   const [isLoadingMovies, setIsLoadingMovies] = useState(false);
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsLoadingMovies(true);
@@ -72,11 +73,15 @@ const UserHome = () => {
     item.movieLanguage.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const MAX_CARDS = 8;
+const displayedMovies = filteredData.slice(0, MAX_CARDS);
+const displayedEvents = data2.slice(0, MAX_CARDS);
+
   const cardsPerSlideMovie = 4;
-  const movieTotalSlides = Math.ceil(filteredData.length / cardsPerSlideMovie);
+  const movieTotalSlides = Math.ceil(displayedMovies.length / cardsPerSlideMovie);
 
   const cardsPerSlideEvent = 4;
-  const eventTotalSlides = Math.ceil(data2.length / cardsPerSlideEvent);
+  const eventTotalSlides = Math.ceil(displayedEvents.length / cardsPerSlideEvent);
 
   const handlePrevSlideMovie = () => {
     setMovieCurrentSlide(prev =>
@@ -100,8 +105,9 @@ const UserHome = () => {
     );
   };
 
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-x-hidden">
       <div className="flex-1">
         <Usernavbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
@@ -127,14 +133,19 @@ const UserHome = () => {
         </div>
         {/* Movies Section */}
         <div className="block p-[5px] text-center ml-[-90px]">
-          <span className='flex justify-start ml-[7rem] text-[20px] font-500
+          <div className='flex justify-between items-center pr-[40px]'>
+          <h5 className='flex justify-start ml-[7.5rem] text-[18px] font-500 mb-[-2px]
                         sm:ml-[8.5rem] sm:text-[22px] sm:font-500 
                         md:ml-[9.5rem] md:text-[22px] md:text-xl md:font-500
                         lg:ml-[16rem] lg:text-[26px] lg:font-bold
-                        xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] '>Recommended Movies</span>
+                        xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
+                        antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]'>Recommended Movies</h5>
+                        <button className=' text-orange-500 text-[15px]' onClick={()=>{navigate("/MoviePage")}}>See All&gt;</button>
+                        </div>
           {isLoadingMovies && <LoadingSpinner asOverlay />}
+          
           {isMobile ? (
-            <div className="w-[90%] mx-auto ">
+            <div className="w-[90%] mx-auto">
               <Swiper 
               
                 slidesPerView={1.8}
@@ -142,6 +153,7 @@ const UserHome = () => {
                 centeredSlides={false}
                 slidesOffsetBefore={80}
                 slidesOffsetAfter={-80}
+                
 
 
                 breakpoints={{
@@ -156,11 +168,12 @@ const UserHome = () => {
       }}
               >
 
-                {filteredData.map(item => (
+                {displayedMovies.map(item => (
                   <SwiperSlide key={item._id}>
                     <Link
                       to={`/moviedetails/${item._id}`}
                       state={item}
+                      className="no-underline hover:no-underline"
                       onClick={() =>
                         setID(
                           item._id,
@@ -182,13 +195,17 @@ const UserHome = () => {
               </Swiper>
             </div>
           ) : (
-            <div className="relative  w-[90%]  overflow-hidden grid place-items-center left-[145px] pr-[55px] 
+            <div className="relative  w-[90%] overflow-hidden grid place-items-center left-[145px] pr-[55px] 
                             xl: left-[155px] xl:pr-[55px]
-                            2xl: left-[162px] 2xl:pr-[75px]">
+                            2xl: left-[162px] 2xl:pr-[95px]
+                            antarikh: left-[175px] antarikh:pr-[85px]">
               {/* Left Arrow */}
               <button
                 type="button"
-                className="absolute top-1/2 left-[45px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
+                className="absolute top-1/2 left-[45px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full
+                 bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white
+                 dark:focus:ring-gray-800/70 focus:outline-none
+                 antarikh:left-[60px]"
                 onClick={handlePrevSlideMovie}
               >
                 <svg
@@ -217,11 +234,12 @@ const UserHome = () => {
                     transform: `translateX(-${movieCurrentSlide * 100}%)`
                   }}
                 >
-                  {filteredData.map(item => (
+                  {displayedMovies.map(item => (
                     <div key={item._id} className="min-w-[25%] box-border flex justify-center items-center flex-shrink-0 no-underline mb-[20px]">
                       <Link
                         to={`/moviedetails/${item._id}`}
                         state={item}
+                        
                         onClick={() =>
                           setID(
                             item._id,
@@ -229,7 +247,9 @@ const UserHome = () => {
                             item.movieGenre,
                             item.movieLanguage,
                             item.movieFormat
+                            
                           )
+                          
                         }
                         className="text-[#222] font-bold no-underline hover:no-underline"
                       >
@@ -247,10 +267,12 @@ const UserHome = () => {
               {/* Right Arrow */}
               <button
                 type="button"
+                disabled={movieCurrentSlide === movieTotalSlides - 1}
                 className="absolute top-1/2 right-[100px] z-30 -translate-y-1/2 flex items-center justify-center w-10 
                 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 
-                focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none
-                2xl:right-[120px]"
+                focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed
+                2xl:right-[120px]
+                antarikh:right-[140px]"
                 onClick={handleNextSlideMovie}
               >
                 <svg
@@ -275,7 +297,7 @@ const UserHome = () => {
         </div>
 
         {/* Ad Banner */}
-        <div className="bg-gradient-to-r from-[#1e1e1e] to-[#2a2a2a] text-white p-[20px] flex items-center justify-center mx-auto my-[20px] rounded-[10px] w-[80%] max-w-[1400px]">
+        <div className="bg-gradient-to-r from-[#1e1e1e] to-[#2a2a2a] text-white p-[20px] flex items-center justify-center mx-auto my-[10px] rounded-[10px] w-[80%] max-w-[1400px]">
           <div className="text-center">
             <h1 className="text-[24px] font-bold mb-[10px]">TICKETFLIX STREAM</h1>
             <p className="text-[18px]">Endless Entertainment Anytime. Anywhere!</p>
@@ -284,11 +306,15 @@ const UserHome = () => {
 
         {/* Events Section */}
         <div className="block p-[5px] text-center ml-[-90px]">
-          <h5 className='flex justify-start ml-[7.5rem] text-[20px] font-500 mb-[-2px]
-                        sm:ml-[8.5rem] sm:text-[22px] sm:font-500
+        <div className='flex justify-between items-center pr-[40px]'>
+          <h5 className='flex justify-start ml-[7.5rem] text-[18px] font-500 mb-[-2px]
+                        sm:ml-[8.5rem] sm:text-[22px] sm:font-500 
                         md:ml-[9.5rem] md:text-[22px] md:text-xl md:font-500
                         lg:ml-[16rem] lg:text-[26px] lg:font-bold
-                        xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px]'>Recommended Events</h5>
+                        xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
+                        antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]'>Recommended Events</h5>
+                        <button className=' text-orange-500 text-[15px]' onClick={()=>{navigate("/event")}}>See All&gt;</button>
+                        </div>
           {isLoadingEvents && <LoadingSpinner asOverlay />}
           {isMobile ? (
             <div className="w-[90%] mx-auto">
@@ -310,7 +336,7 @@ const UserHome = () => {
 
       }}
               >
-                {data2.map(item => (
+                {displayedEvents.map(item => (
                   <SwiperSlide key={item._id}>
                     <Link
                       to={`/eventdetails/${item._id}`}
@@ -324,7 +350,9 @@ const UserHome = () => {
                           item.eventTime,
                           item.eventType
                         )
+                        
                       }
+                      className="no-underline hover:no-underline"
                     >
                       <EventCard
                         image={item.image}
@@ -339,11 +367,15 @@ const UserHome = () => {
           ) : (
             <div className="relative  w-[90%]  overflow-hidden grid place-items-center left-[145px] pr-[55px]
                             xl: left-[155px] xl:pr-[55px]
-                            2xl: left-[162px] 2xl:pr-[75px]">
+                            2xl: left-[162px] 2xl:pr-[95px]
+                            antarikh: left-[175px] antarikh:pr-[85px]">
               {/* Left Arrow */}
               <button
                 type="button"
-                className="absolute top-1/2 left-[45px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none"
+                className="absolute top-1/2 left-[45px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full
+                 bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white
+                 dark:focus:ring-gray-800/70 focus:outline-none
+                 antarikh:left-[60px]"
                 onClick={handlePrevSlideEvent}
               >
                 <svg
@@ -372,7 +404,7 @@ const UserHome = () => {
                     transform: `translateX(-${eventCurrentSlide * 100}%)`
                   }}
                 >
-                  {data2.map(item => (
+                  {displayedEvents.map(item => (
                     <div key={item._id} className="min-w-[25%] box-border flex justify-center items-center flex-shrink-0 no-underline">
                       <Link
                         to={`/eventdetails/${item._id}`}
@@ -403,10 +435,12 @@ const UserHome = () => {
               {/* Right Arrow */}
               <button
                 type="button"
+                disabled={eventCurrentSlide === eventTotalSlides - 1}
                 className="absolute top-1/2 right-[100px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-white/30
                  dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 
-                 focus:outline-none
-                 2xl:right-[120px]"
+                 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed
+                 2xl:right-[120px]
+                 antarikh:right-[140px]"
                 onClick={handleNextSlideEvent}
               >
                 <svg
@@ -431,8 +465,7 @@ const UserHome = () => {
         </div>
 
       </div>
-<br className='max-md:hidden'/>
-
+<br />
       <Footer/>
       <Chatbot />
     </div>

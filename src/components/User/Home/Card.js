@@ -4,16 +4,16 @@ const Card = ({ image, movieName, movieGenre, onClick }) => {
   return (
     
     <div
-      className="border-none rounded-lg  p-2  w-[60%] h-[60%] 
+      className="border-none rounded-lg  p-3  w-[60%] h-[60%] 
                  lg:w-[220px] lg:h-[350px]
-                 xl:shadow-md xl:w-[250px] xl:h-[420px] xl:p-3 xl:m-2 "
+                 xl:shadow-md xl:w-[250px] xl:h-[420px]  xl:m-2 "
       onClick={onClick}
       style={{ cursor: 'pointer' }}
     >
       <img
         src={image}
         alt={movieName}
-        className="w-[100%] aspect-[12/17] object-cover rounded-[8px] border-none outline-none shadow-none transition-transform duration-300 ease-in-out hover:scale-105"
+        className="w-[220px] aspect-[12/17] object-cover rounded-[8px] border-none outline-none shadow-none transition-transform duration-300 ease-in-out hover:scale-105"
       />
       <div className="p-1  flex flex-col items-start text-start 
                       lg:mb-[15px]">
