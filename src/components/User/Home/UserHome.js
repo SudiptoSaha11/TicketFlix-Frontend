@@ -26,6 +26,7 @@ const UserHome = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [movieCurrentSlide, setMovieCurrentSlide] = useState(0);
   const [eventCurrentSlide, setEventCurrentSlide] = useState(0);
+  const [comingSoonCurrentSlide, setComingSoonCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
   const [isLoadingMovies, setIsLoadingMovies] = useState(false);
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
@@ -74,12 +75,28 @@ const UserHome = () => {
     item.movieLanguage.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const comingSoonMovies = data.filter(item => {
+  const today = new Date();
+  const release = new Date(item.movieReleasedate);
+  const diffDays = (release - today) / (1000 * 60 * 60 * 24);
+  return diffDays > 20;
+});
+
+  const filteredComingSoon = comingSoonMovies.filter(item =>
+  item.movieName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  item.movieGenre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  item.movieLanguage.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
   const MAX_CARDS = 8;
   const displayedMovies = filteredData.slice(0, MAX_CARDS);
   const displayedEvents = data2.slice(0, MAX_CARDS);
+  const displayedComingSoon = filteredComingSoon.slice(0, MAX_CARDS);
 
   const cardsPerSlideMovie = 4;
   const movieTotalSlides = Math.ceil(displayedMovies.length / cardsPerSlideMovie);
+  const comingsoonSlides = Math.ceil(displayedComingSoon.length / cardsPerSlideMovie);
+
 
   const cardsPerSlideEvent = 4;
   const eventTotalSlides = Math.ceil(displayedEvents.length / cardsPerSlideEvent);
@@ -105,6 +122,17 @@ const UserHome = () => {
       prev < eventTotalSlides - 1 ? prev + 1 : 0
     );
   };
+
+  const handlePrevComingSoonSlideMovie = () => {
+  setComingSoonCurrentSlide(prev =>
+    prev > 0 ? prev - 1 : comingsoonSlides - 1
+  );
+};
+const handleNextComingSoonSlideMovie = () => {
+  setComingSoonCurrentSlide(prev =>
+    prev < comingsoonSlides - 1 ? prev + 1 : 0
+  );
+};
 
 
   return (
@@ -304,6 +332,176 @@ const UserHome = () => {
             </div>
           )}
         </div>
+
+{/* coming soon Section */}
+        <div className="block p-[5px] text-center ml-[-90px]">
+
+          <div className='flex justify-between items-center pr-[40px]'>
+            <h5 className='flex justify-start ml-[7.5rem] text-[18px] font-500 mb-[-2px]
+                        sm:ml-[8.5rem] sm:text-[22px] sm:font-500 
+                        md:ml-[9.5rem] md:text-[22px] md:text-xl md:font-500
+                        lg:ml-[16rem] lg:text-[26px] lg:font-bold
+                        xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
+                        antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
+                        debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]'>Coming Soon</h5>
+            <button className=' text-orange-500 text-[15px]' onClick={() => { navigate("/comingsoon") }}>See All&gt;</button>
+          </div>
+          {isLoadingMovies && <LoadingSpinner asOverlay />}
+
+          {isMobile ? (
+            <div className="w-[90%] mx-auto">
+              <Swiper
+
+                slidesPerView={1.8}
+                spaceBetween={-100}
+                centeredSlides={false}
+                slidesOffsetBefore={80}
+                slidesOffsetAfter={-80}
+
+
+
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2.65,
+                    spaceBetween: -150,
+                    slidesOffsetBefore: 80,
+                    slidesOffsetAfter: -80,
+                  },
+
+
+                }}
+              >
+
+                {displayedComingSoon.map(item => (
+      <SwiperSlide key={item._id}>
+                    <Link
+                      to={`/moviedetails/${item._id}`}
+                      state={item}
+                      className="no-underline hover:no-underline"
+                      onClick={() =>
+                        setID(
+                          item._id,
+                          item.movieName,
+                          item.movieGenre,
+                          item.movieLanguage,
+                          item.movieFormat
+                        )
+                      }
+                    >
+                      <Card
+                        image={item.image}
+                        movieName={item.movieName}
+                        movieGenre={item.movieGenre}
+                      />
+                    </Link>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          ) : (
+            <div className="relative  w-[90%] overflow-hidden grid place-items-center left-[145px] pr-[55px] 
+                            xl: left-[155px] xl:pr-[55px]
+                            2xl: left-[162px] 2xl:pr-[95px]
+                            antarikh: left-[175px] antarikh:pr-[85px]">
+              {/* Left Arrow */}
+              <button
+                type="button"
+                className="absolute top-1/2 left-[45px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full
+                 bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white
+                 dark:focus:ring-gray-800/70 focus:outline-none
+                 antarikh:left-[60px]
+                 debojit:left-[100px]"
+                onClick={handlePrevComingSoonSlideMovie}
+              >
+                <svg
+                  className="w-4 h-4 text-white dark:text-gray-800"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 1 1 5l4 4"
+                  />
+                </svg>
+                <span className="sr-only">Previous</span>
+              </button>
+
+              {/* Desktop Carousel */}
+              <div className="w-full max-w-[84%] overflow-hidden">
+                <div
+                  className="flex transition-transform duration-[1000ms]"
+                  style={{
+                    transform: `translateX(-${comingSoonCurrentSlide * 100}%)`
+                  }}
+                >
+                  {displayedComingSoon.map(item => (
+                    <div key={item._id} className="min-w-[25%] box-border flex justify-center items-center flex-shrink-0 no-underline mb-[20px]">
+                      <Link
+                        to={`/moviedetails/${item._id}`}
+                        state={item}
+
+                        onClick={() =>
+                          setID(
+                            item._id,
+                            item.movieName,
+                            item.movieGenre,
+                            item.movieLanguage,
+                            item.movieFormat
+
+                          )
+
+                        }
+                        className="text-[#222] font-bold no-underline hover:no-underline"
+                      >
+                        <Card
+                          image={item.image}
+                          movieName={item.movieName}
+                          movieGenre={item.movieGenre}
+                        />
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Arrow */}
+              <button
+                type="button"
+                disabled={comingSoonCurrentSlide === comingsoonSlides - 1}
+                className="absolute top-1/2 right-[100px] z-30 -translate-y-1/2 flex items-center justify-center w-10 
+                h-10 rounded-full bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 
+                focus:ring-4 focus:ring-white dark:focus:ring-gray-800/70 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed
+                2xl:right-[120px]
+                antarikh:right-[140px]
+                debojit:right-[170px]"
+                onClick={handleNextComingSoonSlideMovie}
+              >
+                <svg
+                  className="w-4 h-4 text-white dark:text-gray-800"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m1 9 4-4-4-4"
+                  />
+                </svg>
+                <span className="sr-only">Next</span>
+              </button>
+            </div>
+          )}
+        </div>
+
 
         {/* Ad Banner */}
         <div className="bg-gradient-to-r from-[#1e1e1e] to-[#2a2a2a] text-white p-[20px] flex items-center justify-center mx-auto my-[10px] rounded-[10px] w-[80%] max-w-[1400px]">
