@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Usernavbar from "./Usernavbar";   
-import "./Event.css"
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 const Event = ({ searchTerm, setSearchTerm }) => {
@@ -59,18 +58,21 @@ const Event = ({ searchTerm, setSearchTerm }) => {
   return (
     <>
       <Usernavbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <div className="userevent-container main">
-        <div className="main-movie-name">
+      <div className="pt-[90px] px-[10px] flex flex-col items-center mb-[10px] 
+      2xl:pt-[90px] 2xl:px-[20px] 2xl:flex 2xl:flex-col 2xl:items-center 2xl:mb-[30px]">
+        <div className="font-sans text-[#444441] mb-[10px]
+        2xl:font-sans 2xl:text-[#444441] 2xl:mb-[20px]">
           <h2>Events</h2>
         </div>
 
         {/* Language Filter Buttons */}
-        <div className="language-buttons">
-          <button className={`language-button ${selectedLanguages.length === 0 ? "active" : ""}`} onClick={() => toggleLanguage("All")}>All</button>
+        <div className="flex flex-wrap justify-center gap-2 mb-6
+        2xl:flex 2xl:flex-wrap 2xl:justify-center 2xl:gap-2 2xl:mb-6">
+          <button className={`px-3 py-2 rounded-full    2xl:px-3 2xl:py-2 2xl:rounded-full ${selectedLanguages.length === 0 ? "bg-orange-600 text-white" : 'bg-gray-200 text-gray-700'}`} onClick={() => toggleLanguage("All")}>All</button>
           {["Hindi", "English", "Marathi", "Gujarati", "Tamil", "Telugu", "Bengali"].map(lang => (
             <button
               key={lang}
-              className={`language-button ${selectedLanguages.includes(lang) ? "active" : ""}`}
+              className={`px-3 py-2 rounded-full     2xl:px-3 2xl:py-2 2xl:rounded-full ${selectedLanguages.includes(lang) ? "bg-orange-600 text-white" : 'bg-gray-200 text-gray-700'}`}
               onClick={() => toggleLanguage(lang)}
             >
               {lang}
@@ -78,12 +80,12 @@ const Event = ({ searchTerm, setSearchTerm }) => {
           ))}
         </div>
 
-        <div className="movie-cards-container">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[35px] 2xl:gap-[70px]">
           {filteredEvents.map((item) => (
             <Link
               key={item._id}
               to={`/eventdetails/${item._id}`}
-              className="movie-card-link"
+              className="text-current no-underline"
               onClick={() =>
                 setID(
                   item._id,
@@ -96,14 +98,16 @@ const Event = ({ searchTerm, setSearchTerm }) => {
                 )
               }
             >
-              <div className="movie-card">
+              <div className="w-[150px] h-[280px] rounded-[8px] mb-[-30px] overflow-hidden cursor-pointer text-center flex flex-col justify-start transition-transform transition-shadow duration-300 ease hover:-translate-y-[5px] 
+              2xl:w-[220px] 2xl:h-[425px]">
                 <img
                   src={item.image}
                   alt={item.eventName}
-                  className="movie-poster"
+                  className="w-full h-[200px] object-cover
+                             2xl:w-full 2xl:h-[320px]"
                 />
-                <h3 className="movie-title">{item.eventName}</h3>
-                <p className="movie-language">{item.eventVenue}</p>
+                <h3 className="mt-[5px] mb-[10px] text-[1rem] font-bold text-left hover:text-black-900 ">{item.eventName}</h3>
+                
               </div>
             </Link>
           ))}
