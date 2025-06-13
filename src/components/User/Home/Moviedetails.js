@@ -51,7 +51,7 @@ function Moviedetails() {
   const fetchData = async (movieId) => {
     const localKey = "moviereviews_" + movieId;
     try {
-      const response = await axios.get(`https://ticketflix-backend.onrender.com/${movieId}`);
+      const response = await axios.get(`https://ticketflix-backend.onrender.com/getmovieview/${movieId}`);
       const {
         movieName,
         movieGenre,
@@ -190,7 +190,7 @@ function Moviedetails() {
     }
     try {
       const response = await axios.post(
-        `https://ticketflix-backend.onrender.com/review/${id}`,
+        `https://ticketflix-backend.onrender.com/movieview/review/${id}`,
         {
           rating: parseInt(reviewRating, 10),
           review: reviewText,
