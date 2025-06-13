@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link,useNavigate } from "react-router-dom";
 import Usernavbar from "../Home/Usernavbar";
+import BottomNav from "./BottomNav";
 
 const ComingSoon = () => {
   const [movies, setMovies] = useState([]);
@@ -99,6 +100,7 @@ const ComingSoon = () => {
           ))}
         </div>
       </div>
+      <BottomNav />
     </>
   );
 };

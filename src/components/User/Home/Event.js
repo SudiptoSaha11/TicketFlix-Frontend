@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Usernavbar from "./Usernavbar";   
+import "./Event.css"
+import BottomNav from "./BottomNav";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 const Event = ({ searchTerm, setSearchTerm }) => {
@@ -58,7 +60,7 @@ const Event = ({ searchTerm, setSearchTerm }) => {
   return (
     <>
       <Usernavbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <div className="pt-[90px] px-[10px] flex flex-col items-center mb-[10px] 
+      <div className="pt-[90px] px-[10px] flex flex-col items-center mb-[100px] 
       2xl:pt-[90px] 2xl:px-[20px] 2xl:flex 2xl:flex-col 2xl:items-center 2xl:mb-[30px]">
         <div className="font-sans text-[#444441] mb-[10px]
         2xl:font-sans 2xl:text-[#444441] 2xl:mb-[20px]">
@@ -113,6 +115,7 @@ const Event = ({ searchTerm, setSearchTerm }) => {
           ))}
         </div>
       </div>
+      <BottomNav />
     </>
   );
 };
