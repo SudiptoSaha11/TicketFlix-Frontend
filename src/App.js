@@ -4,6 +4,7 @@ import {BrowserRouter as Router,Route,Routes,} from 'react-router-dom'
 import Movie from './components/Admin/Movie'
 import Movieview from './components/Admin/Movieview'
 import Login from './components/Admin/Login';
+import Home from './components/Admin/Home';
 import Editmovie from './components/Admin/Editmovie';
 import Showtime from './components/Admin/Showtime';
 import Addshow from './components/Admin/Addshow';
@@ -32,6 +33,7 @@ import Faq from './components/User/Home/Faq';
 import Eventdetails from './components/User/Home/Eventdetails';
 import Eventticketbooking from './components/User/Home/Eventticketbooking';
 import MoviePage from './components/User/Home/MoviePage';
+import ComingSoon from './components/User/Home/ComingSoon';
 import AddEvent from './components/Admin/Addevent';
 import Eventview from './components/Admin/Eventview';
 import Editevent from './components/Admin/Editevent';
@@ -44,6 +46,8 @@ return (
   <>
   <Router>
   <Routes>
+         <Route path = '/home'
+            element = {<Home/>}/>
           <Route path = '/Userlogin'
             element = {<Logout/>}/>
           <Route path = '/login'
@@ -106,6 +110,8 @@ return (
             element = {<Eventticketbooking/>}/>
           <Route path = '/MoviePage'
             element = {<MoviePage/>}/>
+          <Route path = '/ComingSoon'
+            element = {<ComingSoon/>}/>
           <Route path = '/addevent'
             element = {<AddEvent/>}/>
           <Route path = '/eventview'

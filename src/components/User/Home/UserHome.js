@@ -76,17 +76,17 @@ const UserHome = () => {
   );
 
   const comingSoonMovies = data.filter(item => {
-  const today = new Date();
-  const release = new Date(item.movieReleasedate);
-  const diffDays = (release - today) / (1000 * 60 * 60 * 24);
-  return diffDays > 20;
-});
+    const today = new Date();
+    const release = new Date(item.movieReleasedate);
+    const diffDays = (release - today) / (1000 * 60 * 60 * 24);
+    return diffDays > 20;
+  });
 
   const filteredComingSoon = comingSoonMovies.filter(item =>
-  item.movieName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  item.movieGenre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  item.movieLanguage.toLowerCase().includes(searchTerm.toLowerCase())
-);
+    item.movieName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.movieGenre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.movieLanguage.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const MAX_CARDS = 8;
   const displayedMovies = filteredData.slice(0, MAX_CARDS);
@@ -124,15 +124,15 @@ const UserHome = () => {
   };
 
   const handlePrevComingSoonSlideMovie = () => {
-  setComingSoonCurrentSlide(prev =>
-    prev > 0 ? prev - 1 : comingsoonSlides - 1
-  );
-};
-const handleNextComingSoonSlideMovie = () => {
-  setComingSoonCurrentSlide(prev =>
-    prev < comingsoonSlides - 1 ? prev + 1 : 0
-  );
-};
+    setComingSoonCurrentSlide(prev =>
+      prev > 0 ? prev - 1 : comingsoonSlides - 1
+    );
+  };
+  const handleNextComingSoonSlideMovie = () => {
+    setComingSoonCurrentSlide(prev =>
+      prev < comingsoonSlides - 1 ? prev + 1 : 0
+    );
+  };
 
 
   return (
@@ -161,9 +161,12 @@ const handleNextComingSoonSlideMovie = () => {
           </div>
         </div>
         <div className='flex justify-center p-[10px] mb-[15px]'>
-          <img src='https://assets-in-gm.bmscdn.com/promotions/cms/creatives/1749191041415_lafangeyslugapp.jpg'
+          <img src={require('./Codehub.png')}
             alt='ad-banner' />
         </div>
+
+
+
         {/* Movies Section */}
         <div className="block p-[5px] text-center ml-[-90px]">
 
@@ -332,8 +335,13 @@ const handleNextComingSoonSlideMovie = () => {
             </div>
           )}
         </div>
+        <div className='flex justify-center p-[10px] mb-[15px]'>
+          <img src='https://assets-in-gm.bmscdn.com/promotions/cms/creatives/1749191041415_lafangeyslugapp.jpg'
+            alt='ad-banner' />
+        </div>
 
-{/* coming soon Section */}
+
+        {/* coming soon Section */}
         <div className="block p-[5px] text-center ml-[-90px]">
 
           <div className='flex justify-between items-center pr-[40px]'>
@@ -373,7 +381,7 @@ const handleNextComingSoonSlideMovie = () => {
               >
 
                 {displayedComingSoon.map(item => (
-      <SwiperSlide key={item._id}>
+                  <SwiperSlide key={item._id}>
                     <Link
                       to={`/moviedetails/${item._id}`}
                       state={item}

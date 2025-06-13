@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import "./MoviePage.css";
 import Usernavbar from "../Home/Usernavbar";
 
 const MoviePage = () => {
   const [movies, setMovies] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get("https://ticketflix-backend.onrender.com/movieview")
@@ -52,6 +54,9 @@ const MoviePage = () => {
           {["Hindi", "English", "Marathi", "Gujarati", "Tamil", "Telugu", "Bengali"].map(lang => (
             <button key={lang} className={`px-3 py-2 rounded-full    2xl:px-3 2xl:py-2 2xl:rounded-full ${selectedLanguages.includes(lang) ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => toggleLanguage(lang)}>{lang}</button>
           ))}
+        </div>
+        <div className="mb-6 text-center bg-orange-600 text-white px-[1.7rem] py-3 rounded-lg shadow-md">
+          <button className="text-[15px]" onClick={()=>navigate('/comingsoon')}>Coming Soon Explore Upcoming Movies &gt;</button>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[35px] 2xl:gap-[70px]">

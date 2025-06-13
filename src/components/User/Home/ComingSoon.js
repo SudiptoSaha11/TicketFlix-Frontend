@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import Usernavbar from "../Home/Usernavbar";
 
 const ComingSoon = () => {
   const [movies, setMovies] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -54,6 +55,7 @@ const ComingSoon = () => {
         <h2 className="font-sans text-[#444441] mb-[10px] text-2xl font-bold">
           Coming Soon
         </h2>
+       
 
         <div className="flex flex-wrap justify-center gap-2 mb-6">
           <button
@@ -71,6 +73,9 @@ const ComingSoon = () => {
               {lang}
             </button>
           ))}
+        </div>
+         <div className="mb-6 text-center bg-orange-600 text-white px-[2.8rem] py-3 rounded-lg shadow-md">
+          <button className="text-[15px]" onClick={()=>navigate('/moviepage')}>Now Showing In Cinemas Near You &gt;</button>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[35px] 2xl:gap-[70px]">
