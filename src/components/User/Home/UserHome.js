@@ -7,6 +7,7 @@ import Card from './Card';
 import EventCard from './EventCard';
 import Chatbot from './Chatbot';
 import Footer from './Footer';
+import BottomNav from './BottomNav';
 import LoadingSpinner from '../../UIElements/LoadingSpinner';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -864,6 +865,7 @@ const UserHome = () => {
 
       </div>
       <br />
+      <BottomNav />
       <Footer />
       <Chatbot />
     </div>

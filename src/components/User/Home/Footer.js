@@ -74,7 +74,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-[#222] text-white pt-10 pb-8">
+    <footer className="bg-[#222] text-white pt-10 pb-8 max-lg:hidden">
       {/* Container to center & limit width */}
       <div className="max-w-10xl  px-4 space-y-2">
         {/* ─── Movies by Language ─── */}
