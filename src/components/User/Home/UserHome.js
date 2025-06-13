@@ -161,11 +161,13 @@ const UserHome = () => {
           </div>
         </div>
         <div className='flex justify-center p-[10px] mb-[15px]'>
-          <img src={require('./Codehub.png')}
-            alt='ad-banner' />
+          <a href="https://codehubsodepur.in/"  rel="noopener noreferrer">
+            <img
+              src={require('./Codehub.png')}
+              alt='ad-banner'
+            />
+          </a>
         </div>
-
-
 
         {/* Movies Section */}
         <div className="block p-[5px] text-center ml-[-90px]">
