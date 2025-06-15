@@ -125,13 +125,17 @@ const Usernavbar = () => {
           <img
             src={require('./logo-png.png')}
             alt="TicketFlix Logo"
-            className="h-[80px] w-[80px] pb-2"
+            className="h-[85px] w-[85px] pb-2"
           />
-          
+
+          <div className="max-sm:whitespace-nowrap max-sm:flex max-sm:justify-center max-sm:items-center max-sm:mt-[10px] md:hidden">
+            <h4 className="text-[1rem]">Welcome to Ticketflix</h4>
+          </div>
         </div>
 
+
         <div className="flex items-center gap-[2px] hidden
-                         xl:block xl: flex xl:justify-around xl:pl-[20px]">
+                         xl:block  xl:justify-around xl:pl-[20px]">
           <NavLink
             to="/MoviePage"
             className="text-[1.1rem] font-medium text-[#333333] no-underline transition-colors duration-300 ease hover:text-[#f39c12]"
@@ -151,18 +155,18 @@ const Usernavbar = () => {
         </div>
 
         {/* SEARCH BAR */}
-              <img
-                src={require('./search.png')}
-                onClick={() => {navigate("/search") }}
-                alt="Search"
-                className="w-[15px] h-[15px] mr-[15px] ml-[215px] mb-[10px]
+        <img
+          src={require('./search.png')}
+          onClick={() => { navigate("/search") }}
+          alt="Search"
+          className="w-[15px] h-[15px] mr-[15px] ml-[215px] mb-[10px] max-sm:w-fit max-sm:ml-[150px]
                            sm: w-[20px] h-[20px] mr-[15px] sm:ml-[35rem] sm:mb-[10px]
                            md: w-[25px] h-[25px] mr-[18px] md:ml-[230px] md:mb-[10px] md:hidden
                            debojit: w-[30px] debojit:h-[30px] debojit: mr-[20px]"
-              />
-            
+        />
+
         <div className="flex-1 flex justify-center max-lg:hidden">
-          
+
           <div className="relative flex items-center w-full max-w-[250px] bg-white border border-[#cccccc] rounded-none px-[15px] py-[5px] shadow-[0_2px_5px_rgba(0,0,0,0.1)]
                           sm:max-w-[400px] 
                           md:max-w-[600px]
@@ -177,7 +181,7 @@ const Usernavbar = () => {
                            debojit: w-[30px] debojit:h-[30px] debojit: mr-[20px]"
               />
             </div>
-            
+
             <input
               type="text"
               placeholder="Search for movies or events..."
