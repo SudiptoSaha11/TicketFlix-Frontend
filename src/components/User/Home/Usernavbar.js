@@ -127,10 +127,6 @@ const Usernavbar = () => {
             alt="TicketFlix Logo"
             className="h-[85px] w-[85px] pb-2"
           />
-
-          <div className="max-sm:whitespace-nowrap max-sm:flex max-sm:justify-center max-sm:items-center max-sm:mt-[10px] md:hidden">
-            <h4 className="text-[1rem]">Welcome to Ticketflix</h4>
-          </div>
         </div>
 
 
@@ -159,7 +155,7 @@ const Usernavbar = () => {
           src={require('./search.png')}
           onClick={() => { navigate("/search") }}
           alt="Search"
-          className="w-[15px] h-[15px] mr-[15px] ml-[215px] mb-[10px] max-sm:w-fit max-sm:ml-[150px]
+          className="w-[15px] h-[15px] mr-[15px] ml-[215px] mb-[10px]
                            sm: w-[20px] h-[20px] mr-[15px] sm:ml-[35rem] sm:mb-[10px]
                            md: w-[25px] h-[25px] mr-[18px] md:ml-[230px] md:mb-[10px] md:hidden
                            debojit: w-[30px] debojit:h-[30px] debojit: mr-[20px]"

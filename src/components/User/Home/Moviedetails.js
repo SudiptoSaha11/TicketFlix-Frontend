@@ -261,7 +261,7 @@ function Moviedetails() {
                           antarikh:mb-4  antarikh:w-[70%] antarikh:ml-[215px]">
             <h1
               className="
-                max-lg:w-[full] text-center text-2xl font-extrabold mb-2
+                max-lg:w-[full] text-start max-lg:text-2xl max-lg:font-extrabold max-lg:mb-2
                 lg:text-4xl 
                 xl:text-4xl 
                 antarikh:text-4xl
@@ -296,7 +296,7 @@ function Moviedetails() {
             <button
               onClick={handlePosterClick}
               className="
-                mr-[11rem] bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105
+                mr-[11rem] bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 w-fit
                 sm:ml-[11rem]
                 lg:ml-0 lg:mr-0
                 xl:ml-0 xl:mr-0
