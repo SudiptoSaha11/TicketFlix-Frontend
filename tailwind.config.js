@@ -60,7 +60,7 @@ module.exports = {
   },
   scroll: {
     "0%": { transform: "translateX(0%)" },
-    "100%": { transform: "translateX(-200%)" },
+    "100%": { transform: "translateX(-275%)" },
   },
   scroll160: {
     "0%": { transform: "translateX(0%)" },
@@ -75,7 +75,7 @@ animation: {
   fadeIn: "fadeIn 0.3s ease-in-out",
   'scroll-slow': 'scroll 50s linear infinite',
   'scroll-medium': 'scroll130 50s linear infinite',
-  'scroll-fast': 'scroll 20s linear infinite',
+  'scroll-fast': 'scroll 26s linear infinite',
   'scroll-md': 'scroll160 25s linear infinite'
 },
     },

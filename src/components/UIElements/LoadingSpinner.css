@@ -1,38 +1,28 @@
-.lds-dual-ring {
-  display: inline-block;
-  width: 64px;
-  height: 64px;
-}
-
-.lds-dual-ring:after {
-  content: ' ';
-  display: block;
-  width: 46px;
-  height: 46px;
-  margin: 1px;
-  border-radius: 50%;
-  border: 5px solid #510077;
-  border-color: #510077 transparent #510077 transparent;
-  animation: lds-dual-ring 1.2s linear infinite;
-}
-
+/* From Uiverse.io by doniaskima */ 
 .loading-spinner__overlay {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: rgba(255, 255, 255, 0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: inline-flex;
+  gap: 10px;
 }
 
-@keyframes lds-dual-ring {
-  0% {
-    transform: rotate(0deg);
-  }
+.loading-spinner__overlay:before,
+.loading-spinner__overlay:after {
+  content: "";
+  height: 20px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(farthest-side,#000 95%,#0000) 35% 35%/6px 6px no-repeat
+    #fff;
+  transform: scaleX(var(--s,1)) rotate(0deg);
+  animation: l6 1s infinite linear;
+}
+
+.loading-spinner__overlay:after {
+  --s: -1;
+  animation-delay: -0.1s;
+}
+
+@keyframes l6 {
   100% {
-    transform: rotate(360deg);
+    transform: scaleX(var(--s,1)) rotate(360deg);
   }
 }

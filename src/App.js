@@ -30,6 +30,7 @@ import MovieShowtime from './components/User/Home/MovieShowtime';
 import ReviewForm from './components/User/Home/ReviewForm';
 import Event from './components/User/Home/Event'
 import Faq from './components/User/Home/Faq';
+import SearchPage from './components/User/Home/SearchPage';
 import Eventdetails from './components/User/Home/Eventdetails';
 import Eventticketbooking from './components/User/Home/Eventticketbooking';
 import MoviePage from './components/User/Home/MoviePage';
@@ -102,6 +103,8 @@ return (
             element = {<Event/>}/>
           <Route path = '/faq'
             element = {<Faq/>}/>
+          <Route path = '/search'
+            element = {<SearchPage/>}/>
           <Route path = '/eventdetails/:id'
             element = {<Eventdetails/>}/>
           <Route path = '/eventticketbooking'

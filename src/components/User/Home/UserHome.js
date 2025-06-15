@@ -1,6 +1,6 @@
 // UserHome.js
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useHref, useNavigate } from "react-router-dom";
 import Usernavbar from './Usernavbar';
 import axios from 'axios';
 import Card from './Card';
@@ -142,7 +142,7 @@ const UserHome = () => {
         <Usernavbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
         <div className="relative overflow-hidden w-full mx-auto whitespace-nowrap mb-[10px]">
-          <div className="flex w-[200%] animate-scroll-fast 
+          <div className="flex w-[200%] animate-scroll-fast gap-1
                       md:animate-scroll-md md:gap-[6px] md:items-center
                       xl:animate-scroll-medium
                       2xl:animate-scroll-medium">
@@ -151,7 +151,7 @@ const UserHome = () => {
                 key={index}
                 src={image}  //slider images
                 alt={`slide-${index}`}
-                className="mt-[90px] w-[412px] h-[150px] flex-shrink-0 object-cover rounded-[8px] shadow-[0_4px_6px_rgba(0,0,0,0.15)]
+                className="mt-[90px] w-[550px] h-[150px] flex-shrink-0 object-cover rounded-[8px] shadow-[0_4px_6px_rgba(0,0,0,0.15)] 
                        sm:w-[768px] sm:h-[250px]
                        md:w-[1024px] md:h-[280px]
                        lg:w-[1280px] lg:h-[300px]"
@@ -865,8 +865,8 @@ const UserHome = () => {
 
       </div>
       <br />
-      <BottomNav />
-      <Footer />
+      <BottomNav/>
+      <Footer/>
       <Chatbot />
     </div>
   );

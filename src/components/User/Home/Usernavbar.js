@@ -150,7 +150,18 @@ const Usernavbar = () => {
         </div>
 
         {/* SEARCH BAR */}
-        <div className="flex-1 flex justify-center">
+              <img
+                src={require('./search.png')}
+                onClick={() => {navigate("/search") }}
+                alt="Search"
+                className="w-[15px] h-[15px] mr-[10px] ml-[230px] mb-[10px]
+                           sm: w-[20px] h-[20px] mr-[15px] sm:ml-[35rem] sm:mb-[10px]
+                           md: w-[25px] h-[25px] mr-[18px] md:ml-[230px] md:mb-[10px] md:hidden
+                           debojit: w-[30px] debojit:h-[30px] debojit: mr-[20px]"
+              />
+            
+        <div className="flex-1 flex justify-center max-lg:hidden">
+          
           <div className="relative flex items-center w-full max-w-[250px] bg-white border border-[#cccccc] rounded-none px-[15px] py-[5px] shadow-[0_2px_5px_rgba(0,0,0,0.1)]
                           sm:max-w-[400px] 
                           md:max-w-[600px]
@@ -165,6 +176,7 @@ const Usernavbar = () => {
                            debojit: w-[30px] debojit:h-[30px] debojit: mr-[20px]"
               />
             </div>
+            
             <input
               type="text"
               placeholder="Search for movies or events..."

@@ -7,7 +7,6 @@ import Footer from "./Footer";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 
-
 function Moviedetails() {
   // Movie detail states
   const [movieImage, setMovieImage] = useState("");
@@ -216,73 +215,166 @@ function Moviedetails() {
       <Usernavbar />
 
       {/* Movie Details Section (Mobile‑First) */}
-      <div className="flex flex-col justify-center items-center bg-gradient-to-r from-[#f1f2b5] to-[#135058] text-[#17202a] p-4 mt-20">
+      <div
+        className="
+          flex flex-col justify-center items-center
+          bg-gradient-to-r from-[#f1f2b5] to-[#135058] text-[#17202a]
+          p-4 mt-[70px]
+          lg:flex-row lg:items-start lg:justify-between lg:p-8 lg:mt-[70px] 
+          xl:flex-row xl:items-start xl:justify-between xl:p-8 xl:mt-[70px] 
+          antarikh:flex-row antarikh:items-start antarikh:justify-between antarikh:p-8 antarikh:mt-[70px] 
+        "
+      >
         {movieImage && (
-          <div className="w-3/4 max-w-[240px] mb-4">
+          <div
+            className="
+              w-3/4 max-w-[240px] max-lg:mb-4
+              lg:w-[200px] lg:max-w-none  lg:order-2 lg:mr-[150px] 
+              xl:w-[200px] xl:max-w-none  xl:order-2 xl:mr-[185px]
+              antarikh:w-[200px] antarikh:max-w-none antarikh:order-2 antarikh:mr-[215px]
+            "
+          >
             <img
               src={movieImage}
               alt={movieName}
-              className="w-full h-auto rounded-sm mx-auto"
+              className="
+                w-full h-auto rounded-sm mx-auto
+                lg:mx-0
+                xl:mx-0
+                antarikh:mx-0
+              "
             />
           </div>
         )}
-        <h1 className="w-full text-center text-2xl font-extrabold mb-2">
-          {movieName}
-        </h1>
-        <div className="w-full flex flex-wrap justify-start gap-2 mb-4 pl-4">
-          <span className="text-base font-extrabold">{movieLanguage}</span>
-          <span className="text-base font-extrabold">{movieGenre}</span>
-          <span className="text-base font-extrabold">{movieFormat}</span>
-          <span className="text-base font-extrabold">{movieDuration}</span>
-        </div>
-        <div className="flex flex-col gap-3">
-          <button
-            onClick={handlePosterClick}
-            className="mr-[11rem] bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105"
-          >
-            <FaFilm className="inline-block mb-1 mr-1" />
-            Watch Trailer
-          </button>
-          <button
-            onClick={handleClick}
-            className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 max-lg:hidden"
-          >
-            Book Tickets
-          </button>
 
+        <div
+          className="
+            w-full text-center
+            lg:text-left lg:flex-1 lg:pr-8
+            xl:text-left xl:flex-1 xl:pr-8
+            antarikh:text-left antarikh:flex-1 antarikh:pr-8
+          "
+        >
+          <div className="flex flex-row justify-start mb-1 ml-[15px]
+                          lg:flex lg:flex-row lg:justify-start lg:mb-4 lg:ml-[154px]
+                          xl:mb-4  xl:w-[70%] xl:ml-[186px]
+                          antarikh:mb-4  antarikh:w-[70%] antarikh:ml-[215px]">
+            <h1
+              className="
+                max-lg:w-[full] text-center text-2xl font-extrabold mb-2
+                lg:text-4xl 
+                xl:text-4xl 
+                antarikh:text-4xl
+              "
+            >
+              {movieName}
+            </h1>
+          </div>
+
+          <div
+            className="
+              w-full flex flex-wrap justify-start gap-2 mb-4 pl-4 sm:justify-center
+              lg:flex lg:flex-col lg:gap-1.6 lg:items-start lg:ml-[139px]
+              xl:flex xl:flex-col xl:gap-1.6 xl:items-start xl:ml-[172px]
+              antarikh:flex antarikh:flex-col antarikh:gap-1.6 antarikh:items-start antarikh:ml-[200px]
+            "
+          >
+            <span className="text-base font-extrabold">{movieLanguage}</span>
+            <span className="text-base font-extrabold">{movieGenre}</span>
+            <span className="text-base font-extrabold">{movieFormat}</span>
+            <span className="text-base font-extrabold">{movieDuration}</span>
+          </div>
+
+          <div
+            className="
+              flex flex-col gap-3
+              lg:flex-col lg:items-start lg:gap-4 lg:w-[400px] lg:ml-[150px]
+              xl:flex-col xl:items-start xl:gap-4 xl:w-[400px] xl:ml-[185px]
+              antarikh:flex-col antarikh:items-start antarikh:gap-4 antarikh:w-[400px] antarikh:ml-[215px]
+            "
+          >
+            <button
+              onClick={handlePosterClick}
+              className="
+                mr-[11rem] bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105
+                sm:ml-[11rem]
+                lg:ml-0 lg:mr-0
+                xl:ml-0 xl:mr-0
+                antarikh:ml-0 antarikh:mr-0
+              "
+            >
+              <FaFilm className="inline-block mb-1 mr-1" />
+              Watch Trailer
+            </button>
+            <button
+              onClick={handleClick}
+              className="
+                ml-[11rem] bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 max-lg:hidden
+                lg:inline-block lg:ml-0
+                xl:inline-block xl:ml-0
+                antarikh:inline-block antarikh:ml-0
+              "
+            >
+              Book Tickets
+            </button>
+          </div>
         </div>
       </div>
-        <div className="flex justify-center mt-4 gap-[2.6rem]">
-          <h3 className="mt-[5px]">Review our movie</h3>
-          <button className=" bg-[#fff] text-black border-[2px] border-pink-500 px-[2.5rem] py-2 rounded-full text-base transition-colors duration-300 hover:bg-[#0d3a40]">Submit</button>
-        </div>
+
+      <div className="flex justify-center mt-4 gap-[2.6rem]
+                      lg:mt-6 lg:gap-8 lg:hidden"
+      >
+        <h3 className="mt-[5px] lg:mt-0">Review our movie</h3>
+        <button
+          onClick={openReviewModal}
+          className="
+            bg-[#fff] text-black border-[2px] border-pink-500 px-[2.5rem] py-2 rounded-full text-base transition-colors duration-300
+            lg:px-6 lg:py-3
+          "
+        >
+          Rate Now
+        </button>
+      </div>
+
       {/* Movie Description */}
-      <div className="px-4 mt-6 text-[#121920] leading-relaxed border-gray-300 pb-4 mb-8">
-        
-        <h2 className="text-xl font-bold mb-2">About the movie</h2>
-        <p className="text-base ">{movieDescription}</p>
+      <div
+        className="
+          px-4 mt-6 text-[#121920] leading-relaxed border-gray-300 pb-4 mb-8
+          lg:px-40 lg:mt-10 lg:mb-12 lg:ml-[154px] lg:mr-[100px]
+          xl:px-40 xl:mt-10 xl:mb-12 xl:ml-[188px] xl:mr-[150px]
+          antarikh:px-40 antarikh:mt-10 antarikh:mb-12 antarikh:ml-[215px] antarikh:mr-[200px]
+        "
+      >
+        <h2 className="text-xl font-bold mb-2 lg:text-2xl lg:mb-4">
+          About the movie
+        </h2>
+        <p className="text-base lg:text-lg">{movieDescription}</p>
       </div>
-      <div className='flex justify-center p-[10px] mb-[2rem] mt-[-3rem]'>
-          <a href="https://codehubsodepur.in/"  rel="noopener noreferrer">
-            <img
-              src={require('./Codehub.png')}
-              alt='ad-banner'
-            />
-          </a>
-        </div>
+
+      {/* Ad Banner */}
+      <div
+        className="flex justify-center p-[10px] mb-[2rem] mt-[-3rem]
+                  lg:mb-16 lg:mt-[-50px] lg:mx-[164px] 
+                  xl:mb-16 xl:mt-[-50px] xl:mx-[200px]
+                  antarikh:mb-16 antarikh:mt-[-50px] antarikh:mx-[230px]"
+      >
+        <a href="https://codehubsodepur.in/" rel="noopener noreferrer">
+          <img src={require('./Codehub.png')} alt="ad-banner" />
+        </a>
+      </div>
 
       {/* Movie Cast */}
-      <div className="px-4 mb-8">
-        <h2 className="text-lg font-bold mb-4">Cast</h2>
+      <div className="xl:flex xl:flex-col xl:justify-start xl:items-start px-4 mb-8 
+                      lg:px-40 lg:mb-12
+                      xl:px-40 xl:mb-12 xl:ml-[9rem]
+                      antarikh:px-40 antarikh:mb-12 antarikh:ml-[10.5rem]">
+        <h2 className="text-lg font-bold mb-4 lg:px-40 lg:mt-[-30px] lg:mb-12 lg:ml-[0px]
+        xl:px-40 xl:mt-[-30px] xl:mb-12 xl:ml-[-115px]">Cast</h2>
 
         {/* MOBILE SWIPER (shown < lg) */}
         {movieCast.length > 0 && (
           <div className="block lg:hidden">
-            <Swiper
-              slidesPerView={2.2}
-              spaceBetween={40}
-              freeMode={true}
-            >
+            <Swiper slidesPerView={2.2} spaceBetween={40} freeMode={true}>
               {movieCast.map((actor, idx) => (
                 <SwiperSlide key={idx} className="w-auto">
                   <div className="flex flex-col items-center">
@@ -295,7 +387,6 @@ function Moviedetails() {
                       {actor.name}
                     </span>
                   </div>
-                  
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -324,34 +415,50 @@ function Moviedetails() {
         )}
       </div>
 
-
       {/* Movie Reviews */}
-      <div className="px-4 mb-8">
-        <h2 className="text-xl text-[#135058] font-bold mb-4 border-b-2 border-[#135058] pb-2">
+      <div className="px-4 mb-8 
+                      lg:mx-[155px] lg:mb-12
+                      xl:mx-[185px] xl:mb-12
+                      antarikh:mx-[215px] antarikh:mb-12">
+        <h2 className="text-xl text-[#135058] font-bold mb-4 border-b-2 border-[#135058] pb-2 lg:text-2xl lg:mb-6">
           Reviews
         </h2>
         {reviews.length > 0 ? (
-          <div className="relative">
+          <div className="relative ">
             <button
               onClick={handleArrowClick}
-              className={`absolute top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full w-8 h-8 text-lg opacity-80 hover:opacity-100 ${arrowPosition === "right" ? "right-2" : "left-2"
-                }`}
+              className={`
+                max-lg:hidden absolute top-1/2 transform -translate-y-1/2
+                bg-gray-200 rounded-full w-8 h-8 text-lg opacity-80 hover:opacity-100
+                ${arrowPosition === 'right' ? 'right-2' : 'left-2'}
+                lg:w-10 lg:h-10 lg:text-xl
+                xl:w-10 xl:h-10 xl:text-xl
+                antarikh:w-10 antarikh:h-10 antarikh:text-xl
+              `}
             >
-              {arrowPosition === "right" ? ">" : "<"}
+              {arrowPosition === 'right' ? '>' : '<'}
             </button>
             <div
               ref={reviewsSliderRef}
               onScroll={handleScroll}
-              className="overflow-x-auto whitespace-nowrap scroll-snap-x-mandatory scroll-smooth no-scrollbar py-2"
+              className="
+                overflow-x-auto whitespace-nowrap scroll-snap-x-mandatory scroll-smooth no-scrollbar py-2
+                lg:py-4 lg:overflow-x-hidden
+              "
             >
               <ul className="inline-flex gap-4 p-0 m-0">
                 {reviews.map((item, idx) => (
                   <li
                     key={idx}
-                    className="flex-none w-[260px] bg-white rounded-lg shadow p-4 scroll-snap-start hover:-translate-y-1 hover:shadow-lg transition"
+                    className="
+                      flex-none w-[280px] bg-white rounded-lg shadow p-4 scroll-snap-start hover:-translate-y-1 hover:shadow-lg transition
+                      lg:w-[320px] lg:p-6
+                      xl:w-[320px] xl:p-6
+                      antarikh:w-[320px] antarikh:p-6
+                    "
                   >
                     <p className="font-semibold text-[#135058] mb-2">
-                      {item.user || "Anonymous"} rated it ⭐ {item.rating}/5
+                      {item.user || 'Anonymous'} rated it ⭐ {item.rating}/10
                     </p>
                     {item.review && <p>{item.review}</p>}
                   </li>
@@ -365,10 +472,14 @@ function Moviedetails() {
       </div>
 
       {/* Submit Review Button */}
-      <div className="px-4 mb-8">
+      <div className="px-4 mb-8 lg:px-40 lg:mb-12 ">
         <button
           onClick={openReviewModal}
-          className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-colors duration-300 hover:bg-[#0d3a40] hidden"
+          className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-colors duration-300 hover:bg-[#0d3a40] hidden 
+          lg:block lg:w-fit lg:px-[15px] lg:ml-[157px]
+          xl:block xl:w-fit xl:px-[15px] xl:ml-[185px]
+          antarikh:block antarikh:w-fit antarikh:px-[15px] antarikh:ml-[215px]
+          "
         >
           Submit Your Review
         </button>
@@ -377,7 +488,7 @@ function Moviedetails() {
       {/* Review Modal */}
       {showReviewModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white w-[90%] max-w-md p-5 rounded-lg shadow-lg relative">
+          <div className="bg-white w-[400px] max-w-[90%] p-5 rounded-lg shadow-lg relative">
             <span
               onClick={closeReviewModal}
               className="absolute top-2 right-3 text-2xl cursor-pointer"
@@ -387,9 +498,7 @@ function Moviedetails() {
             <h2 className="text-xl font-bold mb-4">Submit Your Review</h2>
             <form onSubmit={handleReviewSubmit}>
               <div className="mb-4">
-                <label htmlFor="reviewerName" className="block mb-1">
-                  Your Name
-                </label>
+                <label htmlFor="reviewerName" className="block mb-1">Your Name</label>
                 <input
                   id="reviewerName"
                   type="text"
@@ -420,9 +529,7 @@ function Moviedetails() {
                 </span>
               </div>
               <div className="mb-4">
-                <label htmlFor="review" className="block mb-1">
-                  Review
-                </label>
+                <label htmlFor="review" className="block mb-1">Review</label>
                 <textarea
                   id="review"
                   value={reviewText}
@@ -434,7 +541,7 @@ function Moviedetails() {
               </div>
               <button
                 type="submit"
-                className="w-full bg-[#135058] text-white py-3 rounded-full"
+                className="bg-gradient-to-br from-[#135058] to-[#135058] text-white py-2 px-5 rounded-full"
               >
                 Submit Review
               </button>
@@ -446,7 +553,7 @@ function Moviedetails() {
       {/* Language Popup */}
       {showLanguagePopup && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-[90%] max-w-sm text-center shadow relative">
+          <div className="bg-white p-8 rounded-lg max-w-sm w-[90%] text-center shadow relative">
             <span
               onClick={closeLanguagePopup}
               className="absolute top-3 right-4 text-xl cursor-pointer"
@@ -454,12 +561,12 @@ function Moviedetails() {
               &times;
             </span>
             <h2 className="text-xl font-bold mb-4">Select Language</h2>
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="mt-4">
               {splittedLangs.map((lang, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleLanguageSelect(lang)}
-                  className="border-2 border-blue-500 rounded-full px-4 py-2 text-blue-500 hover:bg-blue-500 hover:text-white transition"
+                  className="inline-block border-2 border-blue-500 rounded-full px-4 py-2 m-1 text-blue-500 transition-colors duration-200 hover:bg-blue-500 hover:text-white"
                 >
                   {lang}
                 </button>
@@ -468,14 +575,17 @@ function Moviedetails() {
           </div>
         </div>
       )}
-     <div className="fixed bottom-0 left-0 right-0 bg-white px-4 py-2 shadow-lg z-50 lg:hidden">
+
+      {/* Mobile-only fixed Book Tickets */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white px-4 py-2 shadow-lg z-50 lg:hidden">
         <button
-            onClick={handleClick}
-            className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-transform duration-200 hover:scale-105"
-          >
-            Book Tickets
-          </button>
+          onClick={handleClick}
+          className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-transform duration-200 hover:scale-105"
+        >
+          Book Tickets
+        </button>
       </div>
+
       <Footer />
     </div>
   );
