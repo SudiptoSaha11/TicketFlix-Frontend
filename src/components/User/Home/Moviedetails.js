@@ -18,6 +18,7 @@ function Moviedetails() {
   const [movieDescription, setMovieDescription] = useState("");
   const [movieCast, setMovieCast] = useState([]);
   const [trailerLink, setTrailerLink] = useState("");
+  const [movieReleaseDate, setMovieReleaseDate] = useState("");
   const [id, setId] = useState("");
 
   // Reviews
@@ -50,7 +51,7 @@ function Moviedetails() {
   const fetchData = async (movieId) => {
     const localKey = "moviereviews_" + movieId;
     try {
-      const response = await axios.get(`https://ticketflix-backend.onrender.com/getmovieview/${movieId}`);
+      const response = await axios.get(`http://localhost:5000/getmovieview/${movieId}`);
       const {
         movieName,
         movieGenre,
@@ -62,6 +63,7 @@ function Moviedetails() {
         movieCast,
         trailerLink,
         reviews: fetchedReviews,
+        movieReleasedate,  // <-- added
       } = response.data;
 
       setMovieImage(imageURL);
@@ -73,6 +75,7 @@ function Moviedetails() {
       setMovieDescription(movieDescription);
       setMovieCast(movieCast || []);
       setTrailerLink(trailerLink || "");
+      setMovieReleaseDate(movieReleasedate);  // <-- added
 
       if (fetchedReviews && fetchedReviews.length > 0) {
         setReviews(fetchedReviews);
@@ -114,6 +117,19 @@ function Moviedetails() {
 
     fetchData(movieId);
   }, [navigate, paramId, location.state]);
+
+  // Compute coming-soon logic
+  const today = new Date();
+  const release = movieReleaseDate ? new Date(movieReleaseDate) : null;
+  const diffDays = release ? (release - today) / (1000 * 60 * 60 * 24) : -1;
+  const isComingSoon = diffDays > 20;
+  const formattedReleaseDate = release
+    ? release.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "";
 
   // Navigate to the trailer page when poster is clicked
   const handlePosterClick = () => {
@@ -189,7 +205,7 @@ function Moviedetails() {
     }
     try {
       const response = await axios.post(
-        `https://ticketflix-backend.onrender.com/movieview/review/${id}`,
+        `http://localhost:5000/movieview/review/${id}`,
         {
           rating: parseInt(reviewRating, 10),
           review: reviewText,
@@ -221,8 +237,8 @@ function Moviedetails() {
           bg-gradient-to-r from-[#f1f2b5] to-[#135058] text-[#17202a]
           p-4 mt-[70px]
           lg:flex-row lg:items-start lg:justify-between lg:p-8 lg:mt-[70px] 
-          xl:flex-row xl:items-start xl:justify-between xl:p-8 xl:mt-[70px] 
-          antarikh:flex-row antarikh:items-start antarikh:justify-between antarikh:p-8 antarikh:mt-[70px] 
+          xl:flex-row xl:items-start xl:justify-between xl:p-8 xl:mt-[70px]
+          antarikh:flex-row antarikh:items-start antarikh:justify-between antarikh:p-8 antarikh:mt-[70px]
         "
       >
         {movieImage && (
@@ -263,7 +279,7 @@ function Moviedetails() {
               className="
                 max-lg:w-[full] text-start max-lg:text-2xl max-lg:font-extrabold max-lg:mb-2
                 lg:text-4xl 
-                xl:text-4xl 
+                xl:text-4xl
                 antarikh:text-4xl
               "
             >
@@ -273,9 +289,10 @@ function Moviedetails() {
 
           <div
             className="
-              w-full flex flex-wrap justify-start gap-2 mb-4 pl-4 sm:justify-center
-              lg:flex lg:flex-col lg:gap-1.6 lg:items-start lg:ml-[139px]
-              xl:flex xl:flex-col xl:gap-1.6 xl:items-start xl:ml-[172px]
+              w-full flex flex-col flex-nowrap gap-1.5 items-start mb-4 pl-4 
+              sm:justify-start
+              lg:flex lg:flex-col lg:gap-1.5 lg:items-start lg:ml-[139px]
+              xl:flex xl:flex-col xl:gap-1.5 xl:items-start xl:ml-[172px]
               antarikh:flex antarikh:flex-col antarikh:gap-1.6 antarikh:items-start antarikh:ml-[200px]
             "
           >
@@ -288,9 +305,10 @@ function Moviedetails() {
           <div
             className="
               flex flex-col gap-3
-              lg:flex-col lg:items-start lg:gap-4 lg:w-[400px] lg:ml-[150px]
-              xl:flex-col xl:items-start xl:gap-4 xl:w-[400px] xl:ml-[185px]
-              antarikh:flex-col antarikh:items-start antarikh:gap-4 antarikh:w-[400px] antarikh:ml-[215px]
+              sm:justify-start
+              lg:flex lg:flex-col lg:gap-1.5 lg:items-start lg:ml-[139px]
+              xl:flex xl:flex-col xl:gap-1.5 xl:items-start xl:ml-[172px]
+              antarikh:flex antarikh:flex-col antarikh:gap-1.6 antarikh:items-start antarikh:ml-[200px]
             "
           >
             <button
@@ -306,17 +324,25 @@ function Moviedetails() {
               <FaFilm className="inline-block mb-1 mr-1" />
               Watch Trailer
             </button>
-            <button
-              onClick={handleClick}
-              className="
-                ml-[11rem] bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 max-lg:hidden
-                lg:inline-block lg:ml-0
-                xl:inline-block xl:ml-0
-                antarikh:inline-block antarikh:ml-0
-              "
-            >
-              Book Tickets
-            </button>
+            {isComingSoon ? (
+              <button
+                disabled
+                className="ml-[11rem] text-black font-bold px-1 py-3 max-lg:hidden lg:inline-block lg:ml-0 cursor-default"
+              >
+                Releasing on {formattedReleaseDate}
+              </button>
+            ) : (
+              <button
+                onClick={handleClick}
+                className="
+                  ml-[11rem] bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 max-lg:hidden
+                  lg:inline-block lg:ml-0
+                  xl:inline-block xl:ml-0
+                "
+              >
+                Book Tickets
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -578,12 +604,21 @@ function Moviedetails() {
 
       {/* Mobile-only fixed Book Tickets */}
       <div className="fixed bottom-0 left-0 right-0 bg-white px-4 py-2 shadow-lg z-50 lg:hidden">
-        <button
-          onClick={handleClick}
-          className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-transform duration-200 hover:scale-105"
-        >
-          Book Tickets
-        </button>
+        {isComingSoon ? (
+          <button
+            disabled
+            className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 opacity-50 cursor-default"
+          >
+            Releasing on {formattedReleaseDate}
+          </button>
+        ) : (
+          <button
+            onClick={handleClick}
+            className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-transform duration-200 hover:scale-105"
+          >
+            Book Tickets
+          </button>
+        )}
       </div>
 
       <Footer />
