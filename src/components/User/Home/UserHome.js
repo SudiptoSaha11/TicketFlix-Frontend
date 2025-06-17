@@ -80,7 +80,7 @@ const UserHome = () => {
     const today = new Date();
     const release = new Date(item.movieReleasedate);
     const diffDays = (release - today) / (1000 * 60 * 60 * 24);
-    return diffDays > 20;
+    return diffDays >7;
   });
 
   const filteredComingSoon = comingSoonMovies.filter(item =>

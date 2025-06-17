@@ -31,7 +31,7 @@ const ComingSoon = () => {
       const today = new Date();
       const releaseDate = new Date(movie.movieReleasedate);
       const diffDays = (releaseDate - today) / (1000 * 60 * 60 * 24);
-      return diffDays > 20;
+      return diffDays > 7;
     })
     .filter((movie) => {
       const languages = movie.movieLanguage

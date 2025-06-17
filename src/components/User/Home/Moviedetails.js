@@ -122,7 +122,7 @@ function Moviedetails() {
   const today = new Date();
   const release = movieReleaseDate ? new Date(movieReleaseDate) : null;
   const diffDays = release ? (release - today) / (1000 * 60 * 60 * 24) : -1;
-  const isComingSoon = diffDays > 20;
+  const isComingSoon = diffDays >7;
   const formattedReleaseDate = release
     ? release.toLocaleDateString("en-US", {
         month: "long",

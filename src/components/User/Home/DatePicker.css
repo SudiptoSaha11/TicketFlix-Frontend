@@ -2,7 +2,7 @@
     display: inline-block;
     display: flex;
     align-items: center;
-    justify-content: left;
+    justify-content: center;
     margin: 0.5rem 0; /* Reduced margin */
     position: relative;/* Smaller overall container width */
 }
