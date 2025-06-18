@@ -151,7 +151,7 @@ const Ticketbooking = () => {
       if (result.error) {
         console.error(result.error.message);
       } else {
-        navigate('/success');
+        navigate('https://ticketflix-backend.onrender.com/success');
       }
     } catch (error) {
       console.error('Error during payment:', error);
