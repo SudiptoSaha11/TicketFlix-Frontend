@@ -58,13 +58,13 @@ const MovieShowtime = () => {
     return "Night";
   };
 
- const TIME_OPTIONS = ["All", "Morning", "Afternoon", "Evening", "Night"];
-const PRICE_OPTIONS = [
-  { key: "All", label: "All" },
-  { key: "Below200", label: "₹0–₹100" },
-  { key: "200to400", label: "₹101–₹200" },
-  { key: "Above400", label: "₹201–₹400" },
-];
+  const TIME_OPTIONS = ["All", "Morning", "Afternoon", "Evening", "Night"];
+  const PRICE_OPTIONS = [
+    { key: "All", label: "All" },
+    { key: "Below200", label: "₹0–₹100" },
+    { key: "200to400", label: "₹101–₹200" },
+    { key: "Above400", label: "₹201–₹400" },
+  ];
 
   const priceMatch = ({ GoldTicketPrice, SilverTicketPrice, PlatinumTicketPrice }) => {
     const arr = [GoldTicketPrice, SilverTicketPrice, PlatinumTicketPrice];
@@ -96,61 +96,59 @@ const PRICE_OPTIONS = [
   return (
     <div>
       <Usernavbar />
-      <div className="max-w-screen-lg mx-auto mt-24 px-4 sm:px-6 md:px-20 lg:px-44 font-sans">
-        <h1 className="text-center text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800 mb-4">
+      <div className="max-w-screen-lg mx-auto mt-24 px-4 sm:px-6 md:px-20 lg:px-44 font-sans xl:max-w-[76%]">
+        <h1 className="text-center text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800 mb-4
+          
+                      ">
           {Name} {chosenLanguage && `- ${chosenLanguage}`}
         </h1>
+<hr/>
 
-        {/* Filters */}
-        <section className="flex flex-col gap-4 sm:gap-6 mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Row 1: DatePicker */}
+        <section className="mb-6">
+          {/* Row 1: DatePicker */}
+          <div className="mb-4 lg:flex lg:items-start lg:justify-start">
             <DatePicker onDateSelect={setSelectedDate} />
-            {/* TIME FILTER (Swiper) */}
-<div className="mb-3">
-  <Swiper
-    slidesPerView="auto"
-    spaceBetween={8}
-    className="!px-0 pb-2"
-  >
-    {TIME_OPTIONS.map((opt) => (
-      <SwiperSlide key={opt} style={{ width: "auto" }}>
-        <button
-          onClick={() => setTimeFilter(opt)}
-          className={`px-3 py-1 rounded-full text-sm border ${
-            timeFilter === opt
-              ? "bg-orange-400 text-white border-orange-400"
-              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-          }`}
-        >
-          {opt}
-        </button>
-      </SwiperSlide>
-    ))}
-  </Swiper>
-</div>
+          </div>
 
+          {/* Row 2: Time filter (left via Swiper) + Price filter (right) */}
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            {/* Time Chips via Swiper */}
+            <div className="flex-1 overflow-x-auto pb-2">
+              <Swiper slidesPerView="auto" spaceBetween={8} className="!px-0">
+                {TIME_OPTIONS.map((opt) => (
+                  <SwiperSlide key={opt} style={{ width: "auto" }}>
+                    <button
+                      onClick={() => setTimeFilter(opt)}
+                      className={`px-3 py-1 rounded-full text-sm border ${timeFilter === opt
+                          ? "bg-orange-400 text-white border-orange-400"
+                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                        }`}
+                    >
+                      {opt}
+                    </button>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
 
-          {/* Price Chips */}
-          <div className="mb-6">
-            <div className="flex space-x-2 overflow-x-auto pb-2">
+            {/* Price Chips */}
+            <div className="flex space-x-2 overflow-x-auto">
               {PRICE_OPTIONS.map(({ key, label }) => (
                 <button
                   key={key}
                   onClick={() => setPriceFilter(key)}
-                  className={`flex-shrink-0 px-3 py-1 rounded-full text-sm border ${
-                    priceFilter === key
+                  className={`px-3 py-1 rounded-full text-sm border ${priceFilter === key
                       ? "bg-orange-400 text-white border-orange-400"
                       : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   {label}
                 </button>
               ))}
             </div>
           </div>
-          </div>
         </section>
-
         {/* Schedule Cards */}
         {schedules.length ? (
           schedules.map((schedule) => (

@@ -151,7 +151,7 @@ const Ticketbooking = () => {
       if (result.error) {
         console.error(result.error.message);
       } else {
-        navigate('https://ticketflix-official.netlify.app/success');
+        navigate('/success');
       }
     } catch (error) {
       console.error('Error during payment:', error);

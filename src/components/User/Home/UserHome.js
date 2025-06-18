@@ -695,7 +695,7 @@ const UserHome = () => {
         </div>
 
         <div className='flex justify-center p-[10px] mb-[15px]'>
-          <img src={require('./Food Express Ad.png')}
+          <img src={require('./FoodExpress1290.png')}
             alt='ad-banner' />
         </div>
         {/* Events Section */}
