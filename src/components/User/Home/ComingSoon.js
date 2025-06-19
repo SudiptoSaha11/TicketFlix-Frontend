@@ -12,7 +12,7 @@ const ComingSoon = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/movieview")
+      .get("https://ticketflix-backend.onrender.com/movieview")
       .then((res) => setMovies(res.data))
       .catch((err) => console.error("Error fetching movies:", err));
   }, []);
