@@ -1,9 +1,9 @@
-// Ticketbooking.jsx
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { loadStripe } from '@stripe/stripe-js';
-import screenImage from './Screen.png';
+import screenImage from './Screen1.png';
+import styled from 'styled-components';
 
 Modal.setAppElement('#root');
 
@@ -144,12 +144,13 @@ const Ticketbooking = () => {
   };
 
   return (
-    <div className="p-4 bg-gray-100 font-sans">
+    <div className="p-5 bg-gray-100 font-sans pb-24">
       {/* HEADER */}
-      <div className="text-center mb-auto">
+      <div className="text-center mb-5">
         <h2 className="text-2xl text-gray-800">
           Book Seats for {Name} {chosenLanguage && `(${chosenLanguage})`}
         </h2>
+        <hr/>
         {Venue && <h3 className="text-lg text-gray-700">Hall: {Venue}</h3>}
         {Time && <h4 className="text-base text-gray-600">Show Time: {Time}</h4>}
         {date && <h4 className="text-base text-gray-600">Date: {date}</h4>}
@@ -170,19 +171,26 @@ const Ticketbooking = () => {
         <img
           src={screenImage}
           alt="Screen"
-          className="inline-block rounded-md border border-gray-300 w-[100%] max-w-xs sm:max-w-md"
+          className="inline-block rounded-md border border-gray-300 w-full max-w-xs sm:max-w-md mb-2"
         />
       </div>
 
-      {/* PAY BUTTON */}
-      <div className="flex justify-center mt-5">
-        <button
-          onClick={handlePayClick}
-          disabled={loading}
-          className="bg-blue-600 text-white text-lg py-3 px-6 rounded-lg transition ease-in-out duration-300 hover:bg-blue-800 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50"
-        >
-          {loading ? 'Processing...' : `PAY ₹${totalAmount}`}
-        </button>
+      {/* PAY BUTTON: Fixed at bottom */}
+      <div className="fixed bottom-0 left-0 w-full bg-white p-4 shadow-inner z-50">
+        <div className="flex justify-center">
+          <StyledWrapper>
+            <button
+              className="Btn"
+              onClick={handlePayClick}
+              disabled={loading}
+            >
+              {loading ? 'Processing...' : `PAY ₹${totalAmount}`}
+              <svg className="svgIcon" viewBox="0 0 576 512">
+                <path d="M512 80c8.8 0 16 7.2 16 16v32H48V96c0-8.8 7.2-16 16-16H512zm16 144V416c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V224H528zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm56 304c-13.3 0-24 10.7-24 24s10.7 24 24 24h48c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm128 0c-13.3 0-24 10.7-24 24s10.7 24 24 24H360c13.3 0 24-10.7 24-24s-10.7-24-24-24H248z" />
+              </svg>
+            </button>
+          </StyledWrapper>
+        </div>
       </div>
 
       {/* LOGIN MODAL */}
@@ -239,18 +247,16 @@ const SeatSelection = ({ ticketPrices, onSeatSelect, selectedSeats }) => {
         [['C','B','A'], ticketPrices.SilverTicketPrice, 'Silver'],
       ].map(([rows, price, label], idx) => (
         <div key={idx} className="mb-6 w-full">
-          <h4 className="text-lg text-black mb-3 px-2">{label} Seat - ₹{price}</h4>
+          <h4 className="text-lg text-black mb-3 px-2 ">{label} Seat - ₹{price}</h4>
 
           {rows.map((row) => (
             <div key={row} className="mb-4">
               {/* Mobile: show label above */}
-              <div className="block md:hidden text-gray-500 font-medium mb-2 px-2">
-                {row}
-              </div>
+              <div className="block md:hidden text-gray-400 font-medium mb-2 px-2 ">{row}</div>
 
               {/* Seats grid: 5 cols on mobile, 11 cols (1 label + 10 seats) on md+ */}
               <div className="
-                grid grid-cols-5 gap-2 px-2 
+                grid grid-cols-5 gap-2 px-2
                 md:grid-cols-[40px_repeat(10,1fr)] md:gap-2 md:px-0 md:items-center
               ">
                 {/* md+: label column */}
@@ -265,11 +271,12 @@ const SeatSelection = ({ ticketPrices, onSeatSelect, selectedSeats }) => {
                     <div
                       key={num}
                       onClick={() => onSeatSelect(row, price, num)}
-                      className={`
-                        h-9 w-9 flex items-center justify-center text-sm font-bold mx-auto
-                        rounded-sm cursor-pointer transition ease-in-out duration-300 border-1 border-orange-300
+                      className={
+                        `
+                        h-9 flex items-center justify-center text-sm font-bold
+                        rounded-sm cursor-pointer transition ease-in-out duration-300 border
                         ${isSeatSelected(id)
-                          ? 'bg-orange-400 text-white border-transparent'
+                          ? 'bg-green-600 text-white border-transparent '
                           : 'bg-white text-black border-green-400 hover:bg-gray-600 hover:text-white'
                         }
                       `}
@@ -288,3 +295,32 @@ const SeatSelection = ({ ticketPrices, onSeatSelect, selectedSeats }) => {
 };
 
 export default Ticketbooking;
+
+const StyledWrapper = styled.div`
+  .Btn {
+    width: 320px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(15, 15, 15);
+    border: none;
+    color: white;
+    font-weight: 800;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.103);
+    position: relative;
+    overflow: hidden;
+    transition-duration: .3s;
+  }
+
+  .svgIcon {
+    width: 16px;
+  }
+
+  .svgIcon path {
+    fill: white;
+  }
+
+`;
