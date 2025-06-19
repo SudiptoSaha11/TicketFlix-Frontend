@@ -112,22 +112,24 @@ const Usernavbar = () => {
     <>
       <div className="fixed top-0 w-full h-[80px] bg-[#fff] px-[2px] py-3 z-[1000] flex justify-between items-center shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-colors duration-300 ease md:gap-[10px]">
         <div
-          className="flex items-center cursor-pointer
-                     sm:left-0
-                     md:ml-[8rem]
-                     lg:ml-[10rem]
-                     xl:ml-[12.2rem]
-                     2xl:ml-[12.4rem]
-                     antarikh:ml-[14.2rem]
-                     debojit:ml-[17rem]"
-          onClick={goToHome}
-        >
-          <img
-            src={require('./logo-png.png')}
-            alt="TicketFlix Logo"
-            className="h-[85px] w-[85px] pb-2"
-          />
-        </div>
+  className="flex items-center cursor-pointer
+             sm:left-0
+             md:ml-[8rem]
+             lg:ml-[10rem]
+             xl:ml-[12.2rem]
+             2xl:ml-[12.4rem]
+             antarikh:ml-[14.2rem]
+             debojit:ml-[17rem]"
+  onClick={goToHome}
+>
+  <div className="h-[85px] w-[85px] pb-2 flex items-center justify-center">
+  <img
+    src={require('./logo-png.png')}
+    alt="Your Logo"
+    className="h-full w-auto object-contain"
+  />
+</div>
+</div>
 
 
         <div className="flex items-center gap-[2px] hidden
@@ -155,7 +157,7 @@ const Usernavbar = () => {
           src={require('./search.png')}
           onClick={() => { navigate("/search") }}
           alt="Search"
-          className="w-[15px] h-[15px] mr-[15px] ml-[215px] mb-[10px]
+          className="w-[15px] h-[15px] mr-[15px] ml-[215px] mb-[10px] 
                            sm: w-[20px] h-[20px] mr-[15px] sm:ml-[35rem] sm:mb-[10px]
                            md: w-[25px] h-[25px] mr-[18px] md:ml-[230px] md:mb-[10px] md:hidden
                            debojit: w-[30px] debojit:h-[30px] debojit: mr-[20px]"
