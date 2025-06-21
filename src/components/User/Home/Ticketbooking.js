@@ -113,7 +113,7 @@ const Ticketbooking = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        'https://ticketflix-backend.onrender.com/api/create-checkout-session',
+        'http://localhost:5000/api/create-checkout-session',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -144,7 +144,7 @@ const Ticketbooking = () => {
   }; 
 
   return (
-    <div className="px-4 pt-4 mb-24 bg-gray-100 font-sans ">
+    <div className="px-4 pt-4 pb-20 bg-gray-100 font-sans ">
       {/* HEADER */}
       <div className="text-center mb-5">
         <h2 className="text-2xl text-gray-800">
@@ -176,8 +176,9 @@ const Ticketbooking = () => {
       </div>
 
       {/* PAY BUTTON: Fixed at bottom */}
-      <div className="fixed bottom-0 left-0 w-full bg-white p-4 shadow-inner z-50">
-        <div className="flex justify-center">
+
+      <div className="fixed bottom-0  left-0 w-full bg-white py-4 shadow-inner z-50">
+        <div className="max-sm:mx-5">
           <StyledWrapper>
             <button
               className="Btn"
@@ -298,7 +299,7 @@ export default Ticketbooking;
 
 const StyledWrapper = styled.div`
   .Btn {
-    width: 320px;
+    width: 100%;
     height: 50px;
     display: flex;
     align-items: center;
