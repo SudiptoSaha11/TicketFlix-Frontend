@@ -141,10 +141,10 @@ const Ticketbooking = () => {
     if (loading) return;
     if (!isLoggedIn) setIsModalOpen(true);
     else handleBooking();
-  };
+  }; 
 
   return (
-    <div className="p-5 bg-gray-100 font-sans pb-24">
+    <div className="px-4 pt-4 mb-24 bg-gray-100 font-sans ">
       {/* HEADER */}
       <div className="text-center mb-5">
         <h2 className="text-2xl text-gray-800">
@@ -202,7 +202,7 @@ const Ticketbooking = () => {
         overlayClassName="fixed inset-0 bg-black bg-opacity-60"
       >
         <h2 className="text-xl text-gray-800 mb-4">Please log in to continue</h2>
-        <p className="text-base text-gray-600 mb-5">Total Amount: ₹{totalAmount}</p>
+        {/* <p className="text-base text-gray-600 mb-5">Total Amount: ₹{totalAmount}</p> */}
         <div className="flex justify-end">
           <button
             onClick={() => navigate('/trylogin')}
