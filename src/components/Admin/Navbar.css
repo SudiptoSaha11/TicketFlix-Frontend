@@ -20,7 +20,7 @@ nav {
     align-items: center; /* Center items vertically */
     justify-content: space-between; /* Space out items within the nav */
     width: 100%; /* Ensure nav takes full width */
-    max-width: 1200px; /* Optional: limit max width of the content */
+    max-width: 1250px; /* Optional: limit max width of the content */
     margin: 0 auto; /* Center nav horizontally if max-width is set */
 }
 

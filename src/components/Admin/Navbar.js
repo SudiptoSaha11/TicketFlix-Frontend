@@ -47,6 +47,9 @@ const Navbar = () => {
           <li> 
             <NavLink className="nav" to="/eventscheduleview"> Event Schedule</NavLink> 
           </li>
+          <li> 
+            <NavLink className="nav" to="/beverages"> Beverages</NavLink> 
+          </li>
         </ul>
         
         {/* Button to navigate to User Home */}

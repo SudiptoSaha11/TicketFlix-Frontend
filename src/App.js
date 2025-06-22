@@ -1,10 +1,8 @@
-
 import React from 'react'
 import {BrowserRouter as Router,Route,Routes,} from 'react-router-dom'
 import Movie from './components/Admin/Movie'
 import Movieview from './components/Admin/Movieview'
 import Login from './components/Admin/Login';
-
 import Editmovie from './components/Admin/Editmovie';
 import Showtime from './components/Admin/Showtime';
 import Addshow from './components/Admin/Addshow';
@@ -30,7 +28,6 @@ import MovieShowtime from './components/User/Home/MovieShowtime';
 import ReviewForm from './components/User/Home/ReviewForm';
 import Event from './components/User/Home/Event'
 import Faq from './components/User/Home/Faq';
-import SearchPage from './components/User/Home/SearchPage';
 import Eventdetails from './components/User/Home/Eventdetails';
 import Eventticketbooking from './components/User/Home/Eventticketbooking';
 import MoviePage from './components/User/Home/MoviePage';
@@ -41,6 +38,10 @@ import Editevent from './components/Admin/Editevent';
 import AddEventSchedule from './components/Admin/AddEventSchedule';
 import EventScheduleView from './components/Admin/EventScheduleView';
 import Dashboard from './components/Admin/Dashboard';
+import SearchPage from './components/User/Home/SearchPage';
+import AddBeverage from './components/Admin/Addbeverage';
+import Beverageview from './components/Admin/Beverageview';
+import UserBeverage from './components/User/Home/Userbeverage';
 
 const App=()=> {
 return (
@@ -103,8 +104,6 @@ return (
             element = {<Event/>}/>
           <Route path = '/faq'
             element = {<Faq/>}/>
-          <Route path = '/search'
-            element = {<SearchPage/>}/>
           <Route path = '/eventdetails/:id'
             element = {<Eventdetails/>}/>
           <Route path = '/eventticketbooking'
@@ -125,6 +124,14 @@ return (
             element = {<EventScheduleView/>}/>
           <Route path = '/dashboard'
             element = {<Dashboard/>}/>  
+          <Route path = '/search'
+            element = {<SearchPage/>}/>
+          <Route path = '/addbeverage'
+            element = {<AddBeverage/>}/>
+          <Route path = '/beverages'
+            element = {<Beverageview/>}/>
+          <Route path = '/userbeverage'
+            element = {<UserBeverage/>}/>
         </Routes>
         </Router>
   </>
