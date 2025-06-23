@@ -1,54 +1,53 @@
+// src/components/UserLogin.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../Login/Userlogin.css';
 
-function Userlogin() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isRightPanelActive, setRightPanelActive] = useState(false);
+function UserLogin() {
+  const [toggleSignUp, setToggleSignUp] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [signupName, setSignupName] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Check if the user is already logged in (based on user role in localStorage)
+  // Redirect if already logged in
   useEffect(() => {
     const userType = localStorage.getItem('usertype');
     const userEmail = localStorage.getItem('userEmail');
-    // Redirect only if both the user type and the user email exist
     if (userType === 'user' && userEmail) {
-      navigate('/'); // Redirect to user home if logged in as a user
+      navigate('/');
     }
   }, [navigate]);
-  
 
-  const handleSignUpClick = () => {
-    setRightPanelActive(true);
+  const handleToggle = () => {
+    setErrorMessage('');
+    setSuccessMessage('');
+    setToggleSignUp(prev => !prev);
   };
 
-  const handleSignInClick = () => {
-    setRightPanelActive(false);
-  };
-
-  const handleSignIn = async (e, email, password) => {
+  const handleLoginSubmit = async e => {
     e.preventDefault();
+    if (!loginEmail || !loginPassword) {
+      setErrorMessage('Please fill in all login fields.');
+      return;
+    }
     setIsLoading(true);
-
-    const userData = { email, password };
-
+    setErrorMessage('');
     try {
-      const response = await axios.post('https://ticketflix-backend.onrender.com/userlogin', userData);
-      if (response.status === 201) {
-        console.log('Signed in successfully:', response.data);
-      
-        // Store the whole user object
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        // Store user type as 'user'
+      const { status, data } = await axios.post('https://ticketflix-backend.onrender.com/userlogin', {
+        email: loginEmail,
+        password: loginPassword,
+      });
+      if (status === 201) {
+        const user = data.user;
+        localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('usertype', 'user');
-        // *Store the email explicitly*
-        localStorage.setItem('userEmail', response.data.user.email);
-      
-        // Check for a redirect URL in localStorage
+        localStorage.setItem('userEmail', user.email);
         const redirectTo = localStorage.getItem('redirectTo');
         if (redirectTo) {
           navigate(redirectTo);
@@ -56,144 +55,181 @@ function Userlogin() {
         } else {
           navigate('/');
         }
-      }       else {
+      } else {
         setErrorMessage('Invalid email or password.');
       }
-    } catch (error) {
-      console.error('Login failed:', error);
-      if (error.response && error.response.status === 401) {
+    } catch (err) {
+      if (err.response?.status === 401) {
         setErrorMessage('Invalid email or password.');
       } else {
-        setErrorMessage('An error occurred while logging in. Please try again later.');
+        setErrorMessage('Login failed. Please try again.');
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSignUp = async (name, email, password) => {
+  const handleSignupSubmit = async e => {
+    e.preventDefault();
+    if (!signupName || !signupEmail || !signupPassword) {
+      setErrorMessage('Please fill in all signup fields.');
+      return;
+    }
+    setIsLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
     try {
-      const response = await axios.post('https://ticketflix-backend.onrender.com/userssignup', { name, email, password });
-      if (response.status === 200) {
-        setErrorMessage('Sign up successful! Please log in.');
-        setRightPanelActive(false); // Switch to Sign In panel
+      const { status } = await axios.post('https://ticketflix-backend.onrender.com/userssignup', {
+        name: signupName,
+        email: signupEmail,
+        password: signupPassword,
+      });
+      if (status === 200) {
+        setSuccessMessage('Sign up successful! Please log in.');
+        setSignupName('');
+        setSignupEmail('');
+        setSignupPassword('');
+        setToggleSignUp(false);
       }
-    } catch (error) {
-      setErrorMessage(error.response?.data?.message || 'Sign up failed. Please try again later.');
+    } catch (err) {
+      setErrorMessage(err.response?.data?.message || 'Sign up failed.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className={`user-container ${isRightPanelActive ? 'right-panel-active' : ''}`} id="container">
-      <SignUpContainer onSignUp={handleSignUp} errorMessage={errorMessage} />
-      <SignInContainer onSignIn={handleSignIn} errorMessage={errorMessage} />
-      <OverlayContainer onSignUpClick={handleSignUpClick} onSignInClick={handleSignInClick} />
-    </div>
-  );
-}
-
-function SignUpContainer({ onSignUp, errorMessage }) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!name || !email || !password) {
-      setError('All fields are required.');
-      return;
-    }
-    setError('');
-    onSignUp(name, email, password);  // Pass data to parent function
-  };
-
-  return (
-    <div className="form-container-user user-sign-up-container">
-      <form className="form-userlogin-user" onSubmit={handleSubmit}>
-        <h1 className="user-login-heading">Create Account</h1>
-        <div className="social-container-signup">
-          <a href="#" className="social"><ion-icon name="logo-facebook"></ion-icon></a>
-          <a href="#" className="social"><ion-icon name="logo-google"></ion-icon></a>
-          <a href="#" className="social"><ion-icon name="logo-linkedin"></ion-icon></a>
+    <div className="flex items-center justify-center min-h-screen bg-white">
+      <div className="relative" style={{ perspective: '1000px' }}>
+        {/* ── TOGGLE ROW ────────────────────────────────────────────────────────── */}
+        <div className="flex items-center justify-center mb-6 space-x-4">
+          <span
+            className={`text-sm font-semibold transition-colors duration-200 ${
+              toggleSignUp ? 'text-gray-400' : 'text-gray-900'
+            }`}
+          >
+            Log in
+          </span>
+          <div
+            onClick={handleToggle}
+            className="relative w-12 h-6 border-2 border-gray-900 rounded-md bg-white cursor-pointer transition-colors duration-200"
+          >
+            {/* track */}
+            <div
+              className={`absolute inset-0 rounded-2 transition-colors duration-200 ${
+                toggleSignUp ? 'bg-blue-500' : 'bg-white'
+              }`}
+            />
+            {/* knob */}
+            <div
+              className={`absolute top-0 left-0 w-6 h-6 bg-white border-2 border-gray-900 rounded-md transform transition-transform duration-200 ${
+                toggleSignUp ? 'translate-x-6' : 'translate-x-0'
+              }`}
+            />
+          </div>
+          <span
+            className={`text-sm font-semibold transition-colors duration-200 ${
+              toggleSignUp ? 'text-gray-900' : 'text-gray-400'
+            }`}
+          >
+            Sign up
+          </span>
         </div>
-        <span className="span-userlogin">or use your email for registration</span>
-        <input className="signup-input" type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-        <input className="signup-input" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input className="signup-input" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        {error && <p className="error-message">{error}</p>}
-        {errorMessage && <p className="success-message">{errorMessage}</p>} {/* Display success or error message */}
-        <button className="signup-button" type="submit">Sign Up</button>
-      </form>
-    </div>
-  );
-}
 
-function SignInContainer({ onSignIn, errorMessage }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+        {/* ── FLIP CARD ────────────────────────────────────────────────────────── */}
+        <div
+          className="w-72 h-80 relative transition-transform duration-700"
+          style={{
+            transform: toggleSignUp ? 'rotateY(180deg)' : 'rotateY(0deg)',
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          {/* Front: Login */}
+          <div
+            className="absolute inset-0 bg-orange-500 border-2 border-gray-900 rounded-lg shadow-[4px_4px_0_#323232] flex flex-col items-center justify-center p-5"
+            style={{ backfaceVisibility: 'hidden' }}
+          >
+            <h2 className="text-gray-900 text-2xl font-bold mb-4">Log in</h2>
+            <form
+              className="w-full flex flex-col items-center gap-4"
+              onSubmit={handleLoginSubmit}
+            >
+              <input
+                type="email"
+                placeholder="Email"
+                className="w-64 h-10 px-3 border-2 border-gray-900 rounded-md shadow-[4px_4px_0_#323232] outline-none focus:border-blue-500"
+                value={loginEmail}
+                onChange={e => setLoginEmail(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-64 h-10 px-3 border-2 border-gray-900 rounded-md shadow-[4px_4px_0_#323232] outline-none focus:border-blue-500"
+                value={loginPassword}
+                onChange={e => setLoginPassword(e.target.value)}
+              />
+              {errorMessage && !toggleSignUp && (
+                <p className="text-red-600 text-sm">{errorMessage}</p>
+              )}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-32 h-10 mt-2 border-2 border-gray-900 rounded-md bg-white shadow-[4px_4px_0_#323232] font-bold active:shadow-none active:translate-x-1 active:translate-y-1"
+              >
+                {isLoading ? 'Loading...' : "Let's go!"}
+              </button>
+            </form>
+          </div>
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!email || !password) {
-      setError('All fields are required.');
-      return;
-    }
-    setError('');
-    onSignIn(e, email, password);  // Pass data to parent function
-  };
-
-  return (
-    <div className="form-container-user sign-in-container-user">
-      <form className="form-userlogin-user" onSubmit={handleSubmit}>
-        <h1 className="heading">Sign in</h1>
-        <div className="social-container-signup">
-          <a href="#" className="social"><ion-icon name="logo-facebook"></ion-icon></a>
-          <a href="#" className="social"><ion-icon name="logo-google"></ion-icon></a>
-          <a href="#" className="social"><ion-icon name="logo-linkedin"></ion-icon></a>
+          {/* Back: Sign up */}
+          <div
+            className="absolute inset-0 bg-orange-500 border-2 border-gray-900 rounded-lg shadow-[4px_4px_0_#323232] flex flex-col items-center justify-center p-5"
+            style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+          >
+            <h2 className="text-gray-900 text-2xl font-bold mb-4">Sign up</h2>
+            <form
+              className="w-full flex flex-col items-center gap-4"
+              onSubmit={handleSignupSubmit}
+            >
+              <input
+                type="text"
+                placeholder="Name"
+                className="w-64 h-10 px-3 border-2 border-gray-900 rounded-md shadow-[4px_4px_0_#323232] outline-none focus:border-blue-500"
+                value={signupName}
+                onChange={e => setSignupName(e.target.value)}
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                className="w-64 h-10 px-3 border-2 border-gray-900 rounded-md shadow-[4px_4px_0_#323232] outline-none focus:border-blue-500"
+                value={signupEmail}
+                onChange={e => setSignupEmail(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-64 h-10 px-3 border-2 border-gray-900 rounded-md shadow-[4px_4px_0_#323232] outline-none focus:border-blue-500"
+                value={signupPassword}
+                onChange={e => setSignupPassword(e.target.value)}
+              />
+              {errorMessage && toggleSignUp && (
+                <p className="text-red-600 text-sm">{errorMessage}</p>
+              )}
+              {successMessage && toggleSignUp && (
+                <p className="text-green-600 text-sm">{successMessage}</p>
+              )}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-32 h-10 mt-2 border-2 border-gray-900 rounded-md bg-white shadow-[4px_4px_0_#323232] font-bold active:shadow-none active:translate-x-1 active:translate-y-1"
+              >
+                {isLoading ? 'Loading...' : 'Confirm!'}
+              </button>
+            </form>
+          </div>
         </div>
-        <span className="span-userlogin">or use your account</span>
-        <input className="signup-input" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input className="signup-input" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        {error && <p className="error-message">{error}</p>}
-        {errorMessage && <p className="error-message">{errorMessage}</p>} {/* Display error message */}
-        <a href="#">Forgot your password?</a>
-        <button className="signup-button" type="submit">Sign In</button>
-      </form>
-    </div>
-  );
-}
-
-function OverlayContainer({ onSignUpClick, onSignInClick }) {
-  return (
-    <div className="overlay-container-userlogin">
-      <div className="overlay-userlogin">
-        <OverlayPanelLeft onSignInClick={onSignInClick} />
-        <OverlayPanelRight onSignUpClick={onSignUpClick} />
       </div>
     </div>
   );
 }
-
-function OverlayPanelLeft({ onSignInClick }) {
-  return (
-    <div className="overlay-panel-user overlay-left-left">
-      <h1 className="heading">Welcome Back!</h1>
-      <p className="para-userlogin">To keep connected with us please login with your personal info</p>
-      <button className="button-ghost" id="signIn" onClick={onSignInClick}>Sign In</button>
-    </div>
-  );
-}
-
-function OverlayPanelRight({ onSignUpClick }) {
-  return (
-    <div className="overlay-panel-user overlay-right-right">
-      <h1 className="heading">Hello, Friend!</h1>
-      <p className="para-userlogin">Enter your personal details and start journey with us</p>
-      <button className="button-ghost" id="signUp" onClick={onSignUpClick}>Sign Up</button>
-    </div>
-  );
-}
-
-export default Userlogin;
+export default UserLogin;

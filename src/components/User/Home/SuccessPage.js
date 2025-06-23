@@ -8,14 +8,15 @@ const SuccessPage = () => {
   const [animationData, setAnimationData] = useState(null);
   const isApiCalled = useRef(false);
 
+  // Load Lottie animation JSON
   useEffect(() => {
-    // ✅ Load Lottie JSON from URL
     fetch('https://lottie.host/5c5bb36f-dbb3-4028-a8a1-62dfaa3ec292/L2ZlgkQwwn.json')
       .then(res => res.json())
       .then(data => setAnimationData(data))
       .catch(err => console.error('Lottie load error:', err));
   }, []);
 
+  // Process booking once
   useEffect(() => {
     if (isApiCalled.current) return;
     isApiCalled.current = true;
@@ -70,13 +71,23 @@ const SuccessPage = () => {
       });
   }, []);
 
+  // Redirect to home after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.location.href = '/';
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-gray-100 text-center">
       <DotLottieReact
-      src="https://lottie.host/f1eda73d-08bd-4a89-bec9-e095f1656329/e3KpA92vAb.lottie"
-      loop
-      autoplay
-    /><br/>
+        src="https://lottie.host/f1eda73d-08bd-4a89-bec9-e095f1656329/e3KpA92vAb.lottie"
+        loop
+        autoplay
+      />
+      <br />
       {animationData && (
         <div className="w-48 sm:w-64 mb-6 animate-scale-up">
           <Lottie animationData={animationData} loop={false} />
