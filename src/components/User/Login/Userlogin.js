@@ -1,21 +1,19 @@
-// src/components/UserLogin.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-function UserLogin() {
+export default function UserLogin() {
   const [toggleSignUp, setToggleSignUp] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [signupName, setSignupName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Redirect if already logged in
   useEffect(() => {
     const userType = localStorage.getItem('usertype');
     const userEmail = localStorage.getItem('userEmail');
@@ -25,19 +23,16 @@ function UserLogin() {
   }, [navigate]);
 
   const handleToggle = () => {
-    setErrorMessage('');
-    setSuccessMessage('');
     setToggleSignUp(prev => !prev);
   };
 
   const handleLoginSubmit = async e => {
     e.preventDefault();
     if (!loginEmail || !loginPassword) {
-      setErrorMessage('Please fill in all login fields.');
+      toast.error('Please fill in all login fields.');
       return;
     }
     setIsLoading(true);
-    setErrorMessage('');
     try {
       const { status, data } = await axios.post('https://ticketflix-backend.onrender.com/userlogin', {
         email: loginEmail,
@@ -56,13 +51,13 @@ function UserLogin() {
           navigate('/');
         }
       } else {
-        setErrorMessage('Invalid email or password.');
+        toast.error('Invalid email or password.');
       }
     } catch (err) {
       if (err.response?.status === 401) {
-        setErrorMessage('Invalid email or password.');
+        toast.error('Invalid email or password.');
       } else {
-        setErrorMessage('Login failed. Please try again.');
+        toast.error('Login failed. Please try again.');
       }
     } finally {
       setIsLoading(false);
@@ -72,36 +67,46 @@ function UserLogin() {
   const handleSignupSubmit = async e => {
     e.preventDefault();
     if (!signupName || !signupEmail || !signupPassword) {
-      setErrorMessage('Please fill in all signup fields.');
+      toast.error('Please fill in all signup fields.');
       return;
     }
     setIsLoading(true);
-    setErrorMessage('');
-    setSuccessMessage('');
     try {
-      const { status } = await axios.post('https://ticketflix-backend.onrender.com/userssignup', {
+      const response = await axios.post('https://ticketflix-backend.onrender.com/userssignup', {
         name: signupName,
         email: signupEmail,
         password: signupPassword,
       });
-      if (status === 200) {
-        setSuccessMessage('Sign up successful! Please log in.');
+
+      // treat any 2xx as success
+      if (response.status >= 200 && response.status < 300) {
+        toast.success('Sign up successful!');
         setSignupName('');
         setSignupEmail('');
         setSignupPassword('');
-        setToggleSignUp(false);
+        // flip back after a short delay so the toast is visible
+        setTimeout(() => {
+          setToggleSignUp(false);
+        }, 300);
       }
     } catch (err) {
-      setErrorMessage(err.response?.data?.message || 'Sign up failed.');
+      if (err.response?.status === 409) {
+        toast.error('User exists already, please login instead.');
+      } else {
+        toast.error(err.response?.data?.message || 'Sign up failed.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-white">
+    <div className="flex items-center justify-center min-h-screen bg-white pb-24">
+      {/* single ToastContainer for all toasts */}
+      <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
+
       <div className="relative" style={{ perspective: '1000px' }}>
-        {/* ── TOGGLE ROW ────────────────────────────────────────────────────────── */}
+        {/* Toggle */}
         <div className="flex items-center justify-center mb-6 space-x-4">
           <span
             className={`text-sm font-semibold transition-colors duration-200 ${
@@ -114,13 +119,11 @@ function UserLogin() {
             onClick={handleToggle}
             className="relative w-12 h-6 border-2 border-gray-900 rounded-md bg-white cursor-pointer transition-colors duration-200"
           >
-            {/* track */}
             <div
               className={`absolute inset-0 rounded-2 transition-colors duration-200 ${
                 toggleSignUp ? 'bg-blue-500' : 'bg-white'
               }`}
             />
-            {/* knob */}
             <div
               className={`absolute top-0 left-0 w-6 h-6 bg-white border-2 border-gray-900 rounded-md transform transition-transform duration-200 ${
                 toggleSignUp ? 'translate-x-6' : 'translate-x-0'
@@ -136,7 +139,7 @@ function UserLogin() {
           </span>
         </div>
 
-        {/* ── FLIP CARD ────────────────────────────────────────────────────────── */}
+        {/* Flip Card */}
         <div
           className="w-72 h-80 relative transition-transform duration-700"
           style={{
@@ -144,7 +147,7 @@ function UserLogin() {
             transformStyle: 'preserve-3d',
           }}
         >
-          {/* Front: Login */}
+          {/* Login Side */}
           <div
             className="absolute inset-0 bg-orange-500 border-2 border-gray-900 rounded-lg shadow-[4px_4px_0_#323232] flex flex-col items-center justify-center p-5"
             style={{ backfaceVisibility: 'hidden' }}
@@ -168,9 +171,6 @@ function UserLogin() {
                 value={loginPassword}
                 onChange={e => setLoginPassword(e.target.value)}
               />
-              {errorMessage && !toggleSignUp && (
-                <p className="text-red-600 text-sm">{errorMessage}</p>
-              )}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -181,7 +181,7 @@ function UserLogin() {
             </form>
           </div>
 
-          {/* Back: Sign up */}
+          {/* Signup Side */}
           <div
             className="absolute inset-0 bg-orange-500 border-2 border-gray-900 rounded-lg shadow-[4px_4px_0_#323232] flex flex-col items-center justify-center p-5"
             style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
@@ -212,12 +212,6 @@ function UserLogin() {
                 value={signupPassword}
                 onChange={e => setSignupPassword(e.target.value)}
               />
-              {errorMessage && toggleSignUp && (
-                <p className="text-red-600 text-sm">{errorMessage}</p>
-              )}
-              {successMessage && toggleSignUp && (
-                <p className="text-green-600 text-sm">{successMessage}</p>
-              )}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -232,4 +226,3 @@ function UserLogin() {
     </div>
   );
 }
-export default UserLogin;
