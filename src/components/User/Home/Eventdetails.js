@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./Eventdetails.css"; // Ensure the path is correct
 import Footer from "./Footer";
 
 function Eventdetails() {
@@ -20,12 +19,10 @@ function Eventdetails() {
   const [eventPricing, setEventPricing] = useState(null);
   const [location, setlocation] = useState(null);
 
-
   // Popups
   const [eventtimePopup, seteventtimePopup] = useState(false);
 
   const [id, setId] = useState("");
-
   const navigate = useNavigate();
 
   // Scroll to top on mount
@@ -38,11 +35,10 @@ function Eventdetails() {
    */
   const fetchData = async (eventID) => {
     try {
-      console.log("Fetching event details for ID:", eventID);
-
       // Fetch event details
-      const eventResponse = await axios.get(`https://ticketflix-backend.onrender.com/getevent/${eventID}`);
-      console.log("Fetched Event Data:", eventResponse.data);
+      const eventResponse = await axios.get(
+        `https://ticketflix-backend.onrender.com/getevent/${eventID}`
+      );
 
       const {
         eventName: Name,
@@ -53,7 +49,7 @@ function Eventdetails() {
         imageURL,
         eventAbout,
         eventDate,
-        eventTime: Time, // Already an array
+        eventTime: Time,
         eventType,
         location,
       } = eventResponse.data;
@@ -66,29 +62,23 @@ function Eventdetails() {
       seteventVenue(Venue);
       seteventAbout(eventAbout);
       seteventDate(eventDate);
-      seteventTime(Array.isArray(Time) ? Time : []); // Ensure it's an array
+      seteventTime(Array.isArray(Time) ? Time : []);
       seteventType(eventType);
-      setlocation(location)
+      setlocation(location);
 
       // Fetch event schedule
-      console.log("Fetching event schedule...");
-      const scheduleResponse = await axios.get(`https://ticketflix-backend.onrender.com/eventschedule`);
-      console.log("Fetched Schedule Data:", scheduleResponse.data);
-
-      // Find matching schedule by event name
-      const matchedSchedule = scheduleResponse.data.find(schedule => schedule.eventName === Name);
+      const scheduleResponse = await axios.get(
+        `https://ticketflix-backend.onrender.com/eventschedule`
+      );
+      const matchedSchedule = scheduleResponse.data.find(
+        (schedule) => schedule.eventName === Name
+      );
 
       if (matchedSchedule) {
-        console.log("Matched Schedule:", matchedSchedule);
         setEventSchedule(matchedSchedule);
-
-        // Extract ticket prices from the first available showtime
         const pricingData = matchedSchedule.EventshowTime?.[0] || {};
         setEventPricing(pricingData);
-      } else {
-        console.log("No matching schedule found for", Name);
       }
-
     } catch (error) {
       console.error("Error fetching event data:", error);
     }
@@ -97,21 +87,13 @@ function Eventdetails() {
   // On mount, get event ID from localStorage then fetch details.
   useEffect(() => {
     const eventID = localStorage.getItem("id");
-    console.log("Event ID from localStorage:", eventID);
-
     if (!eventID) {
       navigate("/");
       return;
     }
-
     setId(eventID);
     fetchData(eventID);
   }, [navigate]);
-
-  // Log eventName to check if it updates
-  useEffect(() => {
-    console.log("Updated eventName:", Name);
-  }, [Name]);
 
   // Handle Event Time popup
   const handleClick = () => {
@@ -120,14 +102,13 @@ function Eventdetails() {
 
   const handleTimeSelect = (chosenTime) => {
     const storedEmail = localStorage.getItem("userEmail") || "";
-
     navigate("/eventticketbooking", {
       state: {
         Name,
         Venue,
         eventDate,
-        Time, // Now an array
-        pricing: eventPricing || {}, // Pass extracted prices
+        Time,
+        pricing: eventPricing || {},
         userEmail: storedEmail,
         chosenTime,
       },
@@ -140,73 +121,122 @@ function Eventdetails() {
   };
 
   return (
-    <div className="main-event">
-      <div className="event-container">
+    <div className="bg-gray-50 min-h-screen font-sans pb-20">
+      <div className="container mx-auto px-4 pt-4 flex flex-col gap-4">
         {/* Banner */}
-        <div className="event-banner">
-          <img src={eventImage} alt={Name} />
+        <div className="w-full h-64 rounded-lg bg-gray-200 overflow-hidden">
+          <img
+            src={eventImage}
+            alt={Name}
+            className="w-full h-full object-cover"
+          />
         </div>
 
         {/* Event Details */}
-        <div className="event-details">
-          <h2>{Name}</h2>
-          <p className="subtext">
+        <div className="relative bg-white p-4 rounded-lg ">
+          <h2 className="text-xl sm:text-2xl text-gray-800 font-bold mb-1">
+            {Name}
+          </h2>
+          <p className="text-sm sm:text-base text-gray-600 mb-2">
             {eventType} | {eventLanguage} | {eventDuration}
           </p>
-          <p className="date">🗓 {new Date(eventDate).toDateString()}</p>
-          <p className="venue">📍 {Venue}</p>
-          {/* Show lowest ticket price if schedule exists */}
-          {eventSchedule?.EventshowTime?.[0]?.BronzeTicketPrice ? (
-            <p className="price">|| ₹{eventSchedule.EventshowTime[0].BronzeTicketPrice} onwards</p>
-          ) : (
-            <p className="price">🎟 Lowest Price: ₹N/A</p>
-          )}
-          <button onClick={handleClick} className="book-btn">Book</button>
+          <div className="flex flex-wrap items-center gap-3 mb-2 text-sm text-gray-600">
+            <span className="flex items-center">
+              🗓 {new Date(eventDate).toDateString()}
+            </span>
+            <span className="flex items-center">
+              📍 {Venue}
+            </span>
+          </div>
+          <p className="text-sm text-gray-600 mb-2">
+            🎟 {eventSchedule?.EventshowTime?.[0]?.BronzeTicketPrice
+              ? `₹${eventSchedule.EventshowTime[0].BronzeTicketPrice} onwards`
+              : "Lowest Price: N/A"}
+          </p>
+
+          {/* Book button for md+ */}
+          <button
+            onClick={handleClick}
+            className="hidden md:block absolute top-4 right-4 bg-red-500 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-red-600 transition"
+          >
+            Book
+          </button>
         </div>
 
-        {/* Artist Section */}
-        <div className="artist-section">
-          {eventArtist.map((artist, index) => (
-            <div className="artist-card" key={index}>
-              <img src={artist.image} alt={artist.name} />
-              <p><strong>{artist.artist}</strong></p>
-              <p>{artist.name}</p>
-              <div className="about-section">
-                <h2>About</h2>
-                <p>{eventAbout}</p>
-              </div>
+        {/* THREE-COLUMN GRID: Artist + Share | About | Map */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* LEFT COLUMN: Artist + Share */}
+          <div className="flex flex-col gap-4">
+            {/* MIDDLE COLUMN: About */}
+            <div className="bg-white rounded-lg p-4">
+              <h3 className="text-lg font-bold text-gray-800 mb-2">About</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                {eventAbout}
+              </p>
             </div>
-          ))}
-          {location?.coordinates && (
-          <div className="map-container" >
-            <iframe
-              title="Event location"
-              // // width="100%"
-              // // height="300"
-              style={{ border: 0, borderRadius: "10px", marginTop: "1rem" }}
-               loading="lazy"
-              allowFullScreen
-              src={`https://maps.google.com/maps?q=${location.coordinates[0]}, ${location.coordinates[1]}&z=15&output=embed`}
-            />
-            {location.address && (
-              <p>{location.address}</p>
+
+            {/* Artist Panel */}
+            <div className="bg-white rounded-lg p-3 flex flex-col items-center">
+              {eventArtist.length > 0 ? (
+                eventArtist.map((artist, idx) => (
+                  <div
+                    key={idx}
+                    className="w-full flex flex-col items-center mb-4"
+                  >
+                    <img
+                      src={artist.image}
+                      alt={artist.name}
+                      className="w-16 h-16 rounded-full object-cover mb-2"
+                    />
+                    <p className="text-sm font-semibold text-gray-700">
+                      {artist.artist}
+                    </p>
+                    <p className="text-xs text-gray-600">{artist.name}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">No artist info</p>
+              )}
+            </div>
+
+
+            {/* RIGHT COLUMN: Map */}
+            {location?.coordinates && (
+              <div className="bg-white rounded-lg  p-3 flex flex-col items-center">
+                <div className="w-full h-40 rounded overflow-hidden mb-2">
+                  <iframe
+                    title="Event location"
+                    src={`https://maps.google.com/maps?q=${location.coordinates[0]},${location.coordinates[1]}&z=15&output=embed`}
+                    loading="lazy"
+                    allowFullScreen
+                    className="w-full h-full border-0"
+                  />
+                </div>
+                {location.address && (
+                  <p className="text-sm text-gray-700 text-center">
+                    {location.address}
+                  </p>
+                )}
+              </div>
             )}
           </div>
-        )}
         </div>
 
-
-
-
-        {/* Share Event Section */}
-        <div className="main-share-event">
-          <div className="share-event">
-            <h6>Share This Event</h6>
-            <a href="https://www.facebook.com">
-              <i className="fab fa-facebook-f" />
+        {/* Share This Event */}
+        <div className="bg-white rounded-lg p-3 text-center">
+          <h6 className="font-bold text-sm mb-2">Share This Event</h6>
+          <div className="flex justify-center gap-4">
+            <a
+              href="https://www.facebook.com"
+              className="text-gray-700 hover:text-yellow-500 transition"
+            >
+              <i className="fab fa-facebook-f fa-lg" />
             </a>
-            <a href="https://www.twitter.com">
-              <i className="fab fa-twitter" />
+            <a
+              href="https://www.twitter.com"
+              className="text-gray-700 hover:text-yellow-500 transition"
+            >
+              <i className="fab fa-twitter fa-lg" />
             </a>
           </div>
         </div>
@@ -214,30 +244,43 @@ function Eventdetails() {
 
       {/* Time Popup */}
       {eventtimePopup && (
-        <div className="popup-Time-booking">
-          <div className="popup-Time-booking-content">
-            <span className="popup-Time-close" onClick={closeTimePopup}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+          <div className="bg-white rounded-lg p-4 w-full max-w-xs relative">
+            <button
+              className="absolute top-2 right-2 text-gray-700 hover:text-gray-500 text-xl"
+              onClick={closeTimePopup}
+            >
               &times;
-            </span>
-            <h2>Select Event Time</h2>
-            <div style={{ marginTop: "1rem" }}>
+            </button>
+            <h4 className="text-lg font-bold mb-3">Select Event Time</h4>
+            <div className="flex flex-wrap justify-center gap-2">
               {Time.length > 0 ? (
-                Time.map((time, index) => (
+                Time.map((time, i) => (
                   <button
-                    key={index}
-                    className="popup-Time-button"
+                    key={i}
+                    className="border-2 border-blue-500 rounded-full px-3 py-1 text-sm hover:bg-blue-500 hover:text-white transition"
                     onClick={() => handleTimeSelect(time)}
                   >
                     {time}
                   </button>
                 ))
               ) : (
-                <p>No available times</p>
+                <p className="text-sm text-gray-500">No available times</p>
               )}
             </div>
           </div>
         </div>
       )}
+
+      {/* Fixed bottom Book button on mobile */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white p-3 shadow-inner flex justify-center md:hidden">
+        <button
+          onClick={handleClick}
+          className="bg-red-500 text-white w-full max-w-md py-2 rounded-md text-base font-semibold hover:bg-red-600 transition"
+        >
+          Book
+        </button>
+      </div>
 
       <Footer />
     </div>
