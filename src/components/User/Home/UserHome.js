@@ -80,7 +80,7 @@ const UserHome = () => {
     const today = new Date();
     const release = new Date(item.movieReleasedate);
     const diffDays = (release - today) / (1000 * 60 * 60 * 24);
-    return diffDays >7;
+    return diffDays > 7;
   });
 
   const filteredComingSoon = comingSoonMovies.filter(item =>
@@ -181,7 +181,8 @@ const UserHome = () => {
                         xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
                         antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
                         debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]'>Recommended Movies</h5>
-            <button className=' text-orange-500 text-[15px]' onClick={() => { navigate("/MoviePage") }}>See All&gt;</button>
+            <button className=' text-orange-500 text-[15px] md:mr-[50px] lg:mr-[95px] xl:mr-[135px] 2xl:mr-[165px] antarikh:mr-[195px]'
+             onClick={() => { navigate("/MoviePage") }}>See All&gt;</button>
           </div>
           {isLoadingMovies && <LoadingSpinner asOverlay />}
 
@@ -355,7 +356,8 @@ const UserHome = () => {
                         xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
                         antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
                         debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]'>Coming Soon</h5>
-            <button className=' text-orange-500 text-[15px]' onClick={() => { navigate("/comingsoon") }}>See All&gt;</button>
+            <button className=' text-orange-500 text-[15px] md:mr-[50px] lg:mr-[95px] xl:mr-[135px] 2xl:mr-[165px] antarikh:mr-[195px]'
+             onClick={() => { navigate("/ComingSoon") }}>See All&gt;</button>
           </div>
           {isLoadingMovies && <LoadingSpinner asOverlay />}
 
@@ -535,7 +537,8 @@ const UserHome = () => {
                         xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
                         antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
                         debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]'>Action Movies</h5>
-            <button className=' text-orange-500 text-[15px]' onClick={() => { navigate("/MoviePage") }}>See All&gt;</button>
+            <button className=' text-orange-500 text-[15px] md:mr-[50px] lg:mr-[95px] xl:mr-[135px] 2xl:mr-[165px] antarikh:mr-[195px]' 
+            onClick={() => { navigate("/MoviePage") }}>See All&gt;</button>
           </div>
 
 
@@ -709,8 +712,8 @@ const UserHome = () => {
                         xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
                         antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
                         debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]'>Recommended Events</h5>
-            <button className=' text-orange-500 text-[15px]
-                                            ' onClick={() => { navigate("/event") }}>See All&gt;</button>
+            <button className=' text-orange-500 text-[15px] md:mr-[50px] lg:mr-[95px] xl:mr-[135px] 2xl:mr-[165px] antarikh:mr-[195px]' 
+            onClick={() => { navigate("/event") }}>See All&gt;</button>
           </div>
           {isLoadingEvents && <LoadingSpinner asOverlay />}
           {isMobile ? (

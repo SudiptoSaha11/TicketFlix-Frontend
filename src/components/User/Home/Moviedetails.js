@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import Usernavbar from "./Usernavbar";
 import { FaFilm, FaStar } from "react-icons/fa";
 import Footer from "./Footer";
+import LoadingSpinner from "../../UIElements/LoadingSpinner";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import Card from "./Card";
 
 function Moviedetails() {
   // Movie detail states
@@ -24,6 +26,16 @@ function Moviedetails() {
   // Reviews
   const [reviews, setReviews] = useState([]);
 
+  // Recommended movies
+  const [recommended, setRecommended] = useState([]);
+  const [isLoadingRec, setIsLoadingRec] = useState(false);
+
+  // Responsive
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+  // Carousel state for recommended
+  const [recommendedCurrentSlide, setRecommendedCurrentSlide] = useState(0);
+
   // Popups
   const [showLanguagePopup, setShowLanguagePopup] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -38,6 +50,13 @@ function Moviedetails() {
   const location = useLocation();
   const reviewsSliderRef = useRef(null);
   const [arrowPosition, setArrowPosition] = useState("right");
+
+  // Handle window resize for mobile/desktop layouts
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 1024);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Scroll to top on mount
   useEffect(() => {
@@ -63,7 +82,7 @@ function Moviedetails() {
         movieCast,
         trailerLink,
         reviews: fetchedReviews,
-        movieReleasedate,  // <-- added
+        movieReleasedate,
       } = response.data;
 
       setMovieImage(imageURL);
@@ -75,29 +94,24 @@ function Moviedetails() {
       setMovieDescription(movieDescription);
       setMovieCast(movieCast || []);
       setTrailerLink(trailerLink || "");
-      setMovieReleaseDate(movieReleasedate);  // <-- added
+      setMovieReleaseDate(movieReleasedate);
 
       if (fetchedReviews && fetchedReviews.length > 0) {
         setReviews(fetchedReviews);
         localStorage.setItem(localKey, JSON.stringify(fetchedReviews));
       } else {
         const storedReviews = localStorage.getItem(localKey);
-        if (storedReviews) {
-          setReviews(JSON.parse(storedReviews));
-        } else {
-          setReviews([]);
-        }
+        if (storedReviews) setReviews(JSON.parse(storedReviews));
+        else setReviews([]);
       }
     } catch (error) {
       console.error("Error fetching movie data:", error);
       const storedReviews = localStorage.getItem(localKey);
-      if (storedReviews) {
-        setReviews(JSON.parse(storedReviews));
-      }
+      if (storedReviews) setReviews(JSON.parse(storedReviews));
     }
   };
 
-  // On mount, determine the movie ID from URL params, location state, or localStorage
+  // On mount, determine the movie ID and fetch data
   useEffect(() => {
     const movieId = paramId || localStorage.getItem("id");
     if (!movieId) {
@@ -106,6 +120,7 @@ function Moviedetails() {
     }
     setId(movieId);
 
+    // populate from location state if available
     if (location.state) {
       if (location.state.movieName) setMovieName(location.state.movieName);
       if (location.state.movieGenre) setMovieGenre(location.state.movieGenre);
@@ -118,85 +133,62 @@ function Moviedetails() {
     fetchData(movieId);
   }, [navigate, paramId, location.state]);
 
+  // Fetch recommended movies (first 8, excluding current)
+  useEffect(() => {
+    setIsLoadingRec(true);
+    axios
+      .get("https://ticketflix-backend.onrender.com/movieview")
+      .then((res) => {
+        const others = res.data.filter((m) => m._id !== (paramId || localStorage.getItem("id")));
+        setRecommended(others.slice(0, 8));
+      })
+      .catch((err) => console.error("Error fetching recommended:", err))
+      .finally(() => setIsLoadingRec(false));
+  }, [paramId]);
+
   // Compute coming-soon logic
   const today = new Date();
   const release = movieReleaseDate ? new Date(movieReleaseDate) : null;
   const diffDays = release ? (release - today) / (1000 * 60 * 60 * 24) : -1;
-  const isComingSoon = diffDays >7;
+  const isComingSoon = diffDays > 7;
   const formattedReleaseDate = release
-    ? release.toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      })
+    ? release.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : "";
 
-  // Navigate to the trailer page when poster is clicked
-  const handlePosterClick = () => {
-    navigate("/multimedia", { state: { trailerLink, movieName } });
-  };
-
-  // Show language popup
-  const handleClick = () => {
-    setShowLanguagePopup(true);
-  };
-
-  // Handle language selection and navigate to showtime page
+  // Handlers
+  const handlePosterClick = () => navigate("/multimedia", { state: { trailerLink, movieName } });
+  const handleClick = () => setShowLanguagePopup(true);
+  const closeLanguagePopup = () => setShowLanguagePopup(false);
   const handleLanguageSelect = (chosenLanguage) => {
     const storedEmail = localStorage.getItem("userEmail") || "";
     navigate("/movieShowtime", {
-      state: {
-        movieName,
-        userEmail: storedEmail,
-        chosenLanguage,
-      },
+      state: { movieName, userEmail: storedEmail, chosenLanguage },
     });
     setShowLanguagePopup(false);
   };
 
-  // Close language popup
-  const closeLanguagePopup = () => {
-    setShowLanguagePopup(false);
-  };
-
-  // Split movieLanguage into an array
+  // Split languages
   const splittedLangs = movieLanguage
     ? movieLanguage.split(/[\/,]/).map((lang) => lang.trim())
     : [];
 
-  // Single Arrow Slider Logic for Reviews
+  // Reviews slider logic
   const handleScroll = () => {
     if (!reviewsSliderRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = reviewsSliderRef.current;
-    if (scrollLeft <= 10) {
-      setArrowPosition("right");
-    } else if (scrollLeft + clientWidth >= scrollWidth - 10) {
-      setArrowPosition("left");
-    } else {
-      setArrowPosition("right");
-    }
+    if (scrollLeft <= 10) setArrowPosition("right");
+    else if (scrollLeft + clientWidth >= scrollWidth - 10) setArrowPosition("left");
+    else setArrowPosition("right");
   };
-
   const handleArrowClick = () => {
     if (!reviewsSliderRef.current) return;
     const { scrollWidth, clientWidth } = reviewsSliderRef.current;
-    if (arrowPosition === "right") {
-      reviewsSliderRef.current.scrollLeft = scrollWidth;
-    } else {
-      reviewsSliderRef.current.scrollLeft = 0;
-    }
+    reviewsSliderRef.current.scrollLeft = arrowPosition === "right" ? scrollWidth : 0;
   };
 
-  // Review Modal Handlers
-  const openReviewModal = () => {
-    setShowReviewModal(true);
-  };
-
-  const closeReviewModal = () => {
-    setShowReviewModal(false);
-  };
-
-  // Handle review submission from the modal
+  // Review modal handlers
+  const openReviewModal = () => setShowReviewModal(true);
+  const closeReviewModal = () => setShowReviewModal(false);
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!reviewRating) {
@@ -215,7 +207,6 @@ function Moviedetails() {
       const localKey = "moviereviews_" + id;
       localStorage.setItem(localKey, JSON.stringify(response.data.reviews));
       setReviews(response.data.reviews);
-
       setReviewerName("");
       setReviewRating("");
       setReviewText("");
@@ -226,17 +217,26 @@ function Moviedetails() {
     }
   };
 
+  // Carousel handlers for recommended (desktop)
+  const cardsPerSlideRec = 4;
+  const displayedRec = recommended.slice(0, cardsPerSlideRec * Math.ceil(recommended.length / cardsPerSlideRec));
+  const recTotalSlides = Math.ceil(displayedRec.length / cardsPerSlideRec);
+  const handlePrevRecSlide = () =>
+    setRecommendedCurrentSlide((prev) => (prev > 0 ? prev - 1 : recTotalSlides - 1));
+  const handleNextRecSlide = () =>
+    setRecommendedCurrentSlide((prev) => (prev < recTotalSlides - 1 ? prev + 1 : 0));
+
   return (
     <div className="min-h-screen flex flex-col">
       <Usernavbar />
 
-      {/* Movie Details Section (Mobile‑First) */}
+      {/* Movie Details Section */}
       <div
         className="
           flex flex-col justify-center items-center
           bg-gradient-to-r from-[#f1f2b5] to-[#135058] text-[#17202a]
           p-4 mt-[70px]
-          lg:flex-row lg:items-start lg:justify-between lg:p-8 lg:mt-[70px] 
+          lg:flex-row lg:items-start lg:justify-between lg:p-8 lg:mt-[70px]
           xl:flex-row xl:items-start xl:justify-between xl:p-8 xl:mt-[70px]
           antarikh:flex-row antarikh:items-start antarikh:justify-between antarikh:p-8 antarikh:mt-[70px]
         "
@@ -245,20 +245,15 @@ function Moviedetails() {
           <div
             className="
               w-3/4 max-w-[240px] max-lg:mb-4
-              lg:w-[200px] lg:max-w-none  lg:order-2 lg:mr-[150px] 
-              xl:w-[200px] xl:max-w-none  xl:order-2 xl:mr-[185px]
+              lg:w-[200px] lg:max-w-none lg:order-2 lg:mr-[150px]
+              xl:w-[200px] xl:max-w-none xl:order-2 xl:mr-[185px]
               antarikh:w-[200px] antarikh:max-w-none antarikh:order-2 antarikh:mr-[215px]
             "
           >
             <img
               src={movieImage}
               alt={movieName}
-              className="
-                w-full h-auto rounded-sm mx-auto
-                lg:mx-0
-                xl:mx-0
-                antarikh:mx-0
-              "
+              className="w-full h-auto rounded-sm mx-auto lg:mx-0 xl:mx-0 antarikh:mx-0"
             />
           </div>
         )}
@@ -271,16 +266,18 @@ function Moviedetails() {
             antarikh:text-left antarikh:flex-1 antarikh:pr-8
           "
         >
-          <div className="flex flex-row justify-start mb-1 ml-[15px]
-                          lg:flex lg:flex-row lg:justify-start lg:mb-4 lg:ml-[154px]
-                          xl:mb-4  xl:w-[70%] xl:ml-[186px]
-                          antarikh:mb-4  antarikh:w-[70%] antarikh:ml-[215px]">
+          <div
+            className="
+              flex flex-row justify-start mb-1 ml-[15px]
+              lg:flex lg:flex-row lg:justify-start lg:mb-4 lg:ml-[154px]
+              xl:mb-4 xl:w-[70%] xl:ml-[186px]
+              antarikh:mb-4 antarikh:w-[70%] antarikh:ml-[215px]
+            "
+          >
             <h1
               className="
                 max-lg:w-[full] text-start max-lg:text-2xl max-lg:font-extrabold max-lg:mb-2
-                lg:text-4xl 
-                xl:text-4xl
-                antarikh:text-4xl
+                lg:text-4xl xl:text-4xl antarikh:text-4xl
               "
             >
               {movieName}
@@ -289,8 +286,7 @@ function Moviedetails() {
 
           <div
             className="
-              w-full flex flex-col flex-nowrap gap-1.5 items-start mb-4 pl-4 
-              sm:justify-start
+              w-full flex flex-col flex-nowrap gap-1.5 items-start mb-4 pl-4 sm:justify-start
               lg:flex lg:flex-col lg:gap-1.5 lg:items-start lg:ml-[139px]
               xl:flex xl:flex-col xl:gap-1.5 xl:items-start xl:ml-[172px]
               antarikh:flex antarikh:flex-col antarikh:gap-1.6 antarikh:items-start antarikh:ml-[200px]
@@ -304,8 +300,7 @@ function Moviedetails() {
 
           <div
             className="
-              flex flex-col gap-3
-              sm:justify-start
+              flex flex-col gap-3 sm:justify-start
               lg:flex lg:flex-col lg:gap-1.5 lg:items-start lg:ml-[139px]
               xl:flex xl:flex-col xl:gap-1.5 xl:items-start xl:ml-[172px]
               antarikh:flex antarikh:flex-col antarikh:gap-1.6 antarikh:items-start antarikh:ml-[200px]
@@ -334,11 +329,7 @@ function Moviedetails() {
             ) : (
               <button
                 onClick={handleClick}
-                className="
-                  ml-[11rem] bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 max-lg:hidden
-                  lg:inline-block lg:ml-0
-                  xl:inline-block xl:ml-0
-                "
+                className="ml-[11rem] bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 max-lg:hidden lg:inline-block lg:ml-0 xl:inline-block xl:ml-0"
               >
                 Book Tickets
               </button>
@@ -347,16 +338,11 @@ function Moviedetails() {
         </div>
       </div>
 
-      <div className="flex justify-center mt-4 gap-[2.6rem]
-                      lg:mt-6 lg:gap-8 lg:hidden"
-      >
+      <div className="flex justify-center mt-4 gap-[2.6rem] lg:mt-6 lg:gap-8 lg:hidden">
         <h3 className="mt-[5px] lg:mt-0">Review our movie</h3>
         <button
           onClick={openReviewModal}
-          className="
-            bg-[#fff] text-black border-[2px] border-pink-500 px-[2.5rem] py-2 rounded-full text-base transition-colors duration-300
-            lg:px-6 lg:py-3
-          "
+          className="bg-[#fff] text-black border-[2px] border-pink-500 px-[2.5rem] py-2 rounded-full text-base transition-colors duration-300 lg:px-6 lg:py-3"
         >
           Rate Now
         </button>
@@ -371,31 +357,41 @@ function Moviedetails() {
           antarikh:px-40 antarikh:mt-10 antarikh:mb-12 antarikh:ml-[215px] antarikh:mr-[200px]
         "
       >
-        <h2 className="text-xl font-bold mb-2 lg:text-2xl lg:mb-4">
-          About the movie
-        </h2>
+        <h2 className="text-xl font-bold mb-2 lg:text-2xl lg:mb-4">About the movie</h2>
         <p className="text-base lg:text-lg">{movieDescription}</p>
       </div>
 
       {/* Ad Banner */}
       <div
-        className="flex justify-center p-[10px] mb-[2rem] mt-[-3rem]
-                  lg:mb-16 lg:mt-[-50px] lg:mx-[164px] 
-                  xl:mb-16 xl:mt-[-50px] xl:mx-[200px]
-                  antarikh:mb-16 antarikh:mt-[-50px] antarikh:mx-[230px]"
+        className="
+          flex justify-center p-[10px] mb-[2rem] mt-[-3rem]
+          lg:mb-16 lg:mt-[-50px] lg:mx-[164px]
+          xl:mb-16 xl:mt-[-50px] xl:mx-[200px]
+          antarikh:mb-16 antarikh:mt-[-50px] antarikh:mx-[230px]
+        "
       >
         <a href="https://codehubsodepur.in/" rel="noopener noreferrer">
-          <img src={require('./Codehub.png')} alt="ad-banner" />
+          <img src={require("./Codehub.png")} alt="ad-banner" />
         </a>
       </div>
 
       {/* Movie Cast */}
-      <div className="xl:flex xl:flex-col xl:justify-start xl:items-start px-4 mb-8 
-                      lg:px-40 lg:mb-12
-                      xl:px-40 xl:mb-12 xl:ml-[9rem]
-                      antarikh:px-40 antarikh:mb-12 antarikh:ml-[10.5rem]">
-        <h2 className="text-lg font-bold mb-4 lg:px-40 lg:mt-[-30px] lg:mb-12 lg:ml-[0px]
-        xl:px-40 xl:mt-[-30px] xl:mb-12 xl:ml-[-115px]">Cast</h2>
+      <div
+        className="
+          xl:flex xl:flex-col xl:justify-start xl:items-start px-4 mb-8
+          lg:px-40 lg:mb-12
+          xl:px-40 xl:mb-12 xl:ml-[9rem]
+          antarikh:px-40 antarikh:mb-12 antarikh:ml-[10.5rem]
+        "
+      >
+        <h2
+          className="
+            text-lg font-bold mb-4 lg:px-40 lg:mt-[-30px] lg:mb-12 lg:ml-[0px]
+            xl:px-40 xl:mt-[-30px] xl:mb-12 xl:ml-[-115px]
+          "
+        >
+          Cast
+        </h2>
 
         {/* MOBILE SWIPER (shown < lg) */}
         {movieCast.length > 0 && (
@@ -409,9 +405,7 @@ function Moviedetails() {
                       alt={actor.name}
                       className="w-[120px] h-[120px] rounded-full object-cover mb-2"
                     />
-                    <span className="block text-center text-sm font-medium">
-                      {actor.name}
-                    </span>
+                    <span className="block text-center text-sm font-medium">{actor.name}</span>
                   </div>
                 </SwiperSlide>
               ))}
@@ -436,33 +430,28 @@ function Moviedetails() {
         )}
 
         {/* EMPTY STATE */}
-        {movieCast.length === 0 && (
-          <p className="text-center">No cast information available.</p>
-        )}
+        {movieCast.length === 0 && <p className="text-center">No cast information available.</p>}
       </div>
 
       {/* Movie Reviews */}
-      <div className="px-4 mb-8 
-                      lg:mx-[155px] lg:mb-12
-                      xl:mx-[185px] xl:mb-12
-                      antarikh:mx-[215px] antarikh:mb-12">
+      <div className="px-4 mb-8 lg:mx-[155px] lg:mb-12 xl:mx-[185px] xl:mb-12 antarikh:mx-[215px] antarikh:mb-12">
         <h2 className="text-xl text-[#135058] font-bold mb-4 border-b-2 border-[#135058] pb-2 lg:text-2xl lg:mb-6">
           Reviews
         </h2>
         {reviews.length > 0 ? (
-          <div className="relative ">
+          <div className="relative">
             <button
               onClick={handleArrowClick}
               className={`
                 max-lg:hidden absolute top-1/2 transform -translate-y-1/2
                 bg-gray-200 rounded-full w-8 h-8 text-lg opacity-80 hover:opacity-100
-                ${arrowPosition === 'right' ? 'right-2' : 'left-2'}
+                ${arrowPosition === "right" ? "right-2" : "left-2"}
                 lg:w-10 lg:h-10 lg:text-xl
                 xl:w-10 xl:h-10 xl:text-xl
                 antarikh:w-10 antarikh:h-10 antarikh:text-xl
               `}
             >
-              {arrowPosition === 'right' ? '>' : '<'}
+              {arrowPosition === "right" ? ">" : "<"}
             </button>
             <div
               ref={reviewsSliderRef}
@@ -484,7 +473,7 @@ function Moviedetails() {
                     "
                   >
                     <p className="font-semibold text-[#135058] mb-2">
-                      {item.user || 'Anonymous'} rated it ⭐ {item.rating}/10
+                      {item.user || "Anonymous"} rated it ⭐ {item.rating}/10
                     </p>
                     {item.review && <p>{item.review}</p>}
                   </li>
@@ -498,14 +487,10 @@ function Moviedetails() {
       </div>
 
       {/* Submit Review Button */}
-      <div className="px-4 mb-8 lg:px-40 lg:mb-12 ">
+      <div className="px-4 mb-8 lg:px-40 lg:mb-12">
         <button
           onClick={openReviewModal}
-          className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-colors duration-300 hover:bg-[#0d3a40] hidden 
-          lg:block lg:w-fit lg:px-[15px] lg:ml-[157px]
-          xl:block xl:w-fit xl:px-[15px] xl:ml-[185px]
-          antarikh:block antarikh:w-fit antarikh:px-[15px] antarikh:ml-[215px]
-          "
+          className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-colors duration-300 hover:bg-[#0d3a40] hidden lg:block lg:w-fit lg:px-[15px] lg:ml-[157px] xl:block xl:w-fit xl:px-[15px] xl:ml-[185px] antarikh:block antarikh:w-fit antarikh:px-[15px] antarikh:ml-[215px]"
         >
           Submit Your Review
         </button>
@@ -515,16 +500,15 @@ function Moviedetails() {
       {showReviewModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white w-[400px] max-w-[90%] p-5 rounded-lg shadow-lg relative">
-            <span
-              onClick={closeReviewModal}
-              className="absolute top-2 right-3 text-2xl cursor-pointer"
-            >
+            <span onClick={closeReviewModal} className="absolute top-2 right-3 text-2xl cursor-pointer">
               &times;
             </span>
             <h2 className="text-xl font-bold mb-4">Submit Your Review</h2>
             <form onSubmit={handleReviewSubmit}>
               <div className="mb-4">
-                <label htmlFor="reviewerName" className="block mb-1">Your Name</label>
+                <label htmlFor="reviewerName" className="block mb-1">
+                  Your Name
+                </label>
                 <input
                   id="reviewerName"
                   type="text"
@@ -550,12 +534,12 @@ function Moviedetails() {
                     SLIDE TO RATE →
                   </span>
                 </div>
-                <span className="min-w-[40px] text-right text-sm text-gray-700">
-                  {reviewRating}/10
-                </span>
+                <span className="min-w-[40px] text-right text-sm text-gray-700">{reviewRating}/10</span>
               </div>
               <div className="mb-4">
-                <label htmlFor="review" className="block mb-1">Review</label>
+                <label htmlFor="review" className="block mb-1">
+                  Review
+                </label>
                 <textarea
                   id="review"
                   value={reviewText}
@@ -565,10 +549,7 @@ function Moviedetails() {
                   className="w-full border border-gray-300 rounded px-3 py-2"
                 />
               </div>
-              <button
-                type="submit"
-                className="bg-gradient-to-br from-[#135058] to-[#135058] text-white py-2 px-5 rounded-full"
-              >
+              <button type="submit" className="bg-gradient-to-br from-[#135058] to-[#135058] text-white py-2 px-5 rounded-full">
                 Submit Review
               </button>
             </form>
@@ -580,10 +561,7 @@ function Moviedetails() {
       {showLanguagePopup && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg max-w-sm w-[90%] text-center shadow relative">
-            <span
-              onClick={closeLanguagePopup}
-              className="absolute top-3 right-4 text-xl cursor-pointer"
-            >
+            <span onClick={closeLanguagePopup} className="absolute top-3 right-4 text-xl cursor-pointer">
               &times;
             </span>
             <h2 className="text-xl font-bold mb-4">Select Language</h2>
@@ -605,19 +583,157 @@ function Moviedetails() {
       {/* Mobile-only fixed Book Tickets */}
       <div className="fixed bottom-0 left-0 right-0 bg-white px-4 py-2 shadow-lg z-50 lg:hidden">
         {isComingSoon ? (
-          <button
-            disabled
-            className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 opacity-50 cursor-default"
-          >
+          <button disabled className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 opacity-50 cursor-default">
             Releasing on {formattedReleaseDate}
           </button>
         ) : (
-          <button
-            onClick={handleClick}
-            className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-transform duration-200 hover:scale-105"
-          >
+          <button onClick={handleClick} className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-transform duration-200 hover:scale-105">
             Book Tickets
           </button>
+        )}
+      </div>
+
+      {/* ============================= */}
+      {/* Recommended Movies Section   */}
+      {/* ============================= */}
+      <div className="block p-[5px] text-center ml-[-90px] mb-[4rem]">
+        <div className="flex justify-between items-center pr-[40px]">
+          <h5
+            className="
+              flex justify-start ml-[7.5rem] text-[18px] font-500 mb-[-2px]
+              sm:ml-[8.5rem] sm:text-[22px] sm:font-500 
+              md:ml-[9.5rem] md:text-[22px] md:text-xl md:font-500
+              lg:ml-[16rem] lg:text-[26px] lg:font-bold
+              xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
+              antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
+              debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]
+            "
+          >
+            Movies for you
+          </h5>
+          <button
+            className="text-orange-500 text-[15px] md:mr-[50px] lg:mr-[95px] xl:mr-[135px] 2xl:mr-[165px] antarikh:mr-[195px]"
+            onClick={() => navigate("/MoviePage")}
+          >
+            See All&gt;
+          </button>
+        </div>
+
+        {isLoadingRec && <LoadingSpinner asOverlay />}
+
+        {isMobile ? (
+          <div className="w-[90%] mx-auto">
+            <Swiper
+              slidesPerView={1.8}
+              spaceBetween={-100}
+              centeredSlides={false}
+              slidesOffsetBefore={80}
+              slidesOffsetAfter={-80}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2.65,
+                  spaceBetween: -150,
+                  slidesOffsetBefore: 80,
+                  slidesOffsetAfter: -80,
+                },
+              }}
+            >
+              {recommended.map((item) => (
+                <SwiperSlide key={item._id}>
+                  <Link
+                    to={`/moviedetails/${item._id}`}
+                    state={item}
+                    className="no-underline hover:no-underline"
+                    onClick={() => {
+                      localStorage.setItem("id", item._id);
+                      localStorage.setItem("moviename", item.movieName);
+                      localStorage.setItem("moviegenre", item.movieGenre);
+                      localStorage.setItem("movielanguage", item.movieLanguage);
+                      localStorage.setItem("movieformat", item.movieFormat);
+                    }}
+                  >
+                    <Card image={item.image} movieName={item.movieName} movieGenre={item.movieGenre} />
+                  </Link>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        ) : (
+          <div
+            className="relative w-[90%] overflow-hidden grid place-items-center left-[145px] pr-[55px]
+                       xl:left-[155px] xl:pr-[55px]
+                       2xl:left-[162px] 2xl:pr-[95px]
+                       antarikh:left-[175px] antarikh:pr-[85px]"
+          >
+            {/* Left Arrow */}
+            <button
+              type="button"
+              className="absolute top-1/2 left-[45px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full
+                         bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white
+                         dark:focus:ring-gray-800/70 focus:outline-none antarikh:left-[60px] debojit:left-[100px]"
+              onClick={handlePrevRecSlide}
+            >
+              <svg
+                className="w-4 h-4 text-white dark:text-gray-800"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 6 10"
+              >
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 1 1 5l4 4" />
+              </svg>
+              <span className="sr-only">Previous</span>
+            </button>
+
+            {/* Desktop Carousel */}
+            <div className="w-full max-w-[84%] overflow-hidden ml-8">
+              <div
+                className="flex transition-transform duration-[1000ms]"
+                style={{ transform: `translateX(-${recommendedCurrentSlide * 100}%)` }}
+              >
+                {displayedRec.map((item) => (
+                  <div key={item._id} className="min-w-[25%] box-border flex justify-center items-center flex-shrink-0 no-underline mb-[20px]">
+                    <Link
+                      to={`/moviedetails/${item._id}`}
+                      state={item}
+                      className="text-[#222] font-bold no-underline hover:no-underline"
+                      onClick={() => {
+                        localStorage.setItem("id", item._id);
+                        localStorage.setItem("moviename", item.movieName);
+                        localStorage.setItem("moviegenre", item.movieGenre);
+                        localStorage.setItem("movielanguage", item.movieLanguage);
+                        localStorage.setItem("movieformat", item.movieFormat);
+                      }}
+                    >
+                      <Card image={item.image} movieName={item.movieName} movieGenre={item.movieGenre} />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Arrow */}
+            <button
+              type="button"
+              disabled={recommendedCurrentSlide === recTotalSlides - 1}
+              className="absolute top-1/2 right-[100px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full
+                         bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white
+                         dark:focus:ring-gray-800/70 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed
+                         2xl:right-[120px] antarikh:right-[140px] debojit:right-[170px]"
+              onClick={handleNextRecSlide}
+            >
+              <svg
+                className="w-4 h-4 text-white dark:text-gray-800"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 6 10"
+              >
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
+              </svg>
+              <span className="sr-only">Next</span>
+            </button>
+          </div>
         )}
       </div>
 
