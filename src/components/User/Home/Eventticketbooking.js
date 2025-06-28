@@ -21,9 +21,13 @@ const Eventticketbooking = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log("Ticketbooking location.state:", location.state);
+  }, [location.state]);
+
   const {
-    eventName = '',
-    eventVenue = '',
+    eventName = location.state.Name,
+    eventVenue = location.state.Venue,
     eventDate = '',
     pricing = {
       VIPPrice: 0,
@@ -37,9 +41,6 @@ const Eventticketbooking = () => {
     chosenTime = '',
   } = location.state || {};
 
-  useEffect(() => {
-    console.log("Ticketbooking location.state:", location.state);
-  }, [location.state]);
 
   const [ticketPrices] = useState(pricing);
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -112,32 +113,38 @@ const Eventticketbooking = () => {
   };
 
   const handleBooking = () => {
-    if (!userEmail) {
-      setIsModalOpen(true);
-      return;
-    }
-    const bookingDetails = {
-      userEmail,
-      eventName,
-      eventVenue,
-      chosenTime,
-      eventDate,
-      seatsBooked: selectedSeats.map((s) => ({
-        seatType: s.seatType,
-        seatNumber: s.seatNumber,
-        price: s.price,
-      })),
-      totalAmount,
-      bookingDate: eventDate,
-    };
-    sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
-    makePayment();
+  if (!userEmail) {
+    setIsModalOpen(true);
+    return;
+  }
+
+  if (selectedSeats.length === 0) {
+    alert("Please select at least one seat before booking!");
+    return;
+  }
+
+  const bookingDetails = {
+    userEmail,
+    eventName,
+    eventVenue,
+    chosenTime,
+    eventDate,
+    seatsBooked: selectedSeats.map((s) => s.seatNumber), // ✅ FIXED HERE
+    totalAmount,
+    bookingDate: eventDate,
   };
+
+  console.log("Booking details to store:", bookingDetails);
+
+  sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+  makePayment();
+};
+
 
   const makePayment = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://ticketflix-backend.onrender.com/api/create-checkout-session', {
+      const response = await fetch('https://ticketflix-backend.onrender.com/api/event/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -180,7 +187,7 @@ const Eventticketbooking = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row p-5 md:p-8 lg:p-12 space-y-8 md:space-y-0 md:space-x-8 bg-gray-50 min-h-screen max-lg:mb-20">
+    <div className="flex flex-col md:flex-row py-5 px-3 md:p-8 lg:p-12 space-y-8 md:space-y-0 md:space-x-8 bg-gray-50 min-h-screen max-lg:mb-20">
       {/* Left Panel */}
       <div className="w-full md:w-1/3 bg-white p-4 md:p-6 rounded-lg shadow-sm flex flex-col md:sticky md:top-10 md:self-start">
         <h2 className="text-2xl font-bold mb-2">{eventName}</h2>

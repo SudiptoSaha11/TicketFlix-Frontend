@@ -20,6 +20,7 @@ import Ticketbooking from './components/User/Home/Ticketbooking';
 import PaymentPage from './components/User/Home/PaymentPage';
 import MyBooking from './components/User/Home/Mybooking';
 import SuccessPage from './components/User/Home/SuccessPage';
+import EventSuccess from './components/User/Home/EventSuccess';
 import ErrorPage from './components/User/Home/ErrorPage';
 import ContactUs from './components/User/Home/ContactUs';
 import Trylogin from './components/User/Login/Userlogin';
@@ -88,6 +89,8 @@ return (
             element = {<MyBooking/>}/>
           <Route path = '/success'
             element = {<SuccessPage/>}/>
+          <Route path = '/eventsuccess'
+            element = {<EventSuccess/>}/>
           <Route path = '/error'
             element = {<ErrorPage/>}/>
            <Route path = '/support'
