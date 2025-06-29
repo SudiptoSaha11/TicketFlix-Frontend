@@ -24,9 +24,9 @@ const MyBooking = () => {
       setLoading(true);
       try {
         const [{ data: allBookings }, res1, res2] = await Promise.all([
-          axios.get("http://localhost:5000/booking"),
-          axios.get("http://localhost:5000/movieview"),
-          axios.get("http://localhost:5000/event"),
+          axios.get("https://ticketflix-backend.onrender.com/booking"),
+          axios.get("https://ticketflix-backend.onrender.com/movieview"),
+          axios.get("https://ticketflix-backend.onrender.com/event"),
         ]);
         setBookings(allBookings);
         setMovies([...(res1.data || []), ...(res2.data || [])]);
@@ -90,7 +90,7 @@ const MyBooking = () => {
             const imageUrl = match?.image
               ? match.image.startsWith("http")
                 ? match.image
-                : `http://localhost:5000/${match.image}`
+                : `https://ticketflix-backend.onrender.com/${match.image}`
               : "";
 
             const isCancelled = booking.status?.toLowerCase() === "cancelled";
