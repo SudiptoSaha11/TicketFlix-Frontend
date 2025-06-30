@@ -35,6 +35,8 @@ const SuccessPage = () => {
       setBookingMessage('Invalid booking details.');
       return;
     }
+    console.log(booking);
+    
 
     const userEmail = localStorage.getItem('userEmail');
     if (!userEmail) {
@@ -52,6 +54,7 @@ const SuccessPage = () => {
       Name: booking.Name,
       Venue: booking.Venue,
       Time: booking.Time,
+      Language:booking.Language,
       bookingDate: new Date().toISOString(),
       seats,
       totalAmount: booking.totalAmount,
@@ -71,14 +74,14 @@ const SuccessPage = () => {
       });
   }, []);
 
-  // Redirect to home after 5 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      window.location.href = '/';
-    }, 5000);
+  // // Redirect to home after 5 seconds
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     window.location.href = '/';
+  //   }, 5000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-gray-100 text-center">
