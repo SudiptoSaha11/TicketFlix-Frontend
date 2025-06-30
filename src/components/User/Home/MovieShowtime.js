@@ -297,7 +297,7 @@ const MovieShowtime = () => {
         className="
           fixed bottom-0 left-0 w-full bg-white p-4 
           sm:relative sm:bottom-auto sm:left-auto sm:w-auto sm:max-w-md sm:rounded-xl sm:mx-auto sm:p-6
-          z-50 animate-fade-in-up
+          z-50 animate-fade-in-up xl:my-28
         "
       >
         <div className="relative">

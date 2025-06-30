@@ -74,18 +74,19 @@ const SuccessPage = () => {
       });
   }, []);
 
-  // // Redirect to home after 5 seconds
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     window.location.href = '/';
-  //   }, 5000);
+  // Redirect to home after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.location.href = '/';
+    }, 5000);
 
-  //   return () => clearTimeout(timer);
-  // }, []);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-gray-100 text-center">
       <DotLottieReact
+        className='xl:h-64'
         src="https://lottie.host/f1eda73d-08bd-4a89-bec9-e095f1656329/e3KpA92vAb.lottie"
         loop
         autoplay

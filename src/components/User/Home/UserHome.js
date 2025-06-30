@@ -339,9 +339,13 @@ const UserHome = () => {
             </div>
           )}
         </div>
-        <div className='flex justify-center p-[10px] mb-[15px]'>
-          <img src='https://assets-in-gm.bmscdn.com/promotions/cms/creatives/1749191041415_lafangeyslugapp.jpg'
-            alt='ad-banner' />
+       <div className='flex justify-center p-[10px] mb-[15px]'>
+          <a href="https://www.mxplayer.in/show/watch-lafangey-sapne-dosti-duniya/season-1/unwanted-online-550d668a28d53dc1227548dd61fc254c?watch=true://codehubsodepur.in/"  rel="noopener noreferrer">
+            <img
+              src='https://assets-in-gm.bmscdn.com/promotions/cms/creatives/1749191041415_lafangeyslugapp.jpg'
+              alt='ad-banner'
+            />
+          </a>
         </div>
 
 
@@ -517,10 +521,12 @@ const UserHome = () => {
 
 
         {/* Ad Banner */}
-        <div className="bg-gradient-to-r from-[#1e1e1e] to-[#2a2a2a] text-white p-[20px] flex items-center justify-center mx-auto my-[10px] rounded-[10px] w-[80%] max-w-[1400px]">
+        <div className="bg-gradient-to-r from-[#1e1e1e] to-[#2a2a2a] text-white p-[20px] flex items-center 
+                        justify-center mx-auto my-[10px] rounded-[10px] w-[80%] max-w-[1400px]
+                        max-md:p-[10px] max-md:py-[5px] ">
           <div className="text-center">
-            <h1 className="text-[24px] font-bold mb-[10px]">TICKETFLIX STREAM</h1>
-            <p className="text-[18px]">Endless Entertainment Anytime. Anywhere!</p>
+            <h1 className="text-[24px] font-bold mb-[10px] max-md:mb-[5px]">TICKETFLIX STREAM</h1>
+            <p className="text-[18px] ">Endless Entertainment Anytime. Anywhere!</p>
           </div>
         </div>
         <div className="relative overflow-hidden w-full mx-auto whitespace-nowrap mb-[10px]">

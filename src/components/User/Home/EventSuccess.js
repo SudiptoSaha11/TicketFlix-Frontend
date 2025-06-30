@@ -70,30 +70,31 @@ const EventSuccess = () => {
       });
   }, []);
 
-//   // 3) Redirect back to home after 5 seconds
-//   useEffect(() => {
-//     const timer = setTimeout(() => {
-//       window.location.href = '/';
-//     }, 5000);
-//     return () => clearTimeout(timer);
-//   }, []);
+  // 3) Redirect back to home after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.location.href = '/';
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-gray-100 text-center">
       {/* .lottie animation */}
       <DotLottieReact
+        className='xl:h-64'
         src="https://lottie.host/f1eda73d-08bd-4a89-bec9-e095f1656329/e3KpA92vAb.lottie"
         loop
         autoplay
         style={{ width: 200, height: 200 }}
       />
 
-      {/* JSON‑based Lottie animation */}
+      {/* JSON‑based Lottie animation
       {animationData && (
         <div className="w-48 sm:w-64 mb-6 animate-scale-up">
           <Lottie animationData={animationData} loop={false} />
         </div>
-      )}
+      )} */}
 
       <h1 className="text-2xl sm:text-4xl font-bold text-green-600 mb-3 animate-bounce">
         Booking Successful!
