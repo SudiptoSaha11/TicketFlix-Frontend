@@ -115,7 +115,7 @@ const MyBooking = () => {
           <h1 className="text-2xl font-bold mb-6 text-center">My Bookings</h1>
           
           {filtered.length === 0 ? (
-            <div className="bg-gray-50 rounded-xl p-8 text-center py-48">
+            <div className="bg-gray-50 rounded-xl p-8 text-center py-48 overflow-hidden">
               <img alt="No bookings" src={require("./no bookings.jpeg")} />
               <button
                 onClick={() => (window.location.href = "/")}
@@ -368,8 +368,14 @@ const MyBooking = () => {
             </div>
           )}
           {filtered.length === 0 ? (
-            <div className="bg-white rounded-xl p-16 text-center shadow">
-              {/* …no bookings UI… */}
+            <div className="bg-gray-50 rounded-xl p-8 text-center py-48 overflow-hidden">
+              <img alt="No bookings" src={require("./no bookings.jpeg")} />
+              <button
+                onClick={() => (window.location.href = "/")}
+                className="mt-6 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700"
+              >
+                Browse Movies & Events
+              </button>
             </div>
           ) : (
             <div className="space-y-6">
