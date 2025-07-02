@@ -33,18 +33,31 @@ const UserHome = () => {
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
+useEffect(() => {
     setIsLoadingMovies(true);
     axios.get('https://ticketflix-backend.onrender.com/movieview')
-      .then(res => setData(res.data))
+      .then(res => {
+       
+        const sorted = res.data.slice().sort((a, b) =>
+          b._id.localeCompare(a._id)
+        );
+        setData(sorted);
+      })
       .catch(err => console.error('Error fetching movies:', err))
       .finally(() => setIsLoadingMovies(false));
 
     setIsLoadingEvents(true);
     axios.get('https://ticketflix-backend.onrender.com/event')
-      .then(res => setData2(res.data))
+      .then(res => {
+        
+        const sortedE = res.data.slice().sort((a, b) =>
+          b._id.localeCompare(a._id)
+        );
+        setData2(sortedE);
+      })
       .catch(err => console.error('Error fetching events:', err))
       .finally(() => setIsLoadingEvents(false));
+
 
 
     const handleResize = () => setIsMobile(window.innerWidth <= 1024);

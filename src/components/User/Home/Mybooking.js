@@ -39,21 +39,27 @@ const MyBooking = () => {
   }, []);
 
   const load = async () => {
-    setLoading(true);
-    try {
-      const [{ data: allBookings }, res1, res2] = await Promise.all([
-        axios.get("https://ticketflix-backend.onrender.com/booking"),
-        axios.get("https://ticketflix-backend.onrender.com/movieview"),
-        axios.get("https://ticketflix-backend.onrender.com/event"),
-      ]);
-      setBookings(allBookings);
-      setMovies([...(res1.data || []), ...(res2.data || [])]);
-    } catch (e) {
-      setError("Failed to load data");
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+
+  try {
+    const [{ data: allBookings }, res1, res2] = await Promise.all([
+      axios.get("https://ticketflix-backend.onrender.com/booking"),
+      axios.get("https://ticketflix-backend.onrender.com/movieview"),
+      axios.get("https://ticketflix-backend.onrender.com/event"),
+    ]);
+
+    const sortedBookings = allBookings
+      .slice()
+      .sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
+
+    setBookings(sortedBookings);
+    setMovies([...(res1.data || []), ...(res2.data || [])]);
+  } catch (e) {
+    setError("Failed to load data");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     load();
