@@ -263,6 +263,7 @@ function Moviedetails() {
             w-full text-center
             lg:text-left lg:flex-1 lg:pr-8
             xl:text-left xl:flex-1 xl:pr-8
+            2xl:mb-4 2xl:w-[70%] 2xl:ml-[10px]
             antarikh:text-left antarikh:flex-1 antarikh:pr-8
           "
         >
@@ -271,6 +272,7 @@ function Moviedetails() {
               flex flex-row justify-start mb-1 ml-[15px]
               lg:flex lg:flex-row lg:justify-start lg:mb-4 lg:ml-[154px]
               xl:mb-4 xl:w-[70%] xl:ml-[186px]
+              
               antarikh:mb-4 antarikh:w-[70%] antarikh:ml-[215px]
             "
           >
@@ -303,6 +305,7 @@ function Moviedetails() {
               flex flex-col gap-3 sm:justify-start
               lg:flex lg:flex-col lg:gap-1.5 lg:items-start lg:ml-[139px]
               xl:flex xl:flex-col xl:gap-1.5 xl:items-start xl:ml-[172px]
+              2xl:ml-[185px]
               antarikh:flex antarikh:flex-col antarikh:gap-1.6 antarikh:items-start antarikh:ml-[200px]
             "
           >
@@ -354,6 +357,7 @@ function Moviedetails() {
           px-4 mt-6 text-[#121920] leading-relaxed border-gray-300 pb-4 mb-8
           lg:px-40 lg:mt-10 lg:mb-12 lg:ml-[154px] lg:mr-[100px]
           xl:px-40 xl:mt-10 xl:mb-12 xl:ml-[188px] xl:mr-[150px]
+          2xl:ml-[198px]
           antarikh:px-40 antarikh:mt-10 antarikh:mb-12 antarikh:ml-[215px] antarikh:mr-[200px]
         "
       >
@@ -367,6 +371,7 @@ function Moviedetails() {
           flex justify-center p-[10px] mb-[2rem] mt-[-3rem]
           lg:mb-16 lg:mt-[-50px] lg:mx-[164px]
           xl:mb-16 xl:mt-[-50px] xl:mx-[200px]
+          2xl:ml-[210px] 2xl:mr-[200px]
           antarikh:mb-16 antarikh:mt-[-50px] antarikh:mx-[230px]
         "
       >
@@ -381,6 +386,7 @@ function Moviedetails() {
           xl:flex xl:flex-col xl:justify-start xl:items-start px-4 mb-8
           lg:px-40 lg:mb-12
           xl:px-40 xl:mb-12 xl:ml-[9rem]
+          2xl:ml-[153px]
           antarikh:px-40 antarikh:mb-12 antarikh:ml-[10.5rem]
         "
       >
@@ -434,12 +440,12 @@ function Moviedetails() {
       </div>
 
       {/* Movie Reviews */}
-      <div className="px-4 mb-8 lg:mx-[155px] lg:mb-12 xl:mx-[185px] xl:mb-12 antarikh:mx-[215px] antarikh:mb-12">
+      <div className="px-4 mb-8 lg:mx-[155px] lg:mb-12 xl:mx-[185px] xl:mb-12 antarikh:mx-[215px] 2xl:ml-[195px] antarikh:mb-12">
         <h2 className="text-xl text-[#135058] font-bold mb-4 border-b-2 border-[#135058] pb-2 lg:text-2xl lg:mb-6">
           Reviews
         </h2>
         {reviews.length > 0 ? (
-          <div className="relative">
+          <div className="relative ">
             <button
               onClick={handleArrowClick}
               className={`
@@ -490,7 +496,7 @@ function Moviedetails() {
       <div className="px-4 mb-8 lg:px-40 lg:mb-12">
         <button
           onClick={openReviewModal}
-          className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-colors duration-300 hover:bg-[#0d3a40] hidden lg:block lg:w-fit lg:px-[15px] lg:ml-[157px] xl:block xl:w-fit xl:px-[15px] xl:ml-[185px] antarikh:block antarikh:w-fit antarikh:px-[15px] antarikh:ml-[215px]"
+          className="w-full bg-[#135058] text-white py-3 rounded-full text-base transition-colors duration-300 hover:bg-[#0d3a40] hidden lg:block lg:w-fit lg:px-[15px] lg:ml-[157px] xl:block xl:w-fit xl:px-[15px] xl:ml-[185px] 2xl:ml-[195px] antarikh:block antarikh:w-fit antarikh:px-[15px] antarikh:ml-[215px]"
         >
           Submit Your Review
         </button>
@@ -605,6 +611,7 @@ function Moviedetails() {
               md:ml-[9.5rem] md:text-[22px] md:text-xl md:font-500
               lg:ml-[16rem] lg:text-[26px] lg:font-bold
               xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
+              2xl:ml-[19.1rem]
               antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
               debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]
             "

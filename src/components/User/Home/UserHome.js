@@ -174,7 +174,7 @@ useEffect(() => {
             ))}
           </div>
         </div>
-        <div className='flex justify-center p-[10px] mb-[15px]'>
+        <div className='flex justify-center py-[10px] mb-[15px] w-[1100px]  mx-auto'>
           <a href="https://codehubsodepur.in/"  rel="noopener noreferrer">
             <img
               src={require('./Codehub.png')}
@@ -352,10 +352,10 @@ useEffect(() => {
             </div>
           )}
         </div>
-       <div className='flex justify-center p-[10px] mb-[15px]'>
-          <a href="https://www.mxplayer.in/show/watch-lafangey-sapne-dosti-duniya/season-1/unwanted-online-550d668a28d53dc1227548dd61fc254c?watch=true://codehubsodepur.in/"  rel="noopener noreferrer">
+       <div className='flex justify-center py-[10px] mb-[15px] w-[1100px]  mx-auto'>
+          <a href="https://www.netflix.com/in/title/81040344"  rel="noopener noreferrer">
             <img
-              src='https://assets-in-gm.bmscdn.com/promotions/cms/creatives/1749191041415_lafangeyslugapp.jpg'
+              src={require('./Netflix SG.png')}
               alt='ad-banner'
             />
           </a>
@@ -716,7 +716,7 @@ useEffect(() => {
           )}
         </div>
 
-        <div className='flex justify-center p-[10px] mb-[15px]'>
+        <div className='flex justify-center py-[10px] mb-[15px] w-[1100px]  mx-auto'>
           <img src={require('./FoodExpress1290.png')}
             alt='ad-banner' />
         </div>
