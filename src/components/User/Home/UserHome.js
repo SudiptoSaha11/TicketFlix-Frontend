@@ -174,7 +174,7 @@ useEffect(() => {
             ))}
           </div>
         </div>
-        <div className='flex justify-center py-[10px] mb-[15px] w-[1100px]  mx-auto'>
+        <div className='flex justify-center p-[10px] mb-[15px]  2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto'>
           <a href="https://codehubsodepur.in/"  rel="noopener noreferrer">
             <img
               src={require('./Codehub.png')}
@@ -352,7 +352,7 @@ useEffect(() => {
             </div>
           )}
         </div>
-       <div className='flex justify-center py-[10px] mb-[15px] w-[1100px]  mx-auto'>
+       <div className='flex justify-center p-[10px] mb-[15px]  2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto'>
           <a href="https://www.netflix.com/in/title/81040344"  rel="noopener noreferrer">
             <img
               src={require('./Netflix SG.png')}
@@ -716,7 +716,7 @@ useEffect(() => {
           )}
         </div>
 
-        <div className='flex justify-center py-[10px] mb-[15px] w-[1100px]  mx-auto'>
+        <div className='flex justify-center p-[10px] mb-[15px]  2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto'>
           <img src={require('./FoodExpress1290.png')}
             alt='ad-banner' />
         </div>
