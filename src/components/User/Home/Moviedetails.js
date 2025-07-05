@@ -243,19 +243,23 @@ function Moviedetails() {
       >
         {movieImage && (
           <div
-            className="
-              w-3/4 max-w-[240px] max-lg:mb-4
-              lg:w-[200px] lg:max-w-none lg:order-2 lg:mr-[150px]
-              xl:w-[200px] xl:max-w-none xl:order-2 xl:mr-[185px]
-              antarikh:w-[200px] antarikh:max-w-none antarikh:order-2 antarikh:mr-[215px]
-            "
-          >
-            <img
-              src={movieImage}
-              alt={movieName}
-              className="w-full h-auto rounded-sm mx-auto lg:mx-0 xl:mx-0 antarikh:mx-0"
-            />
-          </div>
+  className="
+    w-3/4 max-w-[240px] max-lg:mb-4 
+    lg:w-[200px] lg:max-w-none lg:order-2 lg:mr-[150px]
+    xl:w-[200px] xl:max-w-none xl:order-2 xl:mr-[185px]
+    antarikh:w-[200px] antarikh:max-w-none antarikh:order-2 antarikh:mr-[215px]
+  "
+>
+  <img
+    src={movieImage}
+    alt={movieName}
+    className="
+      w-full max-lg:w-[180px] max-lg:h-auto
+      rounded-sm mx-auto lg:mx-0 xl:mx-0 antarikh:mx-0
+    "
+  />
+</div>
+
         )}
 
         <div
@@ -286,7 +290,7 @@ function Moviedetails() {
             </h1>
           </div>
 
-          <div
+        <div className="flex flex-nowrap justify-start"><div
             className="
               w-full flex flex-col flex-nowrap gap-1.5 items-start mb-4 pl-4 sm:justify-start
               lg:flex lg:flex-col lg:gap-1.5 lg:items-start lg:ml-[139px]
@@ -294,11 +298,12 @@ function Moviedetails() {
               antarikh:flex antarikh:flex-col antarikh:gap-1.6 antarikh:items-start antarikh:ml-[200px]
             "
           >
-            <span className="text-base font-extrabold">{movieLanguage}</span>
-            <span className="text-base font-extrabold">{movieGenre}</span>
+            <span className="text-base font-extrabold ">{movieLanguage}</span>
+            <span className="text-base font-extrabold text-start">{movieGenre}</span>
             <span className="text-base font-extrabold">{movieFormat}</span>
             <span className="text-base font-extrabold">{movieDuration}</span>
           </div>
+          </div> 
 
           <div
             className="
@@ -312,7 +317,7 @@ function Moviedetails() {
             <div className="flex flex-nowrap w-full"><button
               onClick={handlePosterClick}
               className="
-                mr-auto bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 w-fit
+                mr-auto bg-[#135058] text-white px-4 py-3 ml-3 rounded-full text-base transition-transform duration-200 hover:scale-105 w-fit
                 sm:ml-[11rem]
                 lg:ml-0 lg:mr-0
                 xl:ml-0 xl:mr-0
@@ -342,14 +347,14 @@ function Moviedetails() {
         </div>
       </div>
 
-      <div className="flex justify-center mt-4 gap-[2.6rem] lg:mt-6 lg:gap-8 lg:hidden">
-        <h3 className="mt-[5px] lg:mt-0">Review our movie</h3>
-        <button
+      <div className="flex justify-between mt-4 gap-[2rem] lg:mt-6 lg:gap-8 lg:hidden mx-4">
+        <h3 className="mt-[5px] lg:mt-0 max-lg:text-xl">Review our movie</h3>
+        <div><button
           onClick={openReviewModal}
-          className="bg-[#fff] text-black border-[2px] border-pink-500 px-[2.5rem] py-2 rounded-full text-base transition-colors duration-300 lg:px-6 lg:py-3"
+          className="bg-[#fff] text-black border-[2px] border-pink-500 px-[1rem] py-2 rounded-full text-base transition-colors duration-300 lg:px-6 lg:py-3"
         >
           Rate Now
-        </button>
+        </button></div>
       </div>
 
       {/* Movie Description */}
