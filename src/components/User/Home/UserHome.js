@@ -83,17 +83,25 @@ useEffect(() => {
     localStorage.setItem("eventType", eventType);
   };
 
-  const filteredData = data.filter(item =>
-    item.movieName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.movieGenre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.movieLanguage.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  
+  const recommendedMovies = data.filter(item => {
+  const today     = new Date();
+  const release   = new Date(item.movieReleasedate);
+  const diffDays  = (release - today) / (1000 * 60 * 60 * 24);
+  return diffDays <= 2;
+});
+
+  const filteredData = recommendedMovies.filter(item =>
+  item.movieName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  item.movieGenre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  item.movieLanguage.toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   const comingSoonMovies = data.filter(item => {
     const today = new Date();
     const release = new Date(item.movieReleasedate);
     const diffDays = (release - today) / (1000 * 60 * 60 * 24);
-    return diffDays > 7;
+    return diffDays > 2;
   });
 
   const filteredComingSoon = comingSoonMovies.filter(item =>
@@ -174,7 +182,7 @@ useEffect(() => {
             ))}
           </div>
         </div>
-        <div className='flex justify-center px-[10px] mb-[15px]  2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto'>
+        <div className='flex justify-center p-[10px] mb-[15px]  2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
           <a href="https://codehubsodepur.in/"  rel="noopener noreferrer">
             <img
               src={require('./Codehub.png')}
@@ -352,7 +360,7 @@ useEffect(() => {
             </div>
           )}
         </div>
-       <div className='flex justify-center p-[10px] mb-[10px] max-lg:mt-[-15px] 2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto'>
+       <div className='flex justify-center p-[10px] mb-[10px] max-lg:mt-[-15px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
           <a href="https://www.netflix.com/in/title/81040344"  rel="noopener noreferrer">
             <img
               src={require('./Netflix SG.png')}
@@ -716,7 +724,7 @@ useEffect(() => {
           )}
         </div>
 
-        <div className='flex justify-center p-[10px] mb-[10px] max-lg:mt-[-12px] 2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto 2xl:mb-[15px]'>
+        <div className='flex justify-center p-[10px] mb-[10px] max-lg:mt-[-12px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto 2xl:mb-[15px antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
           <img src={require('./FoodExpress1290.png')}
             alt='ad-banner' />
         </div>
