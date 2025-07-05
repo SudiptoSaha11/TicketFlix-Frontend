@@ -6,7 +6,7 @@ const Card = ({ image, movieName, movieGenre, onClick }) => {
     <div
       className="border-none rounded-lg  p-3  w-[60%] h-[60%] 
                  lg:w-[220px] lg:h-[350px]
-                 xl:shadow-md xl:w-[250px] xl:h-[420px]  xl:m-2 "
+                 xl:w-[250px] xl:h-[420px]  xl:m-2 "
       onClick={onClick}
       style={{ cursor: 'pointer' }}
     >
@@ -17,7 +17,7 @@ const Card = ({ image, movieName, movieGenre, onClick }) => {
       />
       <div className="p-1  flex flex-col items-start text-start 
                       lg:mb-[15px]">
-        <h2 className="text-[0.9rem] font-extrabold my-0 text-[#222] no-underline hover:no-underline
+        <h2 className="text-[0.9rem] font-semibold my-0 text-[#222] no-underline hover:no-underline
                        sm: text-[1rem]
                        lg:text-[1.01rem] 
                        xl:text-[1.2rem]" >

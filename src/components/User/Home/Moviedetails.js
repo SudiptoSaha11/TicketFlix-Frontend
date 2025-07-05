@@ -309,10 +309,10 @@ function Moviedetails() {
               antarikh:flex antarikh:flex-col antarikh:gap-1.6 antarikh:items-start antarikh:ml-[200px]
             "
           >
-            <button
+            <div className="flex flex-nowrap w-full"><button
               onClick={handlePosterClick}
               className="
-                mr-[11rem] bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 w-fit
+                mr-auto bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 w-fit
                 sm:ml-[11rem]
                 lg:ml-0 lg:mr-0
                 xl:ml-0 xl:mr-0
@@ -322,6 +322,7 @@ function Moviedetails() {
               <FaFilm className="inline-block mb-1 mr-1" />
               Watch Trailer
             </button>
+            </div>
             {isComingSoon ? (
               <button
                 disabled

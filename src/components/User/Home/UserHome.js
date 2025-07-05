@@ -174,7 +174,7 @@ useEffect(() => {
             ))}
           </div>
         </div>
-        <div className='flex justify-center p-[10px] mb-[15px]  2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto'>
+        <div className='flex justify-center px-[10px] mb-[15px]  2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto'>
           <a href="https://codehubsodepur.in/"  rel="noopener noreferrer">
             <img
               src={require('./Codehub.png')}
@@ -352,7 +352,7 @@ useEffect(() => {
             </div>
           )}
         </div>
-       <div className='flex justify-center p-[10px] mb-[15px]  2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto'>
+       <div className='flex justify-center p-[10px] mb-[10px] max-lg:mt-[-15px] 2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto'>
           <a href="https://www.netflix.com/in/title/81040344"  rel="noopener noreferrer">
             <img
               src={require('./Netflix SG.png')}
@@ -534,7 +534,7 @@ useEffect(() => {
 
 
         {/* Ad Banner */}
-        <div className="bg-gradient-to-r from-[#1e1e1e] to-[#2a2a2a] text-white p-[20px] flex items-center 
+        <div className="max-lg:hidden bg-gradient-to-r from-[#1e1e1e] to-[#2a2a2a] text-white p-[20px] flex items-center 
                         justify-center mx-auto my-[10px] rounded-[10px] w-[80%] max-w-[1400px]
                         max-md:p-[10px] max-md:py-[5px] ">
           <div className="text-center">
@@ -716,7 +716,7 @@ useEffect(() => {
           )}
         </div>
 
-        <div className='flex justify-center p-[10px] mb-[15px]  2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto'>
+        <div className='flex justify-center p-[10px] mb-[10px] max-lg:mt-[-12px] 2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto 2xl:mb-[15px]'>
           <img src={require('./FoodExpress1290.png')}
             alt='ad-banner' />
         </div>
