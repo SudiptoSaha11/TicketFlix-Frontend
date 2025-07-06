@@ -110,7 +110,7 @@ const Usernavbar = () => {
 
   return (
     <>
-      <div className="fixed top-0 w-full h-[80px] bg-[#fff] px-[2px] py-3 z-[1000] flex justify-between items-center shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-colors duration-300 ease md:gap-[10px]">
+      <div className="fixed top-0 w-full h-[65px] lg:h-[80px] bg-[#fff] px-[2px] py-3 z-[1000] flex justify-between items-center shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-colors duration-300 ease md:gap-[10px]">
         <div
   className="flex items-center cursor-pointer
              sm:left-0
@@ -122,7 +122,7 @@ const Usernavbar = () => {
              debojit:ml-[17rem]"
   onClick={goToHome}
 >
-  <div className="h-[85px] w-[85px] pb-2 flex items-center justify-center">
+  <div className="h-[70px] w-[70px] pb-2 flex items-center justify-center">
   <img
     src={require('./logo-png.png')}
     alt="Your Logo"

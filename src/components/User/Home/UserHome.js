@@ -162,7 +162,7 @@ useEffect(() => {
       <div className="flex-1">
         <Usernavbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-        <div className="relative overflow-hidden w-full mx-auto whitespace-nowrap mb-[10px]">
+        <div className="relative overflow-hidden w-full mx-auto whitespace-nowrap ">
           <div className="flex w-[200%] animate-scroll-fast gap-1
                       md:animate-scroll-md md:gap-[6px] md:items-center
                       xl:animate-scroll-medium
@@ -172,7 +172,7 @@ useEffect(() => {
                 key={index}
                 src={image}  //slider images
                 alt={`slide-${index}`}
-                className="mt-[90px] w-[550px] h-[150px] flex-shrink-0 object-cover rounded-[8px] shadow-[0_4px_6px_rgba(0,0,0,0.15)] 
+                className="mt-[75px] w-[550px] h-[150px] flex-shrink-0 object-cover rounded-[8px] shadow-[0_4px_6px_rgba(0,0,0,0.15)] 
                        sm:w-[768px] sm:h-[250px]
                        md:w-[1024px] md:h-[280px]
                        lg:w-[1280px] lg:h-[300px]"
@@ -360,7 +360,7 @@ useEffect(() => {
             </div>
           )}
         </div>
-       <div className='flex justify-center p-[10px] mb-[10px] max-lg:mt-[-15px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
+       <div className='flex justify-center p-[10px] mb-[10px] max-lg:mt-[-35px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
           <a href="https://www.netflix.com/in/title/81040344"  rel="noopener noreferrer">
             <img
               src={require('./Netflix SG.png')}
@@ -550,7 +550,7 @@ useEffect(() => {
             <p className="text-[18px] ">Endless Entertainment Anytime. Anywhere!</p>
           </div>
         </div>
-          <div className='lg:hidden flex justify-center p-[10px] mb-[10px] max-lg:mt-[-12px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto 2xl:mb-[15px antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
+          <div className='lg:hidden flex justify-center p-[10px] mb-[10px] max-lg:mt-[-35px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto 2xl:mb-[15px antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
             <img src='https://assets-in-gm.bmscdn.com/promotions/cms/creatives/1751544005377_4thjulypepsif1sluggifapp.gif'
             alt='f1'/>
           </div>
@@ -729,7 +729,7 @@ useEffect(() => {
           )}
         </div>
 
-        <div className='flex justify-center p-[10px] mb-[10px] max-lg:mt-[-12px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto 2xl:mb-[15px antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
+        <div className='flex justify-center p-[10px] mb-[10px] max-lg:mt-[-25px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto 2xl:mb-[15px antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
           <img src={require('./FoodExpress1290.png')}
             alt='ad-banner' />
         </div>
