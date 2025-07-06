@@ -550,6 +550,11 @@ useEffect(() => {
             <p className="text-[18px] ">Endless Entertainment Anytime. Anywhere!</p>
           </div>
         </div>
+          <div className='lg:hidden flex justify-center p-[10px] mb-[10px] max-lg:mt-[-12px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto 2xl:mb-[15px antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
+            <img src='https://assets-in-gm.bmscdn.com/promotions/cms/creatives/1751544005377_4thjulypepsif1sluggifapp.gif'
+            alt='f1'/>
+          </div>
+
         <div className="relative overflow-hidden w-full mx-auto whitespace-nowrap mb-[10px]">
         </div>
 
