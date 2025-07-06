@@ -9,6 +9,17 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import Card from "./Card";
 
+// Helper to extract the YouTube ID from any common YouTube URL
+function getYouTubeID(url) {
+  const short = url.match(/youtu\.be\/([^?&]+)/);
+  if (short) return short[1];
+  const watch = url.match(/[?&]v=([^?&]+)/);
+  if (watch) return watch[1];
+  const embed = url.match(/embed\/([^?&]+)/);
+  if (embed) return embed[1];
+  return null;
+}
+
 function Moviedetails() {
   // Movie detail states
   const [movieImage, setMovieImage] = useState("");
@@ -50,6 +61,16 @@ function Moviedetails() {
   const location = useLocation();
   const reviewsSliderRef = useRef(null);
   const [arrowPosition, setArrowPosition] = useState("right");
+  const {
+    trailerLink: rawTrailerLink,
+  } = useLocation().state || {};
+
+  // Compute embedUrl (not used for mobile thumbnail) and thumbnail URL
+  const videoId = rawTrailerLink ? getYouTubeID(rawTrailerLink) : null;
+  const thumbnailUrl = videoId
+    ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+    : "";
+  const [embedUrl, setEmbedUrl] = useState("");
 
   // Handle window resize for mobile/desktop layouts
   useEffect(() => {
@@ -146,6 +167,20 @@ function Moviedetails() {
       .finally(() => setIsLoadingRec(false));
   }, [paramId]);
 
+  // Convert rawTrailerLink into an embed URL for desktop if needed
+  useEffect(() => {
+    if (!rawTrailerLink) return;
+    let url = rawTrailerLink.trim();
+
+    if (url.includes("youtu.be")) {
+      url = url.split("?")[0].replace("https://youtu.be/", "https://www.youtube.com/embed/");
+    } else if (url.includes("watch?v=")) {
+      url = url.split("&")[0].replace("watch?v=", "embed/");
+    }
+
+    setEmbedUrl(url);
+  }, [rawTrailerLink]);
+
   // Compute coming-soon logic
   const today = new Date();
   const release = movieReleaseDate ? new Date(movieReleaseDate) : null;
@@ -233,33 +268,71 @@ function Moviedetails() {
       {/* Movie Details Section */}
       <div
         className="
-          flex flex-col justify-center items-center
+          flex flex-col justify-center items-center 
           bg-gradient-to-r from-[#f1f2b5] to-[#135058] text-[#17202a]
-          p-4 mt-[70px]
+          p-4 mt-[70px] 
           lg:flex-row lg:items-start lg:justify-between lg:p-8 lg:mt-[70px]
-          xl:flex-row xl:items-start xl:justify-between xl:p-8 xl:mt-[70px]
-          antarikh:flex-row antarikh:items-start antarikh:justify-between antarikh:p-8 antarikh:mt-[70px]
         "
       >
+        {/* 🌟 THUMBNAIL ON MOBILE (hidden at lg+) */}
+        {thumbnailUrl && (
+  <div className="block lg:hidden w-full max-w-md mb-4">
+    <div className="relative" style={{ paddingTop: "56.25%" }}>
+      {/* Thumbnail Image */}
+      <img
+        src={thumbnailUrl}
+        alt={`${movieName} trailer thumbnail`}
+        className="absolute top-0 left-0 w-full h-full rounded-sm object-cover"
+        onError={(e) => {
+          e.currentTarget.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+        }}
+      />
+
+      {/* Minimal Play Button */}
+      <button
+        onClick={() => navigate("/multimedia", { state: { trailerLink, movieName } })}
+        className="
+          absolute 
+          top-1/2 left-1/2 
+          transform -translate-x-1/2 -translate-y-1/2
+          w-10 h-10 
+          bg-white bg-opacity-50
+          rounded-full 
+          flex items-center justify-center
+          hover:bg-opacity-90
+          transition
+        "
+        aria-label="Play Trailer"
+      >
+        <svg
+          className="w-5 h-5 text-black"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M6 4l10 6-10 6V4z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+)}
+
+
+        {/* 🎬 POSTER ON DESKTOP (hidden below lg) */}
         {movieImage && (
           <div
-  className="
-    w-3/4 max-w-[240px] max-lg:mb-4 
-    lg:w-[200px] lg:max-w-none lg:order-2 lg:mr-[150px]
-    xl:w-[200px] xl:max-w-none xl:order-2 xl:mr-[185px]
-    antarikh:w-[200px] antarikh:max-w-none antarikh:order-2 antarikh:mr-[215px]
-  "
->
-  <img
-    src={movieImage}
-    alt={movieName}
-    className="
-      w-full max-lg:w-[180px] max-lg:h-auto
-      rounded-sm mx-auto lg:mx-0 xl:mx-0 antarikh:mx-0
-    "
-  />
-</div>
-
+            className="
+              hidden lg:block
+              w-3/4 max-w-[240px]
+              lg:w-[200px] lg:order-2 lg:mr-[150px]
+              xl:w-[200px] xl:order-2 xl:mr-[185px]
+            "
+          >
+            <img
+              src={movieImage}
+              alt={movieName}
+              className="w-full h-auto rounded-sm mx-auto lg:mx-0"
+            />
+          </div>
         )}
 
         <div
@@ -282,7 +355,7 @@ function Moviedetails() {
           >
             <h1
               className="
-                max-lg:w-[full] text-start max-lg:text-2xl max-lg:font-extrabold max-lg:mb-2
+                max-lg:w-[full] text-start max-lg:text-2xl max-lg:font-bold font-bold  max-lg:mb-2
                 lg:text-4xl xl:text-4xl antarikh:text-4xl
               "
             >
@@ -292,16 +365,16 @@ function Moviedetails() {
 
         <div className="flex flex-nowrap justify-start"><div
             className="
-              w-full flex flex-col flex-nowrap gap-1.5 items-start mb-4 pl-4 sm:justify-start
-              lg:flex lg:flex-col lg:gap-1.5 lg:items-start lg:ml-[139px]
+              w-full flex flex-col flex-nowrap gap-1.5 items-start  pl-4 sm:justify-start
+              lg:flex lg:flex-col lg:gap-1.5 lg:items-start lg:ml-[139px] lg:mb-4
               xl:flex xl:flex-col xl:gap-1.5 xl:items-start xl:ml-[172px]
               antarikh:flex antarikh:flex-col antarikh:gap-1.6 antarikh:items-start antarikh:ml-[200px]
             "
           >
-            <span className="text-base font-extrabold ">{movieLanguage}</span>
-            <span className="text-base font-extrabold text-start">{movieGenre}</span>
-            <span className="text-base font-extrabold">{movieFormat}</span>
-            <span className="text-base font-extrabold">{movieDuration}</span>
+            <span className="text-base font-semibold xl:font-bold text-start">{movieLanguage}</span>
+            <span className="text-base font-semibold xl:font-bold text-start">{movieGenre}</span>
+            <span className="text-base font-semibold xl:font-bold text-start">{movieFormat}</span>
+            <span className="text-base font-semibold xl:font-bold text-start">{movieDuration}</span>
           </div>
           </div> 
 
@@ -314,7 +387,7 @@ function Moviedetails() {
               antarikh:flex antarikh:flex-col antarikh:gap-1.6 antarikh:items-start antarikh:ml-[200px]
             "
           >
-            <div className="flex flex-nowrap w-full"><button
+            <div className="flex flex-nowrap w-full max-md:hidden"><button
               onClick={handlePosterClick}
               className="
                 mr-auto bg-[#135058] text-white px-4 py-3 ml-3 rounded-full text-base transition-transform duration-200 hover:scale-105 w-fit
@@ -408,16 +481,18 @@ function Moviedetails() {
         {/* MOBILE SWIPER (shown < lg) */}
         {movieCast.length > 0 && (
           <div className="block lg:hidden">
-            <Swiper slidesPerView={2.2} spaceBetween={40} freeMode={true}>
+            <Swiper slidesPerView={2.4} spaceBetween={30} freeMode={true}>
               {movieCast.map((actor, idx) => (
                 <SwiperSlide key={idx} className="w-auto">
                   <div className="flex flex-col items-center">
                     <img
                       src={actor.image}
                       alt={actor.name}
-                      className="w-[120px] h-[120px] rounded-full object-cover mb-2"
+                      className="w-[80px] h-[80px] rounded-full object-cover mb-2"
                     />
+                    <div className="flex flex-wrap justify-center w-20">
                     <span className="block text-center text-sm font-medium">{actor.name}</span>
+                    </div>
                   </div>
                 </SwiperSlide>
               ))}
@@ -433,9 +508,11 @@ function Moviedetails() {
                 <img
                   src={actor.image}
                   alt={actor.name}
-                  className="w-[100px] h-[100px] rounded-full object-cover mb-2"
+                  className="w-[120px] h-[120px] rounded-full object-cover mb-2"
                 />
-                <p className="text-center font-medium">{actor.name}</p>
+                <div className="flex flex-wrap justify-center w-24">
+                <span className="text-center font-medium">{actor.name}</span>
+                </div>
               </li>
             ))}
           </ul>
@@ -464,7 +541,7 @@ function Moviedetails() {
               `}
             >
               {arrowPosition === "right" ? ">" : "<"}
-            </button>
+            </button>                          
             <div
               ref={reviewsSliderRef}
               onScroll={handleScroll}

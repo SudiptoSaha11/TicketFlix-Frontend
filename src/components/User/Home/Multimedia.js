@@ -1,70 +1,58 @@
+// src/components/Multimedia.js
+
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import "./Multimedia.css";
-import Usernavbar from "./Usernavbar"; // Adjust the path as needed
+import Usernavbar from "./Usernavbar";
 import Footer from "./Footer";
 
 const Multimedia = () => {
-  const location = useLocation();
-  console.log("Location state:", location.state);
-
-  // Destructure state with fallback values
-  const { trailerLink: rawTrailerLink, movieName: passedMovieName } = location.state || {};
-
+  const { trailerLink: rawTrailerLink, movieName } = useLocation().state || {};
   const [embedUrl, setEmbedUrl] = useState("");
 
   useEffect(() => {
     if (!rawTrailerLink) return;
+    let url = rawTrailerLink.trim();
 
-    let processedLink = rawTrailerLink.trim();
-
-    // Handle short youtu.be links
-    if (processedLink.includes("youtu.be")) {
-      if (processedLink.includes("?")) {
-        processedLink = processedLink.split("?")[0];
-      }
-      processedLink = processedLink.replace(
+    if (url.includes("youtu.be")) {
+      url = url.split("?")[0].replace(
         "https://youtu.be/",
         "https://www.youtube.com/embed/"
       );
-    }
-    // Handle watch?v= links
-    else if (processedLink.includes("watch?v=")) {
-      if (processedLink.includes("&")) {
-        processedLink = processedLink.split("&")[0];
-      }
-      processedLink = processedLink.replace("watch?v=", "embed/");
+    } else if (url.includes("watch?v=")) {
+      url = url.split("&")[0].replace("watch?v=", "embed/");
     }
 
-    setEmbedUrl(processedLink);
+    setEmbedUrl(url);
   }, [rawTrailerLink]);
 
   return (
     <>
-      {/* Include the navbar at the top */}
-      <Usernavbar searchTerm={""} setSearchTerm={() => {}} />
+      <Usernavbar searchTerm="" setSearchTerm={() => {}} />
 
-      <div className="multimedia-page">
-        <h1 className="movie-title">
-          {passedMovieName || "Movie Trailer"}
+      <div className="px-4 pt-[100px] pb-8 text-[#17202a]">
+        <h1 className="text-xl font-semibold text-center mb-4">
+          {movieName || "Movie Trailer"}
         </h1>
 
-        {/* Card-like container matching the screenshot style */}
-        <div className="video-card">
-          <div className="video-container">
-            {embedUrl ? (
+        <div className="bg-white rounded-lg shadow overflow-hidden max-w-md mx-auto">
+          {embedUrl ? (
+            <div className="relative" style={{ paddingTop: "56.25%" }}>
               <iframe
                 src={embedUrl}
                 title="YouTube video player"
+                className="absolute inset-0 w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-            ) : (
-              <p>No trailer available.</p>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="p-4 text-center text-gray-500">
+              No trailer available.
+            </div>
+          )}
         </div>
       </div>
+
       <Footer />
     </>
   );
