@@ -447,7 +447,7 @@ function Moviedetails() {
       {/* Ad Banner */}
       <div
         className="
-          flex justify-center p-[10px] mb-[2rem] mt-[-3rem]
+          flex justify-center p-[10px] max-lg:mb-[1rem] mt-[-4rem]
           lg:mb-16 lg:mt-[-50px] lg:mx-[164px]
           xl:mb-16 xl:mt-[-50px] xl:mx-[200px]
           2xl:ml-[210px] 2xl:mr-[200px]
@@ -523,7 +523,7 @@ function Moviedetails() {
       </div>
 
       {/* Movie Reviews */}
-      <div className="px-4 mb-8 lg:mx-[155px] lg:mb-12 xl:mx-[185px] xl:mb-12 antarikh:mx-[215px] 2xl:ml-[195px] antarikh:mb-12">
+      <div className="px-4 mb-[-4px] lg:mx-[155px] lg:mb-12 xl:mx-[185px] xl:mb-12 antarikh:mx-[215px] 2xl:ml-[195px] antarikh:mb-12">
         <h2 className="text-xl text-[#135058] font-bold mb-4 border-b-2 border-[#135058] pb-2 lg:text-2xl lg:mb-6">
           Reviews
         </h2>

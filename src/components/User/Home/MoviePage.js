@@ -60,7 +60,7 @@ const MoviePage = () => {
         <div className="flex flex-wrap justify-center gap-2 mb-6
           2xl:flex 2xl:flex-wrap 2xl:justify-center 2xl:gap-2 2xl:mb-6">
           <button
-            className={`px-3 py-2 rounded-full 2xl:px-3 2xl:py-2 2xl:rounded-full ${
+            className={`px-[10px] py-1 text-sm rounded-xl 2xl:px-3 2xl:py-2 2xl:rounded-full ${
               selectedLanguages.length === 0
                 ? 'bg-orange-600 text-white'
                 : 'bg-gray-200 text-gray-700'
@@ -72,7 +72,7 @@ const MoviePage = () => {
           {["Hindi", "English", "Marathi", "Gujarati", "Tamil", "Telugu", "Bengali"].map(lang => (
             <button
               key={lang}
-              className={`px-3 py-2 rounded-full 2xl:px-3 2xl:py-2 2xl:rounded-full ${
+              className={`px-2 py-1 text-sm rounded-xl 2xl:px-3 2xl:py-2 2xl:rounded-full ${
                 selectedLanguages.includes(lang)
                   ? 'bg-orange-600 text-white'
                   : 'bg-gray-200 text-gray-700'
@@ -83,7 +83,7 @@ const MoviePage = () => {
             </button>
           ))}
         </div>
-        <div className="mb-6 text-center bg-orange-600 text-white px-[1.7rem] py-3 rounded-lg shadow-md">
+        <div className="mb-[16px] lg:mb-6 text-center py-2.5 bg-orange-600 text-white px-[1.7rem] lg:py-3 rounded-lg shadow-md">
           <button
             className="text-[15px]"
             onClick={() => navigate('/comingsoon')}
