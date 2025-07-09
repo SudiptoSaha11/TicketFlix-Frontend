@@ -173,7 +173,7 @@ const MovieShowtime = () => {
 
         {/* Filters */}
         <section className="mb-6">
-          <DatePicker onDateSelect={setSelectedDate} />
+          <div className="max-lg:px-4 max-lg:w-[370px]"><DatePicker onDateSelect={setSelectedDate} /></div>
           <div className="flex items-center justify-between mt-4 flex-wrap gap-4">
             <div className="flex-1 overflow-x-auto pb-2">
               <Swiper slidesPerView="auto" spaceBetween={8}>
