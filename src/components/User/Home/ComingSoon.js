@@ -52,15 +52,15 @@ const ComingSoon = () => {
   return (
     <>
       <Usernavbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <div className="pt-[90px] px-[10px] flex flex-col items-center mb-[100px] 2xl:pt-[90px] 2xl:px-[20px] 2xl:mb-[30px]">
-        <h2 className="font-sans text-[#444441] mb-[10px] text-2xl font-bold">
-          Coming Soon
-        </h2>
-       
+      <div className="pt-[90px] px-[10px] flex flex-col items-center mb-[100px] 
+        2xl:pt-[90px] 2xl:px-[20px] 2xl:flex 2xl:flex-col 2xl:items-center 2xl:mb-[30px]">
+       <div className="font-sans text-[#444441] mb-[10px]
+          2xl:font-sans 2xl:text-[#444441] 2xl:mb-[20px]"><h2>Coming Soon</h2></div>
+
 
         <div className="flex flex-wrap justify-center gap-2 mb-6">
           <button
-            className={`px-3 py-2 rounded-full ${selectedLanguages.length === 0 ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            className={`px-[10px] py-1 text-sm rounded-xl 2xl:px-3 2xl:py-2 2xl:rounded-full ${selectedLanguages.length === 0 ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-700'}`}
             onClick={() => toggleLanguage("All")}
           >
             All
@@ -68,14 +68,14 @@ const ComingSoon = () => {
           {["Hindi", "English", "Marathi", "Gujarati", "Tamil", "Telugu", "Bengali"].map((lang) => (
             <button
               key={lang}
-              className={`px-3 py-2 rounded-full ${selectedLanguages.includes(lang) ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+              className={`px-2 py-1 text-sm rounded-xl 2xl:px-3 2xl:py-2 2xl:rounded-full ${selectedLanguages.includes(lang) ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-700'}`}
               onClick={() => toggleLanguage(lang)}
             >
               {lang}
             </button>
           ))}
         </div>
-         <div className="mb-6 text-center bg-orange-600 text-white px-[2.8rem] py-3 rounded-lg shadow-md ">
+         <div className="mb-[16px] lg:mb-6 text-center py-2.5 bg-orange-600 text-white px-[2.8rem] lg:py-3 rounded-lg shadow-md">
           <button className="text-[15px]" onClick={()=>navigate('/moviepage')}>Now Showing In Cinemas Near You &gt;</button>
         </div>
 
