@@ -31,43 +31,48 @@ const teamMembers = [
 ];
 
 const Aboutus = () => (
-  <div className="bg-gradient-to-r from-yellow-200 to-orange-400 text-gray-900 py-16">
+  <div className="bg-white text-gray-900 py-10">
     <div className="max-w-4xl mx-auto px-6 space-y-12">
       
       {/* About Section */}
       <section className="text-center">
         <h1 className="text-5xl font-extrabold mb-4">Welcome to <span className="text-orange-600">TicketFlix</span></h1>
-        <p className="text-lg mb-6">
+        <p className="text-lg mb-6 text-justify ">
           TicketFlix is your one‑stop destination for discovering and booking movie tickets with zero hassle. 
-          From the latest blockbusters to indie gems, our platform brings the full cinema experience to your fingertips.
+          From the latest blockbusters to indie gems, our platform brings the full cinema experience to your fingertips. Try the new experience now.
         </p>
-        <p className="text-base leading-relaxed">
-          <strong>Why TicketFlix?</strong>  
-          <ul className="list-disc list-inside mt-2 space-y-1 text-left inline-block">
+        <div><p className="text-base leading-relaxed text-start mb-[-2px] ml-[6px]">
+          <strong>Why TicketFlix?</strong></p>
+          <div className='ml-[-40px] lg:flex justify-start'>
+            <p><ul className="list-disc list-inside mt-2 space-y-1 inline-block text-left">
             <li><strong>Smart Search:</strong> Filter by genre, language, showtime, or theater amenities in one click.</li>
             <li><strong>Instant Seat Selection:</strong> See real‑time seat availability and lock in your favorites.</li>
             <li><strong>Mobile-First Design:</strong> Book on the go with a responsive interface tailored for all devices.</li>
             <li><strong>Secure Payments:</strong> Multiple payment options with bank‑grade encryption.</li>
           </ul>
         </p>
-        <p className="text-base leading-relaxed mt-4">
+          </div>
+          </div>
+        <p className="text-base leading-relaxed mt-2 text-justify">
           Since our inception, we've served thousands of happy movie‑lovers. Our mission is simple: make movie booking
-          faster, friendlier, and more fun.
+          faster, friendlier, and more fun. Thanks for visiting.....
+        </p>
+      </section>
+        <hr className="my-2 border-gray-300" />
+        {/* Mission Section */}
+        <section className="text-center ">
+        <h2 className="text-3xl font-semibold mb-4 mt-[-16px]">Our Mission</h2>
+        <p className="text-lg mb-6 text-justify">    
+            At TicketFlix, we believe that every movie experience should be seamless and enjoyable. Our mission is to
+            revolutionize the way you discover and book movie tickets, making it as easy as a few clicks. We strive to
+            provide a platform that not only simplifies the booking process but also enhances your overall cinema experience.
+        </p>
+        <p className="text-base leading-relaxed text-justify">
+            We are committed to delivering the latest features, ensuring security, and providing exceptional customer support.
+            Join us on this cinematic journey and experience the future of movie booking with TicketFlix.   
         </p>
       </section>
 
-      {/* Gallery Section */}
-      <section>
-        <h2 className="text-3xl font-semibold text-center mb-8">A Glimpse Behind the Scenes</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="h-48 bg-cover bg-center rounded-lg shadow-lg" style={{ backgroundImage: "url('/images/office1.jpg')" }}>
-          </div>
-          <div className="h-48 bg-cover bg-center rounded-lg shadow-lg" style={{ backgroundImage: "url('/images/office2.jpg')" }}>
-          </div>
-          <div className="h-48 bg-cover bg-center rounded-lg shadow-lg" style={{ backgroundImage: "url('/images/office3.jpg')" }}>
-          </div>
-        </div>
-      </section>
 
       {/* Team Section */}
       <section>
@@ -76,13 +81,13 @@ const Aboutus = () => (
           {teamMembers.map(member => (
             <div
               key={member.roll}
-              className="bg-white rounded-2xl p-6 text-center shadow-md transform transition hover:-translate-y-1"
+              className="bg-gradient-to-r from-yellow-200 to-orange-400 rounded-2xl p-6 text-center shadow-md transform transition hover:-translate-y-1"
             >
               <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-orange-500">
                 <img
                   src={member.image}
                   alt={member.name}
-                  className="w-full h-full object-cover"
+                  className="w-full my-[-5px] ml-[1px] object-fit"
                 />
               </div>
               <h3 className="text-2xl font-bold">{member.name}</h3>
