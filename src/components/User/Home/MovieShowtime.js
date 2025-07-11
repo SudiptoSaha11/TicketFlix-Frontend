@@ -3,44 +3,38 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import DatePicker from "./DatePicker";
+import DatePickerMobile from "./DatePickerMobile";  // ← new import
 import axios from "axios";
 import Usernavbar from "./Usernavbar";
 import Footer from "./Footer";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import Modal from "react-modal";
-import { FiClock, FiDollarSign, FiX } from "react-icons/fi";
+import { FiClock, FiDollarSign, FiFilter } from "react-icons/fi";
 
 Modal.setAppElement("#root");
 
-// Professional seat icons
-const seatIcons = [
-  null,
-  "https://cdn-icons-png.flaticon.com/512/6976/6976101.png",
-  "https://cdn-icons-png.flaticon.com/512/6976/6976101.png",
-  "https://cdn-icons-png.flaticon.com/512/6976/6976101.png",
-  "https://cdn-icons-png.flaticon.com/512/6976/6976101.png",
-  "https://cdn-icons-png.flaticon.com/512/6976/6976101.png",
-  "https://cdn-icons-png.flaticon.com/512/6976/6976101.png",
-  "https://cdn-icons-png.flaticon.com/512/6976/6976101.png",
-  "https://cdn-icons-png.flaticon.com/512/6976/6976101.png",
-  "https://cdn-icons-png.flaticon.com/512/6976/6976101.png",
-  "https://cdn-icons-png.flaticon.com/512/6976/6976101.png",
-];
+// Replace these URLs with your own icons
+const seatIcons = [ /* … */];
 
 const MovieShowtime = () => {
   const { state } = useLocation();
   const { movieName: Name, chosenLanguage } = state || {};
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log(
+      "Retrieved bookingDetails:",
+      sessionStorage.getItem("bookingDetails")
+    );
+  }, []);
+
   const [schedules, setSchedules] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dayjs().startOf("day"));
   const [timeFilter, setTimeFilter] = useState("All");
   const [priceFilter, setPriceFilter] = useState("All");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  // Modal state
+  // seat-count modal state
   const [isCountModalOpen, setIsCountModalOpen] = useState(false);
   const [pendingShow, setPendingShow] = useState(null);
   const [hoveredCount, setHoveredCount] = useState(1);
@@ -51,9 +45,9 @@ const MovieShowtime = () => {
 
   const fetchSchedules = async () => {
     try {
-      setLoading(true);
-      setError(null);
-      const res = await axios.get("https://ticketflix-backend.onrender.com/Scheduleschema");
+      const res = await axios.get(
+        "https://ticketflix-backend.onrender.com/Scheduleschema"
+      );
       setSchedules(
         res.data.filter(
           (sch) => sch.MovieName?.toLowerCase() === Name.toLowerCase()
@@ -61,9 +55,6 @@ const MovieShowtime = () => {
       );
     } catch (err) {
       console.error(err);
-      setError("Failed to load showtimes. Please try again later.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -108,7 +99,6 @@ const MovieShowtime = () => {
 
   const handleSelectSeats = () => {
     setIsCountModalOpen(false);
-
     const bundle = {
       Name,
       Venue: pendingShow.Venue,
@@ -120,6 +110,10 @@ const MovieShowtime = () => {
       pricing: pendingShow.pricing,
     };
     sessionStorage.setItem("bookingDetails", JSON.stringify(bundle));
+    console.log(
+      "Just set bookingDetails:",
+      sessionStorage.getItem("bookingDetails")
+    );
 
     navigate("/ticketbooking", {
       state: {
@@ -134,10 +128,10 @@ const MovieShowtime = () => {
 
   const TIME_OPTIONS = ["All", "Morning", "Afternoon", "Evening", "Night"];
   const PRICE_OPTIONS = [
-    { key: "All", label: "All Prices" },
-    { key: "Below200", label: "₹0–₹200" },
-    { key: "200to400", label: "₹201–₹400" },
-    { key: "Above400", label: "₹401+" },
+    { key: "All", label: "All" },
+    { key: "Below200", label: "₹0–₹100" },
+    { key: "200to400", label: "₹101–₹200" },
+    { key: "Above400", label: "₹201–₹400" },
   ];
 
   const getPriceRange = () => {
@@ -154,266 +148,262 @@ const MovieShowtime = () => {
   const { min, max, isRange } = getPriceRange();
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="max-h-full">
       <Usernavbar />
-      
-      <main className="flex-grow max-w-screen-lg mx-auto mt-24 px-4 sm:px-6 md:px-8 font-sans">
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <h1 className="text-center text-3xl font-bold text-gray-800 mb-2">
+      <div className="max-w-screen-lg mx-auto mt-[5rem] pl-[1rem] sm:px-6 md:px-20 lg:px-44 font-sans lg:mt-24 ">
+        <div>
+          <h1 className="text-left text-2xl font-semibold text-gray-800 mb-4 lg:text-left lg:text-3xl">
             {Name}
-            {chosenLanguage && <span className="text-orange-500"> — {chosenLanguage}</span>}
+            <span className="text-orange-500 max-lg:hidden">
+              {chosenLanguage && ` — ${chosenLanguage}`}
+            </span>
+            <div className="lg:hidden mt-[-10px] ml-[1px]">
+              <span className="text-orange-500 text-sm">
+                {chosenLanguage}
+              </span>
+              <span className="text-sm text-orange-500"> 2D</span>
+            </div>
           </h1>
-          <p className="text-center text-gray-600 mb-6">
-            Select a date and time for your movie experience
-          </p>
-          <hr className="mb-6" />
+        </div>
 
-          {/* Filters */}
-          <section className="mb-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
-              <div className="w-full md:w-auto">
-                <h2 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                  <FiClock className="mr-2" /> Select Date
-                </h2>
+        {/* Filters */}
+        <section className="mb-6">
+          {/* ─── SELECT DATE ─────────────────────────────────────────────────────────── */}
+          <div className="mb-4">
+            <h2 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+              <FiClock className="mr-1 mt-[3px]" /> Select Date
+            </h2>
+
+            <div className="max-lg:w-[380px]">
+              {/* Mobile slider */}
+              <div className="lg:hidden ml-[-10px]">
+                <DatePickerMobile onDateSelect={setSelectedDate} />
+              </div>
+              {/* Desktop arrows */}
+              <div className="hidden lg:block">
                 <DatePicker onDateSelect={setSelectedDate} />
               </div>
-              
-              <div className="flex-1">
-                <h2 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                  <FiDollarSign className="mr-2" /> Filter By
-                </h2>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="bg-gray-100 rounded-lg p-2 flex-1">
-                    <h3 className="text-xs font-medium text-gray-600 mb-1">Show Time</h3>
-                    <Swiper slidesPerView="auto" spaceBetween={8}>
-                      {TIME_OPTIONS.map((opt) => (
-                        <SwiperSlide key={opt} style={{ width: "auto" }}>
-                          <button
-                            onClick={() => setTimeFilter(opt)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                              timeFilter === opt
-                                ? "bg-orange-500 text-white shadow-md"
-                                : "bg-white text-gray-700 hover:bg-gray-50"
-                            }`}
-                          >
-                            {opt}
-                          </button>
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
-                  </div>
-                  
-                  <div className="bg-gray-100 rounded-lg p-2 flex-1">
-                    <h3 className="text-xs font-medium text-gray-600 mb-1">Price Range</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {PRICE_OPTIONS.map(({ key, label }) => (
-                        <button
-                          key={key}
-                          onClick={() => setPriceFilter(key)}
-                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                            priceFilter === key
-                              ? "bg-orange-500 text-white shadow-md"
-                              : "bg-white text-gray-700 hover:bg-gray-50"
+            </div>
+          </div>
+
+          {/* ─── FILTER PANEL ────────────────────────────────────────────────────────── */}
+          <div className="lg:bg-gray-100 rounded-lg lg:p-4 ">
+            {/* Panel header */}
+            <div className="flex items-center mb-3">
+              <FiFilter className="text-xl text-gray-600 mr-2 mb-[5px]" />
+              <h3 className="text-lg font-semibold text-gray-700">Filter By</h3>
+            </div>
+
+            <div className="space-y-6">
+              {/* Show Time */}
+              <div className="max-w-[350px]">
+                <h4 className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                  <FiClock className="mr-1 mt-[2px]" /> Show Time
+                </h4>
+                <Swiper
+                  slidesPerView="auto"
+                  spaceBetween={8}
+                  className="px-1 py-1"
+                >
+                  {TIME_OPTIONS.map((opt) => (
+                    <SwiperSlide key={opt} style={{ width: 'auto' }}>
+                      <button
+                        onClick={() => setTimeFilter(opt)}
+                        className={`px-3 py-1 rounded-full text-sm border ${timeFilter === opt
+                          ? 'bg-orange-400 text-white border-orange-400'
+                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
                           }`}
+                      >
+                        {opt}
+                      </button>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </div>
+
+              {/* Price Range */}
+              <div>
+                <h4 className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                  <FiDollarSign className="mr-1 mt-[2px]" /> Price Range
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {PRICE_OPTIONS.map(({ key, label }) => (
+                    <button
+                      key={key}
+                      onClick={() => setPriceFilter(key)}
+                      className={`px-3 py-1 rounded-full text-sm border ${priceFilter === key
+                        ? 'bg-orange-400 text-white border-orange-400'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                        }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+
+      </div>
+      {/* Schedule List */}
+      <section className="mx-auto px-3 ">
+        {schedules.length ? (
+          schedules.map((sch) => (
+            <div
+              key={sch._id}
+              className="border rounded-lg px-4 mb-5 shadow-sm lg:mx-[25rem]"
+            >
+              {sch.hallName.map((hall, i) => {
+                const raw = sch.showTime[i];
+                const showObj = Array.isArray(raw) ? raw[0] : raw;
+                if (!showObj?.time || !priceMatch(showObj)) return null;
+
+                const times = Array.isArray(showObj.time)
+                  ? showObj.time
+                  : [showObj.time];
+                const filtered =
+                  timeFilter === "All"
+                    ? times
+                    : times.filter((t) => getTimePeriod(t) === timeFilter);
+                if (!filtered.length) return null;
+
+                return (
+                  <div
+                    key={i}
+                    className="py-4 border-b last:border-b-0"
+                  >
+                    <h2 className="text-lg font-semibold lg:font-bold mb-2">{hall}</h2>
+                    <div className="flex flex-wrap gap-3">
+                      {filtered.map((t, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() =>
+                            handleShowtimeClick(hall, t, showObj)
+                          }
+                          className="group relative max-lg:px-2 max-lg:py-1 xl:px-3 xl:py-2 rounded-lg border max-lg:text-xs lg:text-md border-green-500 text-green-500 hover:bg-green-500 hover:text-white transition"
                         >
-                          {label}
+                          {formatTime(t)}
+                          <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-52 bg-white border rounded-lg shadow-lg p-2 text-xs text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div>
+                              <strong>Recliner:</strong> ₹
+                              {showObj.GoldTicketPrice}{" "}
+                              <span className="text-green-500">
+                                Available
+                              </span>
+                            </div>
+                            <div>
+                              <strong>Royal:</strong> ₹
+                              {showObj.SilverTicketPrice}{" "}
+                              <span className="text-green-500">
+                                Available
+                              </span>
+                            </div>
+                            <div>
+                              <strong>Club:</strong> ₹
+                              {showObj.PlatinumTicketPrice}{" "}
+                              <span className="text-green-500">
+                                Available
+                              </span>
+                            </div>
+                          </div>
                         </button>
                       ))}
                     </div>
                   </div>
-                </div>
-              </div>
+                );
+              })}
             </div>
-          </section>
-
-          {/* Schedule List */}
-          {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-            </div>
-          ) : error ? (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-              <p className="text-red-700 font-medium">{error}</p>
-              <button 
-                onClick={fetchSchedules}
-                className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-              >
-                Retry
-              </button>
-            </div>
-          ) : schedules.length ? (
-            <div className="space-y-6">
-              {schedules.map((sch) => (
-                <div
-                  key={sch._id}
-                  className="border border-gray-200 rounded-xl overflow-hidden shadow-sm"
-                >
-                  {sch.hallName.map((hall, i) => {
-                    const raw = sch.showTime[i];
-                    const showObj = Array.isArray(raw) ? raw[0] : raw;
-                    if (!showObj?.time || !priceMatch(showObj)) return null;
-
-                    const times = Array.isArray(showObj.time)
-                      ? showObj.time
-                      : [showObj.time];
-                    const filtered =
-                      timeFilter === "All"
-                        ? times
-                        : times.filter((t) => getTimePeriod(t) === timeFilter);
-                    if (!filtered.length) return null;
-
-                    return (
-                      <div
-                        key={i}
-                        className="p-5 border-b border-gray-100 last:border-b-0"
-                      >
-                        <div className="flex items-start mb-4">
-                          <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
-                          <div className="ml-4">
-                            <h2 className="text-xl font-bold text-gray-800">{hall}</h2>
-                            <p className="text-gray-600 text-sm">Standard format • Reserved seating</p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-3">
-                          {filtered.map((t, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => handleShowtimeClick(hall, t, showObj)}
-                              className="group relative px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-800 hover:border-orange-500 hover:bg-orange-50 hover:text-orange-600 transition-all shadow-sm"
-                            >
-                              <span className="font-semibold">{formatTime(t)}</span>
-                              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-60 bg-white border border-gray-200 rounded-lg shadow-xl p-3 text-sm text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                                <div className="flex justify-between mb-1">
-                                  <span className="font-medium">Recliner:</span>
-                                  <span>₹{showObj.GoldTicketPrice}</span>
-                                </div>
-                                <div className="flex justify-between mb-1">
-                                  <span className="font-medium">Royal:</span>
-                                  <span>₹{showObj.SilverTicketPrice}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="font-medium">Club:</span>
-                                  <span>₹{showObj.PlatinumTicketPrice}</span>
-                                </div>
-                                <div className="mt-2 text-xs text-green-600 font-medium">
-                                  All seats available
-                                </div>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="bg-gray-50 rounded-xl border border-gray-200 p-10 text-center">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">No Showtimes Available</h3>
-              <p className="text-gray-600 max-w-md mx-auto">
-                We couldn't find any showtimes for {Name} on the selected date. 
-                Please try another date or check back later.
-              </p>
-            </div>
-          )}
-        </div>
-      </main>
+          ))
+        ) : (
+          <p className="text-center text-gray-600">
+            No showtimes available.
+          </p>
+        )}
+      </section>
 
       <Footer />
 
-      {/* Enhanced Seat Count Modal */}
+      {/* Enhanced Seat-Count Modal */}
       <Modal
         isOpen={isCountModalOpen}
         onRequestClose={() => setIsCountModalOpen(false)}
-        contentLabel="Select Seat Count"
-        overlayClassName="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-fade-in-up"
+        contentLabel="How Many Seats?"
+        overlayClassName="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+        className="
+          fixed bottom-0 left-0 w-full bg-white p-4 
+          sm:relative sm:bottom-auto sm:left-auto sm:w-auto sm:max-w-md sm:rounded-xl sm:mx-auto sm:p-6
+          z-50 animate-fade-in-up xl:my-28
+        "
       >
-        <div className="relative p-6">
+        <div className="relative">
           <button
             onClick={() => setIsCountModalOpen(false)}
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+            className="absolute top-0 right-0 text-gray-500 hover:text-gray-800 text-2xl"
           >
-            <FiX size={24} />
+            ×
           </button>
 
-          <div className="text-center mb-2">
-            <h2 className="text-2xl font-bold text-gray-800">How many seats?</h2>
-            <p className="text-gray-600 mt-2">
-              Select the number of tickets you need
-            </p>
-          </div>
+          <h2 className="text-center text-xl font-bold mb-4">
+            How Many Seats?
+          </h2>
+          <p className="text-center text-gray-600 mb-6">
+            Book the Bestseller Seats at no extra cost!
+          </p>
 
-          {/* Seat visualization */}
-          <div className="flex justify-center my-6">
-            <div className="bg-gray-100 rounded-2xl p-4 w-64 h-48 flex flex-col items-center justify-center">
-              <div className="flex flex-wrap justify-center gap-2 mb-4">
-                {[...Array(hoveredCount)].map((_, idx) => (
-                  <div key={idx} className="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center">
-                    <span className="text-white font-bold text-xs">{idx + 1}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="w-full h-1 bg-gray-300 rounded-full mb-4"></div>
-              <div className="text-sm text-gray-600">Screen this way</div>
+          <div className="flex justify-center mb-0">
+            <div className="rounded-xl p-4 flex items-center justify-center">
+              <img
+                src={seatIcons[hoveredCount]}
+                alt={`${hoveredCount} seats`}
+                className="h-[110px] object-contain"
+              />
             </div>
           </div>
 
-          {/* Seat counter */}
-          <div className="mb-6">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-gray-700 font-medium">Number of seats:</span>
-              <span className="text-xl font-bold text-orange-600">{hoveredCount}</span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="10"
-              value={hoveredCount}
-              onChange={(e) => setHoveredCount(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
-            />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>1</span>
-              <span>10</span>
-            </div>
+          <div className="flex flex-wrap justify-center gap-2 mb-6 px-4">
+            {[...Array(10)].map((_, idx) => {
+              const num = idx + 1;
+              return (
+                <div
+                  key={num}
+                  onMouseEnter={() => setHoveredCount(num)}
+                  className={`
+                    w-6 h-6 rounded-full flex items-center justify-center
+                    border-2 cursor-pointer transition-all duration-200
+                    ${hoveredCount === num
+                      ? "bg-orange-400 border-orange-500 text-white scale-110"
+                      : "bg-white border-gray-300 text-gray-700 hover:bg-gray-100"
+                    }
+                  `}
+                >
+                  {num}
+                </div>
+              );
+            })}
           </div>
 
-          {/* Pricing information */}
           {pendingShow && (
             <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-700 font-medium">Ticket Price:</span>
+                <span className="text-gray-700 font-medium">
+                  Ticket Price:
+                </span>
                 <span className="font-bold text-gray-900">
                   {isRange ? `₹${min} - ₹${max}` : `₹${min}`}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700 font-medium">Total:</span>
-                <span className="font-bold text-xl text-orange-600">
-                  ₹{min * hoveredCount}
-                </span>
-              </div>
             </div>
           )}
 
-          {/* Action buttons */}
-          <div className="flex gap-3">
-            <button
-              onClick={() => setIsCountModalOpen(false)}
-              className="flex-1 py-3 px-4 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSelectSeats}
-              className="flex-1 py-3 px-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all shadow-md"
-            >
-              Select Seats
-            </button>
-          </div>
+          <button
+            onClick={handleSelectSeats}
+            className="w-full bg-gradient-to-r from-orange-400 to-orange-500 text-white py-3 rounded-lg font-bold hover:from-orange-500 hover:to-orange-600 transition-all shadow-md hover:shadow-lg"
+          >
+            Select Seats
+          </button>
         </div>
       </Modal>
     </div>
