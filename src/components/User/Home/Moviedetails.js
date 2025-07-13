@@ -154,6 +154,19 @@ function Moviedetails() {
     fetchData(movieId);
   }, [navigate, paramId, location.state]);
 
+
+//   localStorage.setItem("image", movieImage);
+// localStorage.setItem("moviename", movieName);
+// sessionStorage.setItem("moviegenre", movieGenre);
+// sessionStorage.setItem("movielanguage", movieLanguage);
+// sessionStorage.setItem("movieformat", movieFormat);
+// sessionStorage.setItem("movieduration", movieDuration);
+// sessionStorage.setItem("moviedescription", movieDescription);
+// sessionStorage.setItem("moviecast", JSON.stringify(movieCast || []));
+// sessionStorage.setItem("trailerLink", trailerLink || "");
+// sessionStorage.setItem("movieReleasedate", movieReleaseDate);
+
+
   // Fetch recommended movies (first 8, excluding current)
   useEffect(() => {
     setIsLoadingRec(true);
