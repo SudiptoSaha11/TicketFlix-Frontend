@@ -494,7 +494,7 @@ function Moviedetails() {
         {/* MOBILE SWIPER (shown < lg) */}
         {movieCast.length > 0 && (
           <div className="block lg:hidden">
-            <Swiper slidesPerView={2.4} spaceBetween={30} freeMode={true} cssMode={false}>
+            <Swiper slidesPerView={2.4} spaceBetween={30} freeMode={true} touchAngle={5}>
               {movieCast.map((actor, idx) => (
                 <SwiperSlide key={idx} className="w-auto">
                   <div className="flex flex-col items-center">
@@ -732,7 +732,7 @@ function Moviedetails() {
               centeredSlides={false}
               slidesOffsetBefore={80}
               slidesOffsetAfter={-80}
-              cssMode={false}
+              touchAngle={5}
               breakpoints={{
                 640: {
                   slidesPerView: 2.65,

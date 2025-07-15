@@ -218,7 +218,7 @@ const UserHome = () => {
                 slidesOffsetAfter={-80}
                 touchStartPreventDefault={false}
                 touchMoveStopPropagation={false}
-                cssMode={false}
+                touchAngle={5}
 
 
 
@@ -400,7 +400,7 @@ const UserHome = () => {
                 slidesOffsetAfter={-80}
                 touchStartPreventDefault={false}
                 touchMoveStopPropagation={false}
-                cssMode={false}
+                touchAngle={5}
 
                 breakpoints={{
                   640: {
@@ -588,7 +588,7 @@ const UserHome = () => {
                 slidesOffsetAfter={-80}
                 touchStartPreventDefault={false}
                 touchMoveStopPropagation={false}
-                cssMode={false}
+                touchAngle={5}
 
                 breakpoints={{
                   640: {
@@ -766,7 +766,7 @@ const UserHome = () => {
                 slidesOffsetAfter={-80}
                 touchStartPreventDefault={false}
                 touchMoveStopPropagation={false}
-                cssMode={false}
+                touchAngle={5}
 
                 breakpoints={{
                   640: {
