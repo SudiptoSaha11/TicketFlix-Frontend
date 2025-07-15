@@ -15,9 +15,6 @@ html, body {
   overflow-x: hidden;
 }
 
-.swiper {
-  touch-action: pan-y;
-}
 
 
 @tailwind base;
