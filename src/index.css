@@ -15,7 +15,7 @@ html, body {
   overflow-x: hidden;
 }
 
-.Swiper {
+.swiper {
   touch-action: pan-y;
 }
 
