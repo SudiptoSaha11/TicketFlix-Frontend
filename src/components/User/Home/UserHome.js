@@ -33,11 +33,11 @@ const UserHome = () => {
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
   const navigate = useNavigate();
 
-useEffect(() => {
+  useEffect(() => {
     setIsLoadingMovies(true);
     axios.get('https://ticketflix-backend.onrender.com/movieview')
       .then(res => {
-       
+
         const sorted = res.data.slice().sort((a, b) =>
           b._id.localeCompare(a._id)
         );
@@ -49,7 +49,7 @@ useEffect(() => {
     setIsLoadingEvents(true);
     axios.get('https://ticketflix-backend.onrender.com/event')
       .then(res => {
-        
+
         const sortedE = res.data.slice().sort((a, b) =>
           b._id.localeCompare(a._id)
         );
@@ -83,19 +83,19 @@ useEffect(() => {
     localStorage.setItem("eventType", eventType);
   };
 
-  
+
   const recommendedMovies = data.filter(item => {
-  const today     = new Date();
-  const release   = new Date(item.movieReleasedate);
-  const diffDays  = (release - today) / (1000 * 60 * 60 * 24);
-  return diffDays <= 2;
-});
+    const today = new Date();
+    const release = new Date(item.movieReleasedate);
+    const diffDays = (release - today) / (1000 * 60 * 60 * 24);
+    return diffDays <= 2;
+  });
 
   const filteredData = recommendedMovies.filter(item =>
-  item.movieName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  item.movieGenre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  item.movieLanguage.toLowerCase().includes(searchTerm.toLowerCase())
-);
+    item.movieName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.movieGenre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.movieLanguage.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const comingSoonMovies = data.filter(item => {
     const today = new Date();
@@ -183,7 +183,7 @@ useEffect(() => {
           </div>
         </div>
         <div className='flex justify-center p-[10px] mb-[15px]  2xl:py-[10px] 2xl:w-[1100px]  2xl:mx-auto antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
-          <a href="https://codehubsodepur.in/"  rel="noopener noreferrer">
+          <a href="https://codehubsodepur.in/" rel="noopener noreferrer">
             <img
               src={require('./Codehub.png')}
               alt='ad-banner'
@@ -203,7 +203,7 @@ useEffect(() => {
                         antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
                         debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]'>Recommended Movies</h5>
             <button className=' text-orange-500 text-[15px] md:mr-[50px] lg:mr-[95px] xl:mr-[135px] 2xl:mr-[165px] antarikh:mr-[195px]'
-             onClick={() => { navigate("/MoviePage") }}>See All&gt;</button>
+              onClick={() => { navigate("/MoviePage") }}>See All&gt;</button>
           </div>
           {isLoadingMovies && <LoadingSpinner asOverlay />}
 
@@ -216,6 +216,8 @@ useEffect(() => {
                 centeredSlides={false}
                 slidesOffsetBefore={80}
                 slidesOffsetAfter={-80}
+                touchStartPreventDefault={false}
+                touchMoveStopPropagation={false}
 
 
 
@@ -360,8 +362,8 @@ useEffect(() => {
             </div>
           )}
         </div>
-       <div className='flex justify-center p-[10px] mb-[10px] max-lg:mt-[-35px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
-          <a href="https://www.netflix.com/in/title/81040344"  rel="noopener noreferrer">
+        <div className='flex justify-center p-[10px] mb-[10px] max-lg:mt-[-35px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
+          <a href="https://www.netflix.com/in/title/81040344" rel="noopener noreferrer">
             <img
               src={require('./Netflix SG.png')}
               alt='ad-banner'
@@ -382,7 +384,7 @@ useEffect(() => {
                         antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
                         debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]'>Coming Soon</h5>
             <button className=' text-orange-500 text-[15px] md:mr-[50px] lg:mr-[95px] xl:mr-[135px] 2xl:mr-[165px] antarikh:mr-[195px]'
-             onClick={() => { navigate("/ComingSoon") }}>See All&gt;</button>
+              onClick={() => { navigate("/ComingSoon") }}>See All&gt;</button>
           </div>
           {isLoadingMovies && <LoadingSpinner asOverlay />}
 
@@ -395,6 +397,9 @@ useEffect(() => {
                 centeredSlides={false}
                 slidesOffsetBefore={80}
                 slidesOffsetAfter={-80}
+                touchStartPreventDefault={false}
+                touchMoveStopPropagation={false}
+
 
 
 
@@ -550,10 +555,10 @@ useEffect(() => {
             <p className="text-[18px] ">Endless Entertainment Anytime. Anywhere!</p>
           </div>
         </div>
-          <div className='lg:hidden flex justify-center p-[10px] mb-[10px] max-lg:mt-[-35px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto 2xl:mb-[15px antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
-            <img src='https://assets-in-gm.bmscdn.com/promotions/cms/creatives/1751544005377_4thjulypepsif1sluggifapp.gif'
-            alt='f1'/>
-          </div>
+        <div className='lg:hidden flex justify-center p-[10px] mb-[10px] max-lg:mt-[-35px] 2xl:py-[10px] 2xl:w-[1100px] 2xl:mt-[-45px] 2xl:mx-auto 2xl:mb-[15px antarikh:py-[10px] antarikh:w-[1200px] debojit:py-[10px] debojit:w-[1300px]'>
+          <img src='https://assets-in-gm.bmscdn.com/promotions/cms/creatives/1751544005377_4thjulypepsif1sluggifapp.gif'
+            alt='f1' />
+        </div>
 
         <div className="relative overflow-hidden w-full mx-auto whitespace-nowrap mb-[10px]">
         </div>
@@ -569,8 +574,8 @@ useEffect(() => {
                         xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
                         antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
                         debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]'>Action Movies</h5>
-            <button className=' text-orange-500 text-[15px] md:mr-[50px] lg:mr-[95px] xl:mr-[135px] 2xl:mr-[165px] antarikh:mr-[195px]' 
-            onClick={() => { navigate("/MoviePage") }}>See All&gt;</button>
+            <button className=' text-orange-500 text-[15px] md:mr-[50px] lg:mr-[95px] xl:mr-[135px] 2xl:mr-[165px] antarikh:mr-[195px]'
+              onClick={() => { navigate("/MoviePage") }}>See All&gt;</button>
           </div>
 
 
@@ -582,6 +587,9 @@ useEffect(() => {
                 centeredSlides={false}
                 slidesOffsetBefore={80}
                 slidesOffsetAfter={-80}
+                touchStartPreventDefault={false}
+                touchMoveStopPropagation={false}
+
                 breakpoints={{
                   640: {
                     slidesPerView: 2.65,
@@ -744,8 +752,8 @@ useEffect(() => {
                         xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
                         antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
                         debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]'>Recommended Events</h5>
-            <button className=' text-orange-500 text-[15px] md:mr-[50px] lg:mr-[95px] xl:mr-[135px] 2xl:mr-[165px] antarikh:mr-[195px]' 
-            onClick={() => { navigate("/event") }}>See All&gt;</button>
+            <button className=' text-orange-500 text-[15px] md:mr-[50px] lg:mr-[95px] xl:mr-[135px] 2xl:mr-[165px] antarikh:mr-[195px]'
+              onClick={() => { navigate("/event") }}>See All&gt;</button>
           </div>
           {isLoadingEvents && <LoadingSpinner asOverlay />}
           {isMobile ? (
@@ -756,6 +764,9 @@ useEffect(() => {
                 centeredSlides={false}
                 slidesOffsetBefore={80}
                 slidesOffsetAfter={-80}
+                touchStartPreventDefault={false}
+                touchMoveStopPropagation={false}
+
 
 
                 breakpoints={{
@@ -900,8 +911,8 @@ useEffect(() => {
 
       </div>
       <br />
-      <BottomNav/>
-      <Footer/>
+      <BottomNav />
+      <Footer />
       <Chatbot />
     </div>
   );
