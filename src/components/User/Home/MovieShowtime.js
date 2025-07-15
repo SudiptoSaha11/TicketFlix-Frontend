@@ -515,8 +515,8 @@ const MovieShowtime = () => {
         isOpen={isCountModalOpen}
         onRequestClose={() => setIsCountModalOpen(false)}
         contentLabel="How Many Seats?"
-        overlayClassName="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 mt-20 z-50"
-        className="max-lg:h-[20rem] max-lg:w-full max-lg:mx-1 bg-white rounded-2xl shadow-2xl lg:w-[30rem] mx-auto outline-none"
+        overlayClassName="fixed inset-0 bg-black/50 backdrop-blur-sm flex max-lg:px-2 max-lg:mb-[-12px] max-lg:items-end lg:items-center justify-center lg:p-4 mt-20 z-50"
+        className="max-lg:h-[23rem] max-lg:w-full max-lg:mx-1  bg-white rounded-2xl shadow-2xl lg:w-[30rem] mx-auto outline-none"
       >
         <div className="lg:p-6 max-lg:px-4 max-lg:py-2">
           <div className="flex justify-between items-center lg:mb-4 max-lg:mb-1">
@@ -529,12 +529,12 @@ const MovieShowtime = () => {
             </button>
           </div>
 
-          <p className="text-gray-600 text-center lg:mb-2 max-lg:mb-[-5px]">
+          <p className="text-gray-600 text-center lg:mb-2 max-lg:mb-[5px]">
             Book the best seats at no extra cost!
           </p>
 
-          <div className="flex justify-center lg:mb-3 max-lg:mb-1">
-            <div className="bg-white rounded-xl lg:p-4 lg:w-40 lg:h-40 max-lg:w-20 max-lg:h-20 max-lg:p-0 flex items-center justify-center">
+          <div className="flex justify-center lg:mb-3 max-lg:mb-3">
+            <div className="bg-white rounded-xl lg:p-4 lg:w-40 lg:h-40 max-lg:w-24 max-lg:h-24 max-lg:p-0 flex items-center justify-center">
               <img
                 src={seatIcons[hoveredCount]}
                 alt={`${hoveredCount} seats`}
@@ -543,7 +543,7 @@ const MovieShowtime = () => {
             </div>
           </div>
 
-          <div className="flex flex-nowrap justify-center gap-2 mb-6">
+          <div className="flex flex-nowrap justify-center gap-2 mb-7 ">
             {[...Array(10)].map((_, idx) => {
               const num = idx + 1;
               return (
@@ -566,7 +566,7 @@ const MovieShowtime = () => {
           </div>
 
           {pendingShow && (
-            <div className="bg-orange-50 rounded-xl lg:p-3 max-lg:p-2 lg:mb-6 max-lg:mb-3 border border-orange-100">
+            <div className="bg-orange-50 rounded-xl lg:p-3 max-lg:p-2 lg:mb-6 max-lg:mb-4 border border-orange-100">
               <div className="flex justify-between items-center">
                 <span className="text-gray-700 font-medium">Ticket Price:</span>
                 <span className="font-bold text-gray-900">
