@@ -84,7 +84,7 @@ const Beverageview = () => {
               <th>Image</th>
               <th>Name</th>
               <th>Category</th>
-              <th>Sizes & Prices</th>
+              <th>Sizes, Prices & Quantities</th>
               <th>Update</th>
               <th>Delete</th>
             </tr>
@@ -104,17 +104,25 @@ const Beverageview = () => {
                 <td>
                   {b.sizes?.map((s, i) => (
                     <div key={i} className="cast-container-admin">
-                      <span>{s.label}: ₹{s.price}</span>
+                      <span>
+                        {s.label}: ₹{s.price} (Qty: {s.quantity})
+                      </span>
                     </div>
                   ))}
                 </td>
                 <td>
-                  <button className="update" onClick={() => handleEditPrep(b)}>
+                  <button
+                    className="update"
+                    onClick={() => handleEditPrep(b)}
+                  >
                     Update
                   </button>
                 </td>
                 <td>
-                  <button className="delete" onClick={() => handleDelete(b._id)}>
+                  <button
+                    className="delete"
+                    onClick={() => handleDelete(b._id)}
+                  >
                     Delete
                   </button>
                 </td>

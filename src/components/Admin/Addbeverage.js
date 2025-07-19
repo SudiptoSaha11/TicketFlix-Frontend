@@ -9,19 +9,23 @@ const AddBeverage = () => {
   const [beverageName, setBeverageName] = useState("");
   const [image, setImage] = useState("");
   const [category, setCategory] = useState("");
-  const [sizes, setSizes] = useState([{ label: "Small", price: "" }]);
+  const [sizes, setSizes] = useState([
+    { label: "Small", price: "", quantity: "" }
+  ]);
 
   const sizeOptions = ["Small", "Medium", "Large", "Regular", "XL", "Custom"];
 
   const handleSizeChange = (idx, field, value) => {
     const newSizes = sizes.map((s, i) =>
-      i === idx ? { ...s, [field]: field === "price" ? Number(value) : value } : s
+      i === idx
+        ? { ...s, [field]: field === "price" || field === "quantity" ? Number(value) : value }
+        : s
     );
     setSizes(newSizes);
   };
 
   const addSizeRow = () => {
-    setSizes([...sizes, { label: "Small", price: "" }]);
+    setSizes([...sizes, { label: "Small", price: "", quantity: "" }]);
   };
 
   const removeSizeRow = (idx) => {
@@ -41,7 +45,7 @@ const AddBeverage = () => {
       setBeverageName("");
       setImage("");
       setCategory("");
-      setSizes([{ label: "Small", price: "" }]);
+      setSizes([{ label: "Small", price: "", quantity: "" }]);
       navigate("/beverages");
     } catch (err) {
       console.error("Add beverage error:", err.response?.data || err.message);
@@ -79,7 +83,14 @@ const AddBeverage = () => {
             onChange={(e) => setImage(e.target.value)}
             required
           />
-          {image && <img src={image} alt="Preview" width="100" style={{ marginTop: "0.5rem" }} />}
+          {image && (
+            <img
+              src={image}
+              alt="Preview"
+              width="100"
+              style={{ marginTop: "0.5rem" }}
+            />
+          )}
         </div>
 
         <div className="mb-4">
@@ -104,9 +115,12 @@ const AddBeverage = () => {
         </div>
 
         <div className="mb-4">
-          <label className="Label_movie">Sizes & Prices</label>
+          <label className="Label_movie">Sizes, Prices & Quantities</label>
           {sizes.map((s, idx) => (
-            <div key={idx} style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
+            <div
+              key={idx}
+              style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}
+            >
               <select
                 className="form-control_movie"
                 value={s.label}
@@ -125,6 +139,16 @@ const AddBeverage = () => {
                 min="0"
                 step="0.01"
                 onChange={(e) => handleSizeChange(idx, "price", e.target.value)}
+                required
+              />
+              <input
+                type="number"
+                className="form-control_movie"
+                placeholder="Quantity"
+                value={s.quantity}
+                min="0"
+                step="1"
+                onChange={(e) => handleSizeChange(idx, "quantity", e.target.value)}
                 required
               />
               {sizes.length > 1 && (
