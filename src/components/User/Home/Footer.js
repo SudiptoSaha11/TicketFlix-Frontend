@@ -13,7 +13,7 @@ const Footer = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://ticketflix-backend.onrender.com/movieview");
+        const response = await axios.get("http://localhost:5000/movieview");
         setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -74,9 +74,18 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-[#222] text-white pt-10 pb-8 max-lg:hidden">
-      {/* Container to center & limit width */}
-      <div className="max-w-10xl  px-4 space-y-2">
+    <footer className="bg-[#222] text-white pt-6 pb-8 max-lg:hidden">
+      {/* ─── TicketFlix Header ─── */}
+      <div className="flex items-center justify-center mb-8 px-4">
+        <hr className=" border-gray-700 flex-grow" />
+        <h1 className="mx-4 text-2xl font-bold">
+          Ticket<span className="text-orange-500">Flix</span>
+        </h1>
+        <hr className="border-gray-700 flex-grow" />
+      </div>
+
+      {/* ─── Container to center & limit width ─── */}
+      <div className="max-w-10xl mx-auto px-4 space-y-2">
         {/* ─── Movies by Language ─── */}
         <div>
           <h4 className="text-xl font-semibold mb-2">Movies by Language</h4>
@@ -141,7 +150,7 @@ const Footer = () => {
                       movieName: movie.movieName,
                       userEmail: localStorage.getItem("userEmail"),
                     }}
-                    className="text-gray-100 hover:text-yellow-500 no-underline"
+                    className="text-gray-100 hover:text-yellow-300 no-underline"
                   >
                     {movie.movieName}
                   </Link>
@@ -152,17 +161,14 @@ const Footer = () => {
               </React.Fragment>
             ))}
           </ul>
-
           <div className="border-t border-gray-700" />
         </div>
       </div>
 
       {/* ─── Footer Bottom (Social Icons + Copyright) ─── */}
-      <div className="mt-8 ">
+      <div className="mt-8">
         <div className="max-w-6xl mx-auto px-4 text-center space-y-4">
-          {/* Change text-3xl → text-2xl (or text-xl) */}
-          <div className="flex justify-center items-center space-x-5 text-xl text-gray-200
-                          xl:text-2xl">
+          <div className="flex justify-center items-center space-x-5 text-2xl text-gray-200">
             <a
               href="https://www.facebook.com"
               className="hover:text-yellow-500 transition-colors duration-200 text-gray-200"
@@ -203,7 +209,6 @@ const Footer = () => {
               <i className="fab fa-linkedin" />
             </a>
           </div>
-
           <p className="text-sm text-gray-400">
             © {new Date().getFullYear()} TICKETFLIX. All Rights Reserved.
           </p>
@@ -213,7 +218,6 @@ const Footer = () => {
           </p>
         </div>
       </div>
-
     </footer>
   );
 };

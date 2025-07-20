@@ -129,6 +129,22 @@ const Usernavbar = () => {
     className="h-full w-auto object-contain"
   />
 </div>
+<div className='lg:hidden'>
+  <span className={`
+        font-winky-sans
+        not-italic
+        font-optical-auto
+        text-2xl
+        font-semibold
+      `}>Ticket</span><span className={`
+        font-winky-sans
+        not-italic
+        font-optical-auto
+        text-2xl
+        text-orange-500
+        font-semibold
+      `}>Flix</span>
+</div>
 </div>
 
 

@@ -12,6 +12,9 @@ module.exports = {
       screens: {
         antarikh: '1680px',
       },
+      fontFamily: {
+        'winky-sans': ['"Winky Sans"', 'sans-serif'],
+      },
 
       colors: {
         "custom-gray": "#222",
