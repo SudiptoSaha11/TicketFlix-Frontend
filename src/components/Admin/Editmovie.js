@@ -1,201 +1,323 @@
+// src/Admin/Editmovie.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import '../Admin/Editmovie.css';
+import "../Admin/Editmovie.css";
 
 function Editmovie() {
-  // State variables for movie details, including movieFormat
-  const [movieName, SetmovieName] = useState('');
-  const [movieGenre, SetmovieGenre] = useState('');
-  const [movieLanguage, SetmovieLanguage] = useState('');
-  const [movieDuration, SetmovieDuration] = useState('');
-  const [movieCast, SetmovieCast] = useState(''); // Will hold a JSON string initially
-  const [movieDescription, SetmovieDescription] = useState('');
-  const [movieReleasedate, SetmovieReleasedate] = useState('');
-  const [movieFormat, SetmovieFormat] = useState(''); // New state for movie format
-  const [id, setid] = useState('');
-
+  const [movieName, setMovieName] = useState("");
+  const [image, setImage] = useState("");               // Poster URL
+  const [movieGenre, setMovieGenre] = useState("");
+  const [movieLanguage, setMovieLanguage] = useState("");
+  const [movieDuration, setMovieDuration] = useState("");
+  const [movieCensor, setMovieCensor] = useState("");     // Censor rating
+  const [castMembers, setCastMembers] = useState([{ name: "", image: "" }]);
+  const [crewMembers, setCrewMembers] = useState([{ name: "", role: "", image: "" }]);
+  const [movieDescription, setMovieDescription] = useState("");
+  const [movieReleasedate, setMovieReleasedate] = useState("");
+  const [trailerLink, setTrailerLink] = useState("");
+  const [movieFormat, setMovieFormat] = useState("");
+  const [id, setId] = useState("");
   const navigate = useNavigate();
 
-  const handelSubmit = async (event) => {
-    event.preventDefault();
+  useEffect(() => {
+    // Load from localStorage
+    setMovieName(localStorage.getItem("moviename") || "");
+    setImage(localStorage.getItem("movieimage") || "");
+    setMovieGenre(localStorage.getItem("moviegenre") || "");
+    setMovieLanguage(localStorage.getItem("movielanguage") || "");
+    setMovieDuration(localStorage.getItem("movieduration") || "");
+    setMovieCensor(localStorage.getItem("moviecensor") || "");  // load censor
+    setMovieDescription(localStorage.getItem("moviedescription") || "");
+    setMovieReleasedate(localStorage.getItem("moviereleasedate") || "");
+    setTrailerLink(localStorage.getItem("movietrailer") || "");
+    setMovieFormat(localStorage.getItem("movieformat") || "");
+    setId(localStorage.getItem("id") || "");
 
-    // Ensure movieCast is sent as an array (parse it if it's a JSON string)
-    let parsedMovieCast = movieCast;
-    if (typeof movieCast === "string") {
-      try {
-        parsedMovieCast = JSON.parse(movieCast);
-      } catch (e) {
-        console.error("Failed to parse movieCast:", e);
-        // Optionally, you can set a default or show an error message here.
-      }
+    // Cast
+    const storedCast = localStorage.getItem("moviecast") || "[]";
+    try {
+      const arr = JSON.parse(storedCast);
+      setCastMembers(Array.isArray(arr) && arr.length ? arr : [{ name: "", image: "" }]);
+    } catch {
+      setCastMembers([{ name: "", image: "" }]);
     }
 
+    // Crew
+    const storedCrew = localStorage.getItem("moviecrew") || "[]";
+    try {
+      const arr = JSON.parse(storedCrew);
+      setCrewMembers(
+        Array.isArray(arr) && arr.length
+          ? arr
+          : [{ name: "", role: "", image: "" }]
+      );
+    } catch {
+      setCrewMembers([{ name: "", role: "", image: "" }]);
+    }
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
       await axios.patch(`https://ticketflix-backend.onrender.com/movieview/update/${id}`, {
         movieName,
+        image,
         movieGenre,
         movieLanguage,
         movieDuration,
-        movieCast: parsedMovieCast, // Send as an array of objects
+        movieCensor,            // include censor
+        movieCast: castMembers,
+        movieCrew: crewMembers,
         movieDescription,
         movieReleasedate,
-        movieFormat, // Include movieFormat in the update payload
+        trailerLink,
+        movieFormat,
       });
       navigate("/movieview");
     } catch (err) {
-      console.log("Error during update:");
-      if (err.response && err.response.data) {
-        console.log("Data:", err.response.data.message);
-        console.log("Status:", err.response.data.status);
-      } else {
-        console.log("Error:", err.message);
-      }
+      console.error("Error updating movie:", err);
     }
   };
 
-  // Load stored values (including movieFormat) from localStorage on component mount
-  useEffect(() => {
-    SetmovieName(localStorage.getItem("moviename") || '');
-    SetmovieGenre(localStorage.getItem("moviegenre") || '');
-    SetmovieLanguage(localStorage.getItem("movielanguage") || '');
-    SetmovieDuration(localStorage.getItem("movieduration") || '');
-    // Get the movieCast stored as a JSON string; if missing, use an empty array string
-    const storedMovieCast = localStorage.getItem("moviecast") || '[]';
-    SetmovieCast(storedMovieCast);
-    SetmovieDescription(localStorage.getItem("moviedescription") || '');
-    SetmovieReleasedate(localStorage.getItem("moviereleasedate") || '');
-    SetmovieFormat(localStorage.getItem("movieformat") || '');
-    setid(localStorage.getItem("id") || '');
-  }, []);
-
   return (
-    <body className="edit-body-movie-div">
-      <div>
-        <form style={{ margin: "5rem" }} onSubmit={handelSubmit}>
-          <div className="mb-3">
-            <label>Enter Movie Name</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter Movie Name"
-              value={movieName}
-              onChange={(e) => SetmovieName(e.target.value)}
-              required
-            />
-            <br />
-          </div>
+    <div className="edit-body-movie-div">
+      <form className="edit-form" onSubmit={handleSubmit}>
+        {/* Movie Name */}
+        <div className="mb-3">
+          <label>Movie Name</label>
+          <input
+            type="text"
+            className="form-control"
+            value={movieName}
+            onChange={(e) => setMovieName(e.target.value)}
+            required
+          />
+        </div>
 
-          <div className="mb-3">
-            <label>Enter Movie Genre</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter Movie Genre"
-              value={movieGenre}
-              onChange={(e) => SetmovieGenre(e.target.value)}
-              required
-            />
-            <br />
-          </div>
+        {/* Poster URL */}
+        <div className="mb-3">
+          <label>Poster URL</label>
+          <input
+            type="text"
+            className="form-control"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+            required
+          />
+          {image && <img src={image} alt="Poster" width="100" />}
+        </div>
 
-          <div className="mb-3">
-            <label>Enter Language</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter Language"
-              value={movieLanguage}
-              onChange={(e) => SetmovieLanguage(e.target.value)}
-              required
-            />
-            <br />
-          </div>
+        {/* Genre */}
+        <div className="mb-3">
+          <label>Genre</label>
+          <input
+            type="text"
+            className="form-control"
+            value={movieGenre}
+            onChange={(e) => setMovieGenre(e.target.value)}
+            required
+          />
+        </div>
 
-          <div className="mb-3">
-            <label>Enter Duration</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter Duration"
-              value={movieDuration}
-              onChange={(e) => SetmovieDuration(e.target.value)}
-              required
-            />
-            <br />
-          </div>
+        {/* Language */}
+        <div className="mb-3">
+          <label>Language</label>
+          <input
+            type="text"
+            className="form-control"
+            value={movieLanguage}
+            onChange={(e) => setMovieLanguage(e.target.value)}
+            required
+          />
+        </div>
 
-          {/* For simplicity, the cast is shown as a JSON string.  
-              In a production app, consider a more user-friendly cast editor. */}
-          <div className="mb-3">
-            <label>Enter Cast (JSON Format)</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder='e.g. [{"name":"John Doe", "image":"poster.jpg"}]'
-              value={movieCast}
-              onChange={(e) => SetmovieCast(e.target.value)}
-              required
-            />
-            <br />
-          </div>
+        {/* Duration */}
+        <div className="mb-3">
+          <label>Duration</label>
+          <input
+            type="text"
+            className="form-control"
+            value={movieDuration}
+            onChange={(e) => setMovieDuration(e.target.value)}
+            required
+          />
+        </div>
 
-          <div className="mb-3">
-            <label>Enter Description</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter Description"
-              value={movieDescription}
-              onChange={(e) => SetmovieDescription(e.target.value)}
-              required
-            />
-            <br />
-          </div>
+        {/* Censor Rating */}
+        <div className="mb-3">
+          <label>Censor Rating</label>
+          <input
+            type="text"
+            className="form-control"
+            value={movieCensor}
+            onChange={(e) => setMovieCensor(e.target.value)}
+            required
+          />
+        </div>
 
-          <div className="mb-3">
-            <label>Enter Releasedate</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter Releasedate"
-              value={movieReleasedate}
-              onChange={(e) => SetmovieReleasedate(e.target.value)}
-              required
-            />
-            <br />
-          </div>
+        {/* Cast Members */}
+        <div className="mb-3">
+          <label>Cast Members</label>
+          {castMembers.map((c, i) => (
+            <div key={i} className="cast-edit-row">
+              <input
+                type="text"
+                placeholder="Name"
+                value={c.name}
+                onChange={(e) => {
+                  const arr = [...castMembers];
+                  arr[i].name = e.target.value;
+                  setCastMembers(arr);
+                }}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Image URL"
+                value={c.image}
+                onChange={(e) => {
+                  const arr = [...castMembers];
+                  arr[i].image = e.target.value;
+                  setCastMembers(arr);
+                }}
+              />
+              {c.image && <img src={c.image} alt="Cast" width="80" />}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() =>
+              setCastMembers([...castMembers, { name: "", image: "" }])
+            }
+          >
+            Add Cast Member
+          </button>
+        </div>
 
-          {/* New input field for movie format */}
-          <div className="mb-3">
-            <label>Enter Movie Format</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter Movie Format"
-              value={movieFormat}
-              onChange={(e) => SetmovieFormat(e.target.value)}
-              required
-            />
-            <br />
-          </div>
+        {/* Crew Members */}
+        <div className="mb-3">
+          <label>Crew Members</label>
+          {crewMembers.map((c, i) => (
+            <div key={i} className="cast-edit-row">
+              <input
+                type="text"
+                placeholder="Name"
+                value={c.name}
+                onChange={(e) => {
+                  const arr = [...crewMembers];
+                  arr[i].name = e.target.value;
+                  setCrewMembers(arr);
+                }}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Role"
+                value={c.role}
+                onChange={(e) => {
+                  const arr = [...crewMembers];
+                  arr[i].role = e.target.value;
+                  setCrewMembers(arr);
+                }}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Image URL"
+                value={c.image}
+                onChange={(e) => {
+                  const arr = [...crewMembers];
+                  arr[i].image = e.target.value;
+                  setCrewMembers(arr);
+                }}
+              />
+              {c.image && <img src={c.image} alt="Crew" width="80" />}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() =>
+              setCrewMembers([
+                ...crewMembers,
+                { name: "", role: "", image: "" }
+              ])
+            }
+          >
+            Add Crew Member
+          </button>
+        </div>
 
+        {/* Description */}
+        <div className="mb-3">
+          <label>Description</label>
+          <input
+            type="text"
+            className="form-control"
+            value={movieDescription}
+            onChange={(e) => setMovieDescription(e.target.value)}
+            required
+          />
+        </div>
+
+        {/* Release Date */}
+        <div className="mb-3">
+          <label>Release Date</label>
+          <input
+            type="date"
+            className="form-control"
+            value={movieReleasedate}
+            onChange={(e) => setMovieReleasedate(e.target.value)}
+            required
+          />
+        </div>
+
+        {/* Trailer Link */}
+        <div className="mb-3">
+          <label>Trailer Link (YouTube URL)</label>
+          <input
+            type="text"
+            className="form-control"
+            value={trailerLink}
+            onChange={(e) => setTrailerLink(e.target.value)}
+            required
+          />
+          {trailerLink && (
+            <div style={{ marginTop: "0.5rem" }}>
+              <a href={trailerLink} target="_blank" rel="noopener noreferrer">
+                Preview Trailer
+              </a>
+            </div>
+          )}
+        </div>
+
+        {/* Format */}
+        <div className="mb-3">
+          <label>Format</label>
+          <input
+            type="text"
+            className="form-control"
+            value={movieFormat}
+            onChange={(e) => setMovieFormat(e.target.value)}
+            required
+          />
+        </div>
+
+        {/* Action Buttons */}
+        <div className="Update_container">
+          <button className="Updatebutton1" type="submit">
+            Update
+          </button>
+        </div>
+        <Link to="/movieview">
           <div className="Update_container">
-            <button className="Updatebutton1" type="submit">
-              Update
+            <button className="Homebutton1" type="button">
+              Home
             </button>
           </div>
-          <br />
-          <Link style={{ textDecoration: "none" }} to="/movieview">
-            <div className="Update_container">
-              <button className="Homebutton1" type="button">
-                Home
-              </button>
-            </div>
-          </Link>
-        </form>
-      </div>
-    </body>
+        </Link>
+      </form>
+    </div>
   );
 }
 

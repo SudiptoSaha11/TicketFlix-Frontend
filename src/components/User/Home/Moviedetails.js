@@ -8,6 +8,7 @@ import LoadingSpinner from "../../UIElements/LoadingSpinner";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import Card from "./Card";
+import { FaTheaterMasks } from 'react-icons/fa';
 
 // Helper to extract the YouTube ID from any common YouTube URL
 function getYouTubeID(url) {
@@ -28,8 +29,10 @@ function Moviedetails() {
   const [movieLanguage, setMovieLanguage] = useState("");
   const [movieFormat, setMovieFormat] = useState("");
   const [movieDuration, setMovieDuration] = useState("");
+  const [movieCensor, setMovieCensor] = useState("");
   const [movieDescription, setMovieDescription] = useState("");
   const [movieCast, setMovieCast] = useState([]);
+  const [movieCrew, setMovieCrew] = useState([]);
   const [trailerLink, setTrailerLink] = useState("");
   const [movieReleaseDate, setMovieReleaseDate] = useState("");
   const [id, setId] = useState("");
@@ -98,9 +101,11 @@ function Moviedetails() {
         movieLanguage,
         movieFormat,
         movieDuration,
+        movieCensor,
         movieDescription,
         imageURL,
         movieCast,
+        movieCrew,
         trailerLink,
         reviews: fetchedReviews,
         movieReleasedate,
@@ -112,8 +117,10 @@ function Moviedetails() {
       setMovieLanguage(movieLanguage);
       setMovieFormat(movieFormat);
       setMovieDuration(movieDuration);
+      setMovieCensor(movieCensor);
       setMovieDescription(movieDescription);
       setMovieCast(movieCast || []);
+      setMovieCrew(movieCrew || []);
       setTrailerLink(trailerLink || "");
       setMovieReleaseDate(movieReleasedate);
 
@@ -154,20 +161,6 @@ function Moviedetails() {
     fetchData(movieId);
   }, [navigate, paramId, location.state]);
 
-
-//   localStorage.setItem("image", movieImage);
-// localStorage.setItem("moviename", movieName);
-// sessionStorage.setItem("moviegenre", movieGenre);
-// sessionStorage.setItem("movielanguage", movieLanguage);
-// sessionStorage.setItem("movieformat", movieFormat);
-// sessionStorage.setItem("movieduration", movieDuration);
-// sessionStorage.setItem("moviedescription", movieDescription);
-// sessionStorage.setItem("moviecast", JSON.stringify(movieCast || []));
-// sessionStorage.setItem("trailerLink", trailerLink || "");
-// sessionStorage.setItem("movieReleasedate", movieReleaseDate);
-
-
-  // Fetch recommended movies (first 8, excluding current)
   useEffect(() => {
     setIsLoadingRec(true);
     axios
@@ -289,22 +282,22 @@ function Moviedetails() {
       >
         {/* 🌟 THUMBNAIL ON MOBILE (hidden at lg+) */}
         {thumbnailUrl && (
-  <div className="block lg:hidden w-full max-w-md mb-4">
-    <div className="relative" style={{ paddingTop: "56.25%" }}>
-      {/* Thumbnail Image */}
-      <img
-        src={thumbnailUrl}
-        alt={`${movieName} trailer thumbnail`}
-        className="absolute top-0 left-0 w-full h-full rounded-sm object-cover"
-        onError={(e) => {
-          e.currentTarget.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
-        }}
-      />
+          <div className="block lg:hidden w-full max-w-md mb-4">
+            <div className="relative" style={{ paddingTop: "56.25%" }}>
+              {/* Thumbnail Image */}
+              <img
+                src={thumbnailUrl}
+                alt={`${movieName} trailer thumbnail`}
+                className="absolute top-0 left-0 w-full h-full rounded-sm object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                }}
+              />
 
-      {/* Minimal Play Button */}
-      <button
-        onClick={() => navigate("/multimedia", { state: { trailerLink, movieName } })}
-        className="
+              {/* Minimal Play Button */}
+              <button
+                onClick={() => navigate("/multimedia", { state: { trailerLink, movieName } })}
+                className="
           absolute 
           top-[55%] left-1/2 
           transform -translate-x-1/2 -translate-y-1/2
@@ -315,19 +308,19 @@ function Moviedetails() {
           hover:bg-opacity-90
           transition
         "
-        aria-label="Play Trailer"
-      >
-        <svg
-          className="w-5 h-5 text-black"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M6 4l10 6-10 6V4z" />
-        </svg>
-      </button>
-    </div>
-  </div>
-)}
+                aria-label="Play Trailer"
+              >
+                <svg
+                  className="w-5 h-5 text-black"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M6 4l10 6-10 6V4z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
 
 
         {/* 🎬 POSTER ON DESKTOP (hidden below lg) */}
@@ -338,6 +331,7 @@ function Moviedetails() {
               w-3/4 max-w-[240px]
               lg:w-[200px] lg:order-2 lg:mr-[150px]
               xl:w-[200px] xl:order-2 xl:mr-[185px]
+              antarikh:w-[200px] antarikh:order-2 antarikh:mr-[215px]
             "
           >
             <img
@@ -376,20 +370,87 @@ function Moviedetails() {
             </h1>
           </div>
 
-        <div className="flex flex-nowrap justify-start"><div
-            className="
-              w-full flex flex-col flex-nowrap gap-1.5 items-start  pl-4 sm:justify-start
-              lg:flex lg:flex-col lg:gap-1.5 lg:items-start lg:ml-[139px] lg:mb-4
-              xl:flex xl:flex-col xl:gap-1.5 xl:items-start xl:ml-[172px]
-              antarikh:flex antarikh:flex-col antarikh:gap-1.6 antarikh:items-start antarikh:ml-[200px]
-            "
-          >
-            <span className="text-base font-semibold xl:font-bold text-start">{movieLanguage}</span>
-            <span className="text-base font-semibold xl:font-bold text-start">{movieGenre}</span>
-            <span className="text-base font-semibold xl:font-bold text-start">{movieFormat}</span>
-            <span className="text-base font-semibold xl:font-bold text-start">{movieDuration}</span>
+          <div className="flex flex-nowrap justify-start">
+            <div
+              className="
+      w-full flex flex-col flex-nowrap gap-1.5 items-start pl-4 sm:justify-start
+      lg:flex lg:flex-col lg:gap-1.5 lg:items-start lg:ml-[139px] lg:mb-4
+      xl:flex xl:flex-col xl:gap-1.5 xl:items-start xl:ml-[172px]
+      antarikh:flex antarikh:flex-col antarikh:gap-1.6 antarikh:items-start antarikh:ml-[200px]
+    "
+            >
+              {/* Language */}
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                    className="inline-block w-5 h-5 mr-1 align-middle"
+                    viewBox="2 1 20 21"
+                    fill="none">
+                    <path d="M20.58 19.37L17.59 11.01C17.38 10.46 16.91 10.12 16.37 10.12C15.83 10.12 15.37 10.46 15.14 11.03L12.16 19.37C12.02 19.76 12.22 20.19 12.61 20.33C13 20.47 13.43 20.27 13.57 19.88L14.19 18.15H18.54L19.16 19.88C19.27 20.19 19.56 20.38 19.87 20.38C19.95 20.38 20.04 20.37 20.12 20.34C20.51 20.2 20.71 19.77 20.57 19.38L20.58 19.37ZM14.74 16.64L16.38 12.05L18.02 16.64H14.74ZM12.19 7.85C9.92999 11.42 7.89 13.58 5.41 15.02C5.29 15.09 5.16 15.12 5.04 15.12C4.78 15.12 4.53 14.99 4.39 14.75C4.18 14.39 4.3 13.93 4.66 13.73C6.75999 12.51 8.48 10.76 10.41 7.86H4.12C3.71 7.86 3.37 7.52 3.37 7.11C3.37 6.7 3.71 6.36 4.12 6.36H7.87V4.38C7.87 3.97 8.21 3.63 8.62 3.63C9.02999 3.63 9.37 3.97 9.37 4.38V6.36H13.12C13.53 6.36 13.87 6.7 13.87 7.11C13.87 7.52 13.53 7.86 13.12 7.86H12.18L12.19 7.85ZM12.23 15.12C12.1 15.12 11.97 15.09 11.85 15.02C11.2 14.64 10.57 14.22 9.97999 13.78C9.64999 13.53 9.58 13.06 9.83 12.73C10.08 12.4 10.55 12.33 10.88 12.58C11.42 12.99 12.01 13.37 12.61 13.72C12.97 13.93 13.09 14.39 12.88 14.75C12.74 14.99 12.49 15.12 12.23 15.12Z" fill="#000000" />
+                  </svg>
+                  <span className="text-base font-semibold xl:font-bold text-start">
+                    {movieLanguage}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                    className="inline-block w-5 h-5 align-middle "
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    {/* Ticket shape */}
+                    <path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                    {/* Censor hole */}
+                    <circle cx="16" cy="12" r="2" />
+                  </svg>
+                  <span className="text-base font-semibold xl:font-bold text-start">{movieCensor}</span>
+                </div>
+              </div>
+
+              {/* Genre */}
+              <div className="flex items-center">
+                <FaTheaterMasks className="inline-block w-5 h-5 mr-1 align-middle" />
+                <span className="text-base font-semibold xl:font-bold text-start">
+                  {movieGenre}
+                </span>
+              </div>
+
+              {/* Format */}
+              <div className="flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="inline-block w-5 h-5 mr-1 align-middle"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M4 4h16v16H4V4zm2 2v12h12V6H6z" />
+                  <path d="M8 8h1v1H8zm0 2h1v1H8zm0 2h1v1H8zm0 2h1v1H8zm2-6h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm2-6h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm2-6h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1zm0 2h1v1h-1z" />
+                </svg>
+                <span className="text-base font-semibold xl:font-bold text-start">
+                  {movieFormat}
+                </span>
+              </div>
+
+              {/* Duration */}
+              <div className="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                  className="inline-block w-5 h-5 mr-1 align-middle"
+                  viewBox="0 0 24 24"
+                  fill="none">
+                  <path d="M23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12ZM3.00683 12C3.00683 16.9668 7.03321 20.9932 12 20.9932C16.9668 20.9932 20.9932 16.9668 20.9932 12C20.9932 7.03321 16.9668 3.00683 12 3.00683C7.03321 3.00683 3.00683 7.03321 3.00683 12Z" fill="#0F0F0F" />
+                  <path d="M12 5C11.4477 5 11 5.44771 11 6V12.4667C11 12.4667 11 12.7274 11.1267 12.9235C11.2115 13.0898 11.3437 13.2343 11.5174 13.3346L16.1372 16.0019C16.6155 16.278 17.2271 16.1141 17.5032 15.6358C17.7793 15.1575 17.6155 14.5459 17.1372 14.2698L13 11.8812V6C13 5.44772 12.5523 5 12 5Z" fill="#0F0F0F" />
+                </svg>
+                <span className="text-base font-semibold xl:font-bold text-start">
+                  {movieDuration}
+                </span>
+              </div>
+            </div>
           </div>
-          </div> 
+
 
           <div
             className="
@@ -407,7 +468,7 @@ function Moviedetails() {
                 sm:ml-[11rem]
                 lg:ml-0 lg:mr-0
                 xl:ml-0 xl:mr-0
-                antarikh:ml-0 antarikh:mr-0
+                antarikh:ml-3 antarikh:mr-0
               "
             >
               <FaFilm className="inline-block mb-1 mr-1" />
@@ -424,7 +485,8 @@ function Moviedetails() {
             ) : (
               <button
                 onClick={handleClick}
-                className="ml-[11rem] bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 max-lg:hidden lg:inline-block lg:ml-0 xl:inline-block xl:ml-0"
+                className="ml-[11rem] bg-[#135058] text-white px-4 py-3 rounded-full text-base transition-transform duration-200 hover:scale-105 max-lg:hidden lg:inline-block lg:ml-0 xl:inline-block xl:ml-0
+                antarikh:inline-block antarikh:ml-3"
               >
                 Book Tickets
               </button>
@@ -450,7 +512,7 @@ function Moviedetails() {
           lg:px-40 lg:mt-10 lg:mb-12 lg:ml-[154px] lg:mr-[100px]
           xl:px-40 xl:mt-10 xl:mb-12 xl:ml-[188px] xl:mr-[150px]
           2xl:ml-[198px]
-          antarikh:px-40 antarikh:mt-10 antarikh:mb-12 antarikh:ml-[215px] antarikh:mr-[200px]
+          antarikh:px-40 antarikh:mt-10 antarikh:mb-12 antarikh:ml-[220px] antarikh:mr-[200px]
         "
       >
         <h2 className="text-xl font-bold mb-2 lg:text-2xl lg:mb-4">About the movie</h2>
@@ -464,7 +526,7 @@ function Moviedetails() {
           lg:mb-16 lg:mt-[-50px] lg:mx-[164px]
           xl:mb-16 xl:mt-[-50px] xl:mx-[200px]
           2xl:ml-[210px] 2xl:mr-[200px]
-          antarikh:mb-16 antarikh:mt-[-50px] antarikh:mx-[230px]
+          antarikh:mb-16 antarikh:mt-[-50px] antarikh:mx-[235px]
         "
       >
         <a href="https://codehubsodepur.in/" rel="noopener noreferrer">
@@ -479,7 +541,7 @@ function Moviedetails() {
           lg:px-40 lg:mb-12
           xl:px-40 xl:mb-12 xl:ml-[9rem]
           2xl:ml-[153px]
-          antarikh:px-40 antarikh:mb-12 antarikh:ml-[10.5rem]
+          antarikh:px-40 antarikh:mb-12 antarikh:ml-[11rem]
         "
       >
         <h2
@@ -504,7 +566,7 @@ function Moviedetails() {
                       className="w-[80px] h-[80px] rounded-full object-cover mb-2"
                     />
                     <div className="flex flex-wrap justify-center w-20">
-                    <span className="block text-center text-sm font-medium">{actor.name}</span>
+                      <span className="block text-center text-sm font-medium">{actor.name}</span>
                     </div>
                   </div>
                 </SwiperSlide>
@@ -524,19 +586,73 @@ function Moviedetails() {
                   className="w-[120px] h-[120px] rounded-full object-cover mb-2"
                 />
                 <div className="flex flex-wrap justify-center w-24">
-                <span className="text-center font-medium">{actor.name}</span>
+                  <span className="text-center font-medium">{actor.name}</span>
                 </div>
               </li>
             ))}
           </ul>
         )}
+        <hr className="max-lg:hidden my-8 border-gray-300 w-3/4 ml-[2.8rem]" />
+
 
         {/* EMPTY STATE */}
         {movieCast.length === 0 && <p className="text-center">No cast information available.</p>}
       </div>
 
+      <div className="xl:flex xl:flex-col xl:justify-start xl:items-start px-4 mb-8
+          lg:px-40 lg:mb-12
+          xl:px-40 xl:mb-12 xl:ml-[9rem]
+          2xl:ml-[153px]
+          antarikh:px-40 antarikh:mb-12 antarikh:ml-[11rem]">
+
+        <h2 className="text-lg font-bold mb-4 lg:px-40 lg:mt-[-30px] lg:mb-12 lg:ml-[0px]
+            xl:px-40 xl:mt-[-30px] xl:mb-12 xl:ml-[-115px]">Crew</h2>
+        {movieCrew.length > 0 ? (
+          <ul className="hidden lg:flex flex-wrap justify-center gap-6">
+            {movieCrew.map((member, idx) => (
+              <li key={idx} className="flex flex-col items-center">
+                <img
+                  src={member.image}
+                  alt={`${member.name} (${member.role})`}
+                  className="w-[100px] h-[100px] rounded-full object-cover mb-2"
+                />
+                <div className="text-center font-medium"><span>{member.name}</span></div>
+                <div className="text-center text-sm text-gray-600 pt-[5px]"><span>{member.role}</span></div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-center 2xl:ml-[33rem]">No crew information available.</p>
+        )}
+
+
+        {/* Mobile Swiper for Crew */}
+        {movieCrew.length > 0 && isMobile && (
+          <div className="block lg:hidden">
+            <Swiper slidesPerView={2.4} spaceBetween={30} freeMode={true}>
+              {movieCrew.map((member, idx) => (
+                <SwiperSlide key={idx} className="w-auto">
+                  <div className="flex flex-col items-center">
+                    <img
+                      src={member.image}
+                      alt={`${member.name} (${member.role})`}
+                      className="w-[80px] h-[80px] rounded-full object-cover mb-2"
+                    />
+                    <div className="flex flex-wrap justify-center w-20">
+                      <span className="block text-center text-sm font-medium">{member.name}</span>
+                      <span className="block text-center text-xs text-gray-600">{member.role}</span>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+
+        )}
+      </div>
+
       {/* Movie Reviews */}
-      <div className="px-4 mb-[-4px] lg:mx-[155px] lg:mb-12 xl:mx-[185px] xl:mb-12 antarikh:mx-[215px] 2xl:ml-[195px] antarikh:mb-12">
+      <div className="px-4 mb-[-4px] lg:mx-[155px] lg:mb-12 xl:mx-[185px] xl:mb-12 antarikh:mx-[220px] 2xl:ml-[195px] antarikh:mb-12">
         <h2 className="text-xl text-[#135058] font-bold mb-4 border-b-2 border-[#135058] pb-2 lg:text-2xl lg:mb-6">
           Reviews
         </h2>
@@ -551,10 +667,11 @@ function Moviedetails() {
                 lg:w-10 lg:h-10 lg:text-xl
                 xl:w-10 xl:h-10 xl:text-xl
                 antarikh:w-10 antarikh:h-10 antarikh:text-xl
+                
               `}
             >
               {arrowPosition === "right" ? ">" : "<"}
-            </button>                          
+            </button>
             <div
               ref={reviewsSliderRef}
               onScroll={handleScroll}
@@ -708,7 +825,7 @@ function Moviedetails() {
               lg:ml-[16rem] lg:text-[26px] lg:font-bold
               xl:ml-[18.7rem] xl:text-[28px] xl:py-[10px] xl:font-bold
               2xl:ml-[19.1rem]
-              antarikh:ml-[20.3rem] antarikh:text-[28px] antarikh:py-[10px]
+              antarikh:ml-[20.8rem] antarikh:text-[28px] antarikh:py-[10px]
               debojit:ml-[23.3rem] debojit:text-[28px] debojit:py-[10px]
             "
           >
@@ -762,81 +879,57 @@ function Moviedetails() {
             </Swiper>
           </div>
         ) : (
-          <div
-            className="relative w-[90%] overflow-hidden grid place-items-center left-[145px] pr-[55px]
-                       xl:left-[155px] xl:pr-[55px]
-                       2xl:left-[162px] 2xl:pr-[95px]
-                       antarikh:left-[175px] antarikh:pr-[85px]"
-          >
-            {/* Left Arrow */}
-            <button
-              type="button"
-              className="absolute top-1/2 left-[45px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full
-                         bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white
-                         dark:focus:ring-gray-800/70 focus:outline-none antarikh:left-[60px] debojit:left-[100px]"
-              onClick={handlePrevRecSlide}
-            >
-              <svg
-                className="w-4 h-4 text-white dark:text-gray-800"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 1 1 5l4 4" />
-              </svg>
-              <span className="sr-only">Previous</span>
-            </button>
-
-            {/* Desktop Carousel */}
-            <div className="w-full max-w-[84%] overflow-hidden ml-8">
-              <div
-                className="flex transition-transform duration-[1000ms]"
-                style={{ transform: `translateX(-${recommendedCurrentSlide * 100}%)` }}
-              >
-                {displayedRec.map((item) => (
-                  <div key={item._id} className="min-w-[25%] box-border flex justify-center items-center flex-shrink-0 no-underline mb-[20px]">
-                    <Link
-                      to={`/moviedetails/${item._id}`}
-                      state={item}
-                      className="text-[#222] font-bold no-underline hover:no-underline"
-                      onClick={() => {
-                        localStorage.setItem("id", item._id);
-                        localStorage.setItem("moviename", item.movieName);
-                        localStorage.setItem("moviegenre", item.movieGenre);
-                        localStorage.setItem("movielanguage", item.movieLanguage);
-                        localStorage.setItem("movieformat", item.movieFormat);
-                      }}
-                    >
-                      <Card image={item.image} movieName={item.movieName} movieGenre={item.movieGenre} />
-                    </Link>
-                  </div>
-                ))}
+          <div className="relative w-full overflow-visible ">
+            <div className="relative w-[90%] overflow-visible grid place-items-center left-[145px] pr-[55px] xl:left-[155px] xl:pr-[55px] 2xl:left-[162px] 2xl:pr-[95px] antarikh:left-[175px] antarikh:pr-[85px] ">
+              <div className="w-full max-w-[84%] overflow-hidden ml-8 ">
+                <div
+                  className="flex transition-transform duration-[1000ms] "
+                  style={{ transform: `translateX(-${recommendedCurrentSlide * 100}%)` }}
+                >
+                  {displayedRec.map(item => (
+                    <div key={item._id} className="min-w-[25%] flex justify-center items-center flex-shrink-0 mb-[20px] ">
+                      <Link
+                        to={`/moviedetails/${item._id}`}
+                        state={item}
+                        className="no-underline"
+                        onClick={() => {
+                          localStorage.setItem("id", item._id);
+                          localStorage.setItem("moviename", item.movieName);
+                          localStorage.setItem("moviegenre", item.movieGenre);
+                          localStorage.setItem("movielanguage", item.movieLanguage);
+                          localStorage.setItem("movieformat", item.movieFormat);
+                        }}
+                      >
+                        <Card image={item.image} movieName={item.movieName} movieGenre={item.movieGenre} />
+                      </Link>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Right Arrow */}
-            <button
-              type="button"
-              disabled={recommendedCurrentSlide === recTotalSlides - 1}
-              className="absolute top-1/2 right-[100px] z-30 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full
-                         bg-white/30 dark:bg-gray-800/30 hover:bg-white/50 dark:hover:bg-gray-800/60 focus:ring-4 focus:ring-white
-                         dark:focus:ring-gray-800/70 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed
-                         2xl:right-[120px] antarikh:right-[140px] debojit:right-[170px]"
-              onClick={handleNextRecSlide}
-            >
-              <svg
-                className="w-4 h-4 text-white dark:text-gray-800"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
+              <button
+                type="button"
+                onClick={handlePrevRecSlide}
+                className="absolute top-1/2 left-[80px] transform -translate-y-1/2 z-50 flex items-center justify-center w-10 h-10 rounded-full bg-white/50 hover:bg-white/70 focus:outline-none"
               >
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
-              </svg>
-              <span className="sr-only">Next</span>
-            </button>
+                <svg className="w-4 h-4 text-gray-800" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 1L1 5L5 9" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleNextRecSlide}
+                disabled={recommendedCurrentSlide === recTotalSlides - 1}
+                className="absolute top-1/2 right-[130px] transform -translate-y-1/2 z-50 flex items-center justify-center w-10 h-10 rounded-full bg-white/50 hover:bg-white/70 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg className="w-4 h-4 text-gray-800" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 9L5 5L1 1" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                </svg>
+              </button>
+            </div>
           </div>
+
         )}
       </div>
 

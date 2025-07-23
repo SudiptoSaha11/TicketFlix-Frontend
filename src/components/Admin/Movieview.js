@@ -2,152 +2,185 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../Admin/Navbar";
 import axios from "axios";
 import "../Admin/Movieview.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+// Keys for localStorage transfer when editing
+const DETAIL_KEYS = [
+  "id",
+  "moviename",
+  "moviegenre",
+  "movielanguage",
+  "movieduration",
+  "moviecensor",       // new key
+  "moviecast",
+  "moviecrew",
+  "moviedescription",
+  "moviereleasedate",
+  "movietrailer",
+  "movieformat",
+  "movieimage",
+  "moviereviews",
+];
 
 const Movieview = () => {
   const [data, setData] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
-      localStorage.setItem("id", "");
-      localStorage.setItem("Movie Name", "");
-      localStorage.setItem("movie Genre", "");
-      localStorage.setItem("movie Language", "");
-      localStorage.setItem("movie Duration", "");
-      localStorage.setItem("movie Cast", "");
-      localStorage.setItem("movie Description", "");
-      localStorage.setItem("movie Releasedate", "");
-      localStorage.setItem("movie Trailer", "");
-      localStorage.setItem("movie Format", "");
-      localStorage.setItem("moviereviews", "");
-
-      const response = await axios.get("https://ticketflix-backend.onrender.com/movieview");
-      setData(response.data);
-      console.log("Fetched movies:", response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
+      const res = await axios.get("https://ticketflix-backend.onrender.com/movieview");
+      setData(res.data);
+    } catch (err) {
+      console.error("Error fetching movies:", err);
     }
   };
 
   useEffect(() => {
     fetchData();
+
+    if (!localStorage.getItem("isPopupShown")) {
+      setShowPopup(true);
+      setTimeout(() => {
+        setShowPopup(false);
+        localStorage.setItem("isPopupShown", "true");
+      }, 3000);
+    }
   }, []);
 
-  function setID(
-    _id,
-    movieName,
-    movieGenre,
-    movieLanguage,
-    movieDuration,
-    movieCast,
-    movieDescription,
-    movieReleasedate,
-    trailerLink,
-    movieFormat,
-    reviews
-  ) {
-    console.log("Selected movie ID:", _id);
-    localStorage.setItem("id", _id);
-    localStorage.setItem("moviename", movieName);
-    localStorage.setItem("moviegenre", movieGenre);
-    localStorage.setItem("movielanguage", movieLanguage);
-    localStorage.setItem("movieduration", movieDuration);
-    localStorage.setItem("moviecast", JSON.stringify(movieCast));
-    localStorage.setItem("moviedescription", movieDescription);
-    localStorage.setItem("moviereleasedate", movieReleasedate);
-    localStorage.setItem("movietrailer", trailerLink);
-    localStorage.setItem("movieformat", movieFormat);
-    localStorage.setItem("moviereviews", JSON.stringify(reviews));
-  }
+  const handleEditPrep = (m) => {
+    DETAIL_KEYS.forEach((k) => localStorage.removeItem(k));
+    localStorage.setItem("id", m._id);
+    localStorage.setItem("moviename", m.movieName);
+    localStorage.setItem("moviegenre", m.movieGenre);
+    localStorage.setItem("movielanguage", m.movieLanguage);
+    localStorage.setItem("movieduration", m.movieDuration);
+    localStorage.setItem("moviecensor", m.movieCensor);           // new
+    localStorage.setItem("moviecast", JSON.stringify(m.movieCast));
+    localStorage.setItem("moviecrew", JSON.stringify(m.movieCrew));
+    localStorage.setItem("moviedescription", m.movieDescription);
+    localStorage.setItem("moviereleasedate", m.movieReleasedate);
+    localStorage.setItem("movietrailer", m.trailerLink);
+    localStorage.setItem("movieformat", m.movieFormat);
+    localStorage.setItem("movieimage", m.image);
+    localStorage.setItem("moviereviews", JSON.stringify(m.reviews || []));
+    navigate("/editmovie");
+  };
 
-  async function deleted(id) {
+  const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(`https://ticketflix-backend.onrender.com/movieview/delete/${id}`);
-      console.log("Delete response:", response);
+      await axios.delete(`https://ticketflix-backend.onrender.com/movieview/delete/${id}`);
+      fetchData();
     } catch (err) {
       console.error("Error deleting movie:", err);
     }
-    fetchData();
-  }
+  };
 
   return (
     <div className="movieview">
       <Navbar />
-      <div className="movieview-table-container">
-        <table className="movieview-table1_">
+
+      {showPopup && (
+        <div className="popup-container">
+          <div className="popup">
+            <h2>Welcome back, Admin!</h2>
+            <button
+              onClick={() => setShowPopup(false)}
+              className="close-popup-btn"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="table-container">
+        <table className="table1">
           <thead>
             <tr>
-              <th>Movie Poster</th>
-              <th>Movie Name</th>
-              <th>Movie Genre</th>
-              <th>Movie Language</th>
-              <th>Movie Duration</th>
-              <th>Movie Cast</th>
-              <th>Movie Description</th>
-              <th>Movie Releasedate</th>
-              <th>Movie Trailer</th>
-              <th>Movie Format</th>
+              <th>Poster</th>
+              <th>Name</th>
+              <th>Genre</th>
+              <th>Language</th>
+              <th>Duration</th>
+              <th>Censor</th>
+              <th>Cast</th>
+              <th>Crew</th>
+              <th>Description</th>
+              <th>Release Date</th>
+              <th>Trailer</th>
+              <th>Format</th>
               <th>Update</th>
               <th>Delete</th>
             </tr>
           </thead>
           <tbody>
-            {data.map((item) => (
-              <tr key={item._id}>
+            {data.map((m) => (
+              <tr key={m._id}>
                 <td>
                   <img
-                    className="movieview-poster"
-                    src={item.image}
-                    alt={item.movieName}
+                    className="table-imagesize"
+                    src={m.image}
+                    alt={m.movieName}
                   />
                 </td>
-                <td>{item.movieName}</td>
-                <td>{item.movieGenre}</td>
-                <td>{item.movieLanguage}</td>
-                <td>{item.movieDuration}</td>
+                <td>{m.movieName}</td>
+                <td>{m.movieGenre}</td>
+                <td>{m.movieLanguage}</td>
+                <td>{m.movieDuration}</td>
+                <td>{m.movieCensor}</td>
                 <td>
-                  {item.movieCast &&
-                    item.movieCast.map((cast, index) => (
-                      <div key={index} className="movieview-cast-container-admin">
-                        <img
-                          className="movieview-cast-image-admin"
-                          src={cast.image}
-                          alt={cast.name}
-                        />
-                        <div>{cast.name}</div>
+                  {m.movieCast?.map((c, i) => (
+                    <div key={i} className="cast-container-admin">
+                      <img
+                        className="cast-image-admin"
+                        src={c.image}
+                        alt={c.name}
+                      />
+                      <div>{c.name}</div>
+                    </div>
+                  ))}
+                </td>
+                <td>
+                  {m.movieCrew?.map((c, i) => (
+                    <div key={i} className="cast-container-admin">
+                      <img
+                        className="cast-image-admin"
+                        src={c.image}
+                        alt={`${c.name} (${c.role})`}
+                      />
+                      <div>
+                        <strong>{c.name}</strong>
+                        <div className="crew-role">{c.role}</div>
                       </div>
-                    ))}
+                    </div>
+                  ))}
                 </td>
-                <td>{item.movieDescription}</td>
-                <td>{item.movieReleasedate}</td>
-                <td>{item.trailerLink}</td>
-                <td>{item.movieFormat}</td>
+                <td>{m.movieDescription}</td>
+                <td>{new Date(m.movieReleasedate).toLocaleDateString()}</td>
                 <td>
-                  <Link to="/editmovie" style={{ textDecoration: "none" }}>
-                    <button
-                      className="movieview-update"
-                      onClick={() =>
-                        setID(
-                          item._id,
-                          item.movieName,
-                          item.movieGenre,
-                          item.movieLanguage,
-                          item.movieDuration,
-                          item.movieCast,
-                          item.movieDescription,
-                          item.movieReleasedate,
-                          item.trailerLink,
-                          item.movieFormat,
-                          item.reviews
-                        )
-                      }
-                    >
-                      Update
-                    </button>
-                  </Link>
+                  <a
+                    href={m.trailerLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Trailer
+                  </a>
+                </td>
+                <td>{m.movieFormat}</td>
+                <td>
+                  <button
+                    className="update"
+                    onClick={() => handleEditPrep(m)}
+                  >
+                    Update
+                  </button>
                 </td>
                 <td>
-                  <button className="movieview-delete" onClick={() => deleted(item._id)}>
+                  <button
+                    className="delete"
+                    onClick={() => handleDelete(m._id)}
+                  >
                     Delete
                   </button>
                 </td>
@@ -157,9 +190,9 @@ const Movieview = () => {
         </table>
       </div>
 
-      <div className="movieview-Add-button-container">
-        <Link to="/movie" style={{ textDecoration: "none" }}>
-          <button className="movieview-Addbutton">Add Movie</button>
+      <div className="Add_button_container">
+        <Link to="/movie">
+          <button className="Addbutton">Add Movie</button>
         </Link>
       </div>
     </div>
