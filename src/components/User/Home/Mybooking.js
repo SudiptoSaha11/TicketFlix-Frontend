@@ -426,12 +426,9 @@ const MyBooking = () => {
                   {/* Details */}
                   <div className="flex-grow mt-6 md:mt-0">
                     {/* Title & Status */}
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-2">
                       <div className="cursor-pointer" onClick={() => handleCardClick(booking._id)}>
                         <h2 className="text-xl font-bold text-gray-900">{name}</h2>
-                        <span className="text-gray-500 text-sm">
-                          Booking ID: {formatBookingId(booking._id)}
-                        </span>
                       </div>
                       <span
                         className={`px-3 py-1 rounded-full text-sm font-semibold ${
@@ -441,6 +438,17 @@ const MyBooking = () => {
                         {booking.status}
                       </span>
                     </div>
+                    <div className="flex mb-3 justify-between mr-28">
+                        <span className="text-gray-500 text-sm">
+                          Booking ID: {formatBookingId(booking._id)}
+                        </span>
+                        <span className="text-gray-500 text-sm">
+                          Venue: {booking.Venue}
+                        </span>
+                        <span className="text-gray-500 text-sm">
+                          Show-Time: {booking.Time}
+                        </span>
+                      </div>
 
                     {/* Info Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
