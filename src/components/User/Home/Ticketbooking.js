@@ -206,7 +206,7 @@ const Ticketbooking = () => {
             Select <span className="font-bold text-orange-500">{hoveredCount}</span> seats
           </p>
           <div
-            className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-gray-700 cursor-pointer hover:bg-gray-200 transition"
+            className="flex items-center gap-1 px-3 py-1 mb-3 bg-gray-100 rounded-full text-gray-700 cursor-pointer hover:bg-gray-200 transition"
             onClick={() => setIsCountModalOpen(true)}
           >
             <FaEdit className="text-orange-400"/>
@@ -255,7 +255,7 @@ const Ticketbooking = () => {
       </div>
 
       {/* Bottom Pay Bar */}
-      <div className="fixed bottom-0 left-0 w-full bg-white py-4 shadow-inner z-50 border-t-2 border-gray-100">
+      <div className="fixed bottom-0 left-0 w-full bg-white max-lg:py-2 lg:py-4 shadow-inner z-50 border-t-2 border-gray-100 max-lg:h-20 ">
         <div className="max-w-4xl mx-auto px-4">
           <StyledWrapper>
             <button className="Btn" onClick={handlePayClick}>
@@ -293,7 +293,7 @@ const Ticketbooking = () => {
       <Modal
         isOpen={isCountModalOpen}
         onRequestClose={() => setIsCountModalOpen(false)}
-        className="relative bg-white rounded-2xl max-w-md w-full mx-4 shadow-xl overflow-hidden"
+        className="relative bg-white rounded-2xl max-w-md w-full mx-4 shadow-xl overflow-hidden max-lg:mb-10"
         overlayClassName="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center"
       >
         <button
@@ -309,21 +309,21 @@ const Ticketbooking = () => {
           <p className="text-center text-gray-600 mb-6">
             Choose number of seats you want to book
           </p>
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-6 max-lg:mt-[-8px]">
             <img
               src={seatIcons[hoveredCount]}
               alt={`${hoveredCount} seats`}
-              className="h-28 object-contain"
+              className="h-28 object-contain max-lg:h-20"
             />
           </div>
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
+          <div className="flex flex-wrap justify-center gap-2.5 lg:gap-3 mb-8">
             {[...Array(10)].map((_, i) => {
               const num = i + 1;
               return (
                 <div
                   key={num}
                   onMouseEnter={() => setHoveredCount(num)}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 cursor-pointer transition duration-200 shadow-sm ${
+                  className={`w-10 h-10 max-lg:w-[35px] max-lg:h-[35px] rounded-full flex items-center justify-center border-2 cursor-pointer transition duration-200 shadow-sm ${
                     hoveredCount === num
                       ? 'bg-gradient-to-r from-orange-400 to-orange-500 border-orange-600 text-white scale-110 shadow-md'
                       : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
@@ -334,7 +334,7 @@ const Ticketbooking = () => {
               );
             })}
           </div>
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+          <div className="bg-gray-50 rounded-lg px-4 py-2 mb-6 lg:p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <FaTicketAlt className="text-orange-500 mr-2"/>
@@ -405,7 +405,7 @@ const SeatSelection = ({
         [['C','B','A'], ticketPrices.SilverTicketPrice, 'Silver']
       ].map(([rows, price, label], idx) => (
         <div key={idx} className="mb-8">
-          <h4 className="text-lg font-bold mb-4 px-2 flex items-center">
+          <h4 className="text-lg font-bold mb-3 px-2 flex items-center">
             <div className={`w-3 h-3 mr-2 ${
               label === 'Platinum'
                 ? 'bg-gradient-to-r from-purple-500 to-blue-500'
@@ -475,7 +475,7 @@ const StyledWrapper = styled.div`
     color: white;
     font-size: 1.1rem;
     font-weight: 700;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
