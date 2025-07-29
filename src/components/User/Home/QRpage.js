@@ -57,12 +57,6 @@ const QRpage = () => {
 
   return (
     <div className="p-6 max-w-md mx-auto bg-white shadow-md rounded-xl space-y-4 mt-6 relative">
-      <button
-        onClick={() => navigate('/')}
-        className="absolute top-3 left-3 text-gray-700 hover:text-black text-sm font-medium"
-      >
-        ← Back
-      </button>
 
       <h2 className="text-2xl font-bold text-center">🎫 Ticket Validation</h2>
 

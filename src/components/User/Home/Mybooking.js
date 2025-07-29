@@ -280,7 +280,7 @@ const MyBooking = () => {
                 </div>
                 <div className="flex justify-center mb-4">
                   <QRCodeCanvas
-                    value={`https://ticketflix-official.netlify.app/qr/${bookingDetails._id}`}
+                    value={`https://ticketflix-official.netlify.app/qrprotectedpage/${bookingDetails._id}`}
                     size={140}
                     bgColor="#ffffff"
                     fgColor="#1f2937"
@@ -486,7 +486,7 @@ const MyBooking = () => {
                       <div className="flex items-center space-x-4">
                         <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-sm">
                           <QRCodeCanvas
-                            value={`https://ticketflix-official.netlify.app/qr/${bookingDetails._id}`}
+                            value={`https://ticketflix-official.netlify.app/qrprotectedpage/${booking?._id || ''}`}
                             size={80}
                             bgColor="#ffffff"
                             fgColor="#4f46e5"
