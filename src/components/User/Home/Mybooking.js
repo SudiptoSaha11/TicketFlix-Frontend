@@ -280,7 +280,7 @@ const MyBooking = () => {
                 </div>
                 <div className="flex justify-center mb-4">
                   <QRCodeCanvas
-                    value={JSON.stringify(bookingDetails)}
+                    value={`https://ticketflix-official.netlify.app/qr/${bookingDetails._id}`}
                     size={140}
                     bgColor="#ffffff"
                     fgColor="#1f2937"
@@ -288,7 +288,8 @@ const MyBooking = () => {
                   />
                 </div>
                 {bookingDetails.status !== "cancelled" &&
-                  bookingDetails.status !== "finished" && (
+                  bookingDetails.status !== "used" &&
+                  bookingDetails.status !== "rejected" && (
                     <button
                       onClick={() => handleCancelClick(bookingDetails)}
                       className="w-full py-2 bg-red-500 text-white rounded-full text-sm font-semibold hover:bg-red-600 transition"
@@ -485,7 +486,7 @@ const MyBooking = () => {
                       <div className="flex items-center space-x-4">
                         <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-sm">
                           <QRCodeCanvas
-                            value={JSON.stringify(booking)}
+                            value={`https://ticketflix-official.netlify.app/qr/${bookingDetails._id}`}
                             size={80}
                             bgColor="#ffffff"
                             fgColor="#4f46e5"
@@ -495,24 +496,20 @@ const MyBooking = () => {
                         <span className="text-sm text-gray-500">Scan QR code at venue</span>
                       </div>
 
-                      {!isCancelled && (
-                        <button
-                          onClick={() => handleCancelClick(booking)}
-                          className="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium flex items-center"
-                        >
-                          <svg
-                            className="h-5 w-5 mr-2"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          Cancel Booking
-                        </button>
+                      {!['cancelled', 'used', 'rejected'].includes(booking.status?.toLowerCase()) && (
+                            <button
+                              onClick={() => handleCancelClick(booking)}
+                              className="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium flex items-center"
+                            >
+                              <svg className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path
+                                  fillRule="evenodd"
+                                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              Cancel Booking
+                            </button>
                       )}
                     </div>
                   </div>

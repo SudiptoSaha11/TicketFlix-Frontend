@@ -43,6 +43,9 @@ import SearchPage from './components/User/Home/SearchPage';
 import AddBeverage from './components/Admin/Addbeverage';
 import Beverageview from './components/Admin/Beverageview';
 import UserBeverage from './components/User/Home/Userbeverage';
+import QRpage from './components/User/Home/QRpage';
+import QRProtectedPage from './components/User/Home/QRprotectedpage';
+import StaffLogin from './components/User/Home/StaffLogin';
 
 const App=()=> {
 return (
@@ -135,6 +138,12 @@ return (
             element = {<Beverageview/>}/>
           <Route path = '/userbeverage'
             element = {<UserBeverage/>}/>
+          <Route path = '/qrpage/:pid'
+            element = {<QRpage/>}/>
+          <Route path = '/qrprotectedpage/:pid'
+            element = {<QRProtectedPage/>}/>
+          <Route path = '/staff/login'
+            element = {<StaffLogin/>}/>
         </Routes>
         </Router>
   </>
