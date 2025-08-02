@@ -74,7 +74,7 @@ const MyBooking = () => {
 
   useEffect(() => {
     const cleanupStale = async () => {
-      const twoDaysAgo = dayjs().subtract(0, "day");
+      const twoDaysAgo = dayjs().subtract(2, "day");
       const toDelete = bookings.filter(b => {
         const st = b.status?.toLowerCase();
         if (st !== "used" && st !== "rejected") return false;
