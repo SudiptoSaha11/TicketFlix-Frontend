@@ -72,6 +72,33 @@ const MyBooking = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const cleanupStale = async () => {
+      const twoDaysAgo = dayjs().subtract(0, "day");
+      const toDelete = bookings.filter(b => {
+        const st = b.status?.toLowerCase();
+        if (st !== "used" && st !== "rejected") return false;
+        return dayjs.utc(b.bookingDate).local().isBefore(twoDaysAgo);
+      });
+
+      await Promise.all(
+        toDelete.map(b =>
+          axios
+            .delete(`https://ticketflix-backend.onrender.com/booking/delete/${b._id}`)
+            .catch(err => console.error("Delete failed", b._id, err))
+        )
+      );
+
+      if (toDelete.length > 0) {
+        load();
+      }
+    };
+
+    if (bookings.length) {
+      cleanupStale();
+    }
+  }, [bookings]);
+
   const handleCardClick = async (id) => {
     try {
       const response = await axios.get(`https://ticketflix-backend.onrender.com/booking/${id}`);
