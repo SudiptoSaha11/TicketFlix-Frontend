@@ -5,162 +5,162 @@ import "./Editshow.css";
 
 function Editshow() {
   const [MovieName, setMovieName] = useState("");
-  // Use an array of objects for halls: { hallName: string, showTimes: string }
   const [halls, setHalls] = useState([]);
-  const [GoldTicketPrice, setGoldTicketPrice] = useState("");
-  const [SilverTicketPrice, setSilverTicketPrice] = useState("");
-  const [PlatinumTicketPrice, setPlatinumTicketPrice] = useState("");
+  const [newTimeInput, setNewTimeInput] = useState({});
   const [id, setId] = useState("");
-
   const navigate = useNavigate();
 
-  // On mount, load data from localStorage
   useEffect(() => {
     setMovieName(localStorage.getItem("MovieName") || "");
-    setGoldTicketPrice(localStorage.getItem("GoldTicketPrice") || "");
-    setSilverTicketPrice(localStorage.getItem("SilverTicketPrice") || "");
-    setPlatinumTicketPrice(localStorage.getItem("PlatinumTicketPrice") || "");
     setId(localStorage.getItem("id") || "");
 
-    const storedHallName = localStorage.getItem("hallName");
-    const storedShowTime = localStorage.getItem("showTime");
-    if (storedHallName && storedShowTime) {
+    const storedHallNames = localStorage.getItem("hallName");
+    const storedShowTimes = localStorage.getItem("showTime");
+    if (storedHallNames && storedShowTimes) {
       try {
-        const parsedHallNames = JSON.parse(storedHallName); // e.g., ["Hall 1", "Hall 2"]
-        const parsedShowTimes = JSON.parse(storedShowTime); // e.g., [ ["14:30", "18:00"], ["15:00", "19:00"] ]
-        const combined = parsedHallNames.map((hall, index) => ({
-          hallName: hall,
-          // Join show times with a comma so user can edit them as a single string.
-          showTimes: Array.isArray(parsedShowTimes[index])
-            ? parsedShowTimes[index].join(", ")
-            : ""
-        }));
+        const hallNamesArr = JSON.parse(storedHallNames);
+        const showTimeArr = JSON.parse(storedShowTimes);
+        const combined = hallNamesArr.map((name, idx) => {
+          const s = showTimeArr[idx] || {};
+          return {
+            hallName: name,
+            times: Array.isArray(s.time) ? s.time : [],
+            GoldTicketPrice: s.GoldTicketPrice ?? "",
+            SilverTicketPrice: s.SilverTicketPrice ?? "",
+            PlatinumTicketPrice: s.PlatinumTicketPrice ?? "",
+          };
+        });
         setHalls(combined);
+        // initialize newTimeInput
+        const initialNew = {};
+        hallNamesArr.forEach(name => { initialNew[name] = ""; });
+        setNewTimeInput(initialNew);
       } catch (e) {
-        console.error("Error parsing stored hallName or showTime", e);
+        console.error("Parsing showtime storage failed", e);
       }
     }
   }, []);
 
-  // Update hall object when a field changes
   const handleHallChange = (index, field, value) => {
-    const updatedHalls = [...halls];
-    updatedHalls[index][field] = value;
-    setHalls(updatedHalls);
+    const updated = [...halls];
+    updated[index][field] = value;
+    setHalls(updated);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleAddTime = (hallName) => {
+    if (!newTimeInput[hallName]) return;
+    setHalls(halls.map(h => h.hallName === hallName ? {
+      ...h,
+      times: [...h.times, newTimeInput[hallName]]
+    } : h));
+    setNewTimeInput({ ...newTimeInput, [hallName]: "" });
+  };
 
-    // Convert halls into arrays for the payload.
-    const hallNameArray = halls.map((hall) => hall.hallName.trim());
-    const showTimeArray = halls.map((hall) =>
-      hall.showTimes
-        .split(",")
-        .map((time) => time.trim())
-        .filter((time) => time !== "")
-    );
+  const handleRemoveTime = (hallName, idxToRemove) => {
+    setHalls(halls.map(h => h.hallName === hallName ? {
+      ...h,
+      times: h.times.filter((_, i) => i !== idxToRemove)
+    } : h));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const hallName = halls.map(h => h.hallName.trim());
+    const showTime = halls.map(h => ({
+      time: h.times,
+      GoldTicketPrice: Number(h.GoldTicketPrice),
+      SilverTicketPrice: Number(h.SilverTicketPrice),
+      PlatinumTicketPrice: Number(h.PlatinumTicketPrice),
+    }));
 
     try {
       await axios.patch(`https://ticketflix-backend.onrender.com/Scheduleschema/update/${id}`, {
         MovieName,
-        hallName: hallNameArray,
-        showTime: showTimeArray,
-        GoldTicketPrice,
-        SilverTicketPrice,
-        PlatinumTicketPrice,
+        hallName,
+        showTime,
       });
+      navigate("/showtime");
     } catch (err) {
-      console.log("Error updating schedule:", err);
-      console.log("Data:", err.response.data.message);
-      console.log("Status:", err.response.status);
+      console.error("Error updating schedule:", err);
     }
-    navigate("/showtime");
   };
 
   return (
     <div className="editshow-body-show">
-      <form style={{ margin: "5rem" }} onSubmit={handleSubmit}>
+      <form className="editshow-form" onSubmit={handleSubmit}>
         <div className="mb-3">
           <label>Enter Movie Name</label>
           <input
             type="text"
             className="form-control"
-            placeholder="Enter Movie Name"
             value={MovieName}
-            onChange={(e) => setMovieName(e.target.value)}
+            onChange={e => setMovieName(e.target.value)}
             required
           />
-          <br />
         </div>
 
         <div className="mb-3">
-          <label>Halls and Show Times</label>
-          {halls.map((hall, index) => (
-            <div key={index} style={{ marginBottom: "15px" }}>
+          <label>Halls & Show Times & Pricing</label>
+          {halls.map((hall, idx) => (
+            <div key={idx} className="hall-edit-block">
               <input
                 type="text"
                 className="form-control"
                 placeholder="Hall Name"
                 value={hall.hallName}
-                onChange={(e) =>
-                  handleHallChange(index, "hallName", e.target.value)
-                }
+                onChange={e => handleHallChange(idx, "hallName", e.target.value)}
                 required
               />
-              <br />
+
+              <div className="time-input-group">
+                <input
+                  type="time"
+                  className="form-control-time"
+                  value={newTimeInput[hall.hallName] || ""}
+                  onChange={e => setNewTimeInput({
+                    ...newTimeInput,
+                    [hall.hallName]: e.target.value
+                  })}
+                />
+                <button type="button" onClick={() => handleAddTime(hall.hallName)}>
+                  Add Time
+                </button>
+              </div>
+
+              <div className="added-times">
+                {hall.times.map((t, i) => (
+                  <div key={i} className="time-item">
+                    {t} <button type="button" onClick={() => handleRemoveTime(hall.hallName, i)}>×</button>
+                  </div>
+                ))}
+              </div>
+
               <input
-                type="text"
+                type="number"
                 className="form-control"
-                placeholder="Enter Show Times (comma separated)"
-                value={hall.showTimes}
-                onChange={(e) =>
-                  handleHallChange(index, "showTimes", e.target.value)
-                }
+                placeholder="Recliner Ticket Price"
+                value={hall.GoldTicketPrice}
+                onChange={e => handleHallChange(idx, "GoldTicketPrice", e.target.value)}
                 required
               />
-              <br />
+              <input
+                type="number"
+                className="form-control"
+                placeholder="Royal Ticket Price"
+                value={hall.SilverTicketPrice}
+                onChange={e => handleHallChange(idx, "SilverTicketPrice", e.target.value)}
+                required
+              />
+              <input
+                type="number"
+                className="form-control"
+                placeholder="Club Ticket Price"
+                value={hall.PlatinumTicketPrice}
+                onChange={e => handleHallChange(idx, "PlatinumTicketPrice", e.target.value)}
+                required
+              />
             </div>
           ))}
-        </div>
-
-        <div className="mb-3">
-          <label>Gold Ticket Price</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter Gold Ticket Price"
-            value={GoldTicketPrice}
-            onChange={(e) => setGoldTicketPrice(e.target.value)}
-            required
-          />
-          <br />
-        </div>
-
-        <div className="mb-3">
-          <label>Silver Ticket Price</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter Silver Ticket Price"
-            value={SilverTicketPrice}
-            onChange={(e) => setSilverTicketPrice(e.target.value)}
-            required
-          />
-          <br />
-        </div>
-
-        <div className="mb-3">
-          <label>Platinum Ticket Price</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter Platinum Ticket Price"
-            value={PlatinumTicketPrice}
-            onChange={(e) => setPlatinumTicketPrice(e.target.value)}
-            required
-          />
-          <br />
         </div>
 
         <div className="Update_container2">
@@ -168,8 +168,8 @@ function Editshow() {
             Update
           </button>
         </div>
-        <br />
-        <Link style={{ textDecoration: "none" }} to="/movieview">
+
+        <Link to="/showtime">
           <div className="Update_container2">
             <button className="Homebutton2" type="button">
               Home

@@ -73,8 +73,9 @@ const Showtime = () => {
   return (
     <div className="showtimepage">
       <Navbar />
-      <div className="showtime-table-container_1">
-        <table className="show-table_1">
+      <br />
+      <div className="table-container_1">
+        <table className="table_2">
           <thead>
             <tr>
               <th>Movie Name</th>
@@ -138,7 +139,7 @@ const Showtime = () => {
                 <td>
                   <Link to="/editshow">
                     <button
-                      className="showtime-update"
+                      className="update"
                       onClick={() =>
                         setid(item._id, item.MovieName, item.hallName, item.showTime)
                       }
@@ -148,7 +149,7 @@ const Showtime = () => {
                   </Link>
                 </td>
                 <td>
-                  <button className="showtime-delete" onClick={() => deleted(item._id)}>
+                  <button className="delete" onClick={() => deleted(item._id)}>
                     Delete
                   </button>
                 </td>
@@ -157,12 +158,12 @@ const Showtime = () => {
           </tbody>
         </table>
         <br />
-      </div>
-      <div className="showtime-add-button-container">
-          <Link to="/Addshow" className="showtime-link">
-            <button className="showtime-Addbutton">Add Show Time</button>
+        <div className="add-button-screen-container">
+          <Link to="/Addshow">
+            <button className="Addbutton">Add Show Time</button>
           </Link>
         </div>
+      </div>
     </div>
   );
 };

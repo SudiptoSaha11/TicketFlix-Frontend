@@ -122,7 +122,7 @@ const Usernavbar = () => {
              debojit:ml-[17rem]"
   onClick={goToHome}
 >
-  <div className="h-[70px] w-[70px] pb-2 flex items-center justify-center">
+  <div className="h-[70px] w-[70px] lg:h-[85px] lg:w-[85px] pb-2 flex items-center justify-center">
   <img
     src={require('./logo-png.png')}
     alt="Your Logo"

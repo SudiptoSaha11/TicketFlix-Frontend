@@ -1,123 +1,163 @@
+
+
 .movieview {
-  padding: 1px 60px;
-  margin-top: 70px;
-  background-image: url('./Image.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  min-height: calc(100vh - 60px);
-  box-sizing: border-box;
+    padding: 0 60px; /* Add horizontal padding */
+    margin-top: 60px; /* Adjust to match the height of the Navbar */
+    background-image: url('./Image.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: calc(100vh - 60px); /* Ensure content covers the rest of the viewport */
+    box-sizing: border-box; /* Ensure padding and borders are included in the element’s total width and height */
 }
 
-/* table container */
-.movieview-table-container {
-  max-height: 700px;
-  overflow-y: auto;
-  overflow-x: auto;
-  border: 2px solid black;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
-  padding: 20px;
+/* Ensure the table container is correctly styled */
+.table-container {
+    max-height: 700px; /* Adjust height as needed */
+    overflow-y: auto; /* Adds vertical scrolling */
+    overflow-x: auto; /* Adds horizontal scrolling if needed */
+    border: 2px solid black; /* Black border for the container */
+    border-radius: 10px; /* Rounded corners */
+    background-color: rgba(255, 255, 255, 0.3) !important; /* Semi-transparent white background */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2) !important; /* Optional: Shadow for better visibility */
+    backdrop-filter: blur(10px);
+    padding: 20px !important;
 }
 
-/* table styling */
-.movieview-table1_ {
-  width: 100%;
-  border-collapse: collapse;
-  padding: 20px !important;
-  border-radius: 10px !important;
+/* Table styling */
+.table1 {
+    width: 100%; /* Ensure the table takes full width */
+    border-collapse: collapse; /* Merges borders for a cleaner look */
+
 }
 
-.movieview-table1_ th,
-.movieview-table1_ td {
-  border: 2px solid black;
-  font-weight: bold;
-  padding: 10px;
-  color: black;
-  text-align: center;
+/* Table header and data cell styling */
+.table1 th, .table1 td {
+    border: 2px solid black; /* Black border for the table */
+    font: bolder;
+    padding: 10px; /* Space inside cells */
+    color: black; /* Text color */
+    text-align: center; /* Center text horizontally */
 }
 
-/* poster image */
-.movieview-poster {
-  width: 100px;
-  height: auto;
+/* Styling for images in the table */
+.table-imagesize {
+    width: 100px; /* Adjust width as needed */
+    height: auto; /* Maintain aspect ratio */
 }
 
-/* cast images */
-.movieview-cast-container-admin {
+/* Button styling */
+.Add_button_container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Add margin if needed */
+}
+/* Movieview.css */
+
+/* Pop-up container styling */
+.popup-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it appears above everything */
+  }
+  
+/* Pop-up Container */
+.popup-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    z-index: 9999; /* Ensure the pop-up is on top */
+  }
+  
+  /* Pop-up Box */
+  .popup {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 300px;
+    position: relative;
+  }
+  
+  /* Pop-up Heading */
+  .popup h2 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 24px;
+  }
+  
+  /* Close Button */
+  .close-popup-btn {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .close-popup-btn:hover {
+    background-color: #45a049; /* Darker green */
+  }
+  
+  /* Close Button Position */
+  .close-popup-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .update {
+    background: linear-gradient(45deg, #f39c12, #e74c3c);
+    color: black; /* Black text */
+    border: 2px solid black; /* Black border */
+    padding: 12px 30px; /* Padding inside the button */
+    border-radius: 50px; /* High border-radius for cylindrical shape */
+    font-weight: bold; /* Bold text */
+    font-size: 15px; /* Font size */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    display: inline-block; /* Keeps the button's inline-block shape */
+    text-align: center; /* Centers text horizontally */
+}
+
+.update:hover {
+    background-color: black; /* Background color on hover */
+    color: white; /* Text color on hover */
+    border-color: darkorange; /* Border color on hover */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.cast-container-admin {
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Add any spacing or layout styles here if needed */
 }
 
-.movieview-cast-image-admin {
+.cast-image-admin {
   width: 25px;
   height: 25px;
-  object-fit: cover;
-  border-radius: 50%;
-  margin-bottom: 0.5rem;
-}
-
-/* UPDATE button */
-.movieview-update {
-  background: #ea1538;
-  color: black;
-  border: 2px solid black;
-  padding: 12px 30px;
-  border-radius: 50px;
-  font-weight: bold;
-  font-size: 15px;
-  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
-}
-
-.movieview-update:hover {
-  border-color: whitesmoke;
-  cursor: pointer;
-  color: whitesmoke;
-}
-
-/* DELETE button */
-.movieview-delete {
-  background: linear-gradient(45deg, #e74c3c, #c0392b);
-  color: black;
-  border: 2px solid black;
-  padding: 12px 30px;
-  border-radius: 50px;
-  font-weight: bold;
-  font-size: 15px;
-  transition: color 0.3s, border-color 0.3s;
-}
-
-.movieview-delete:hover {
-  border-color: whitesmoke;
-  cursor: pointer;
-  color: whitesmoke;
-}
-
-/* ADD MOVIE button */
-.movieview-Addbutton {
-  background: #ea1538;
-  color: white;
-  padding: 15px 40px;
-  margin-bottom: 20px;
-  border-radius: 50px;
-  font-weight: bold;
-  font-size: 16px;
-  transition: color 0.3s;
-}
-
-.movieview-Addbutton:hover {
-  border-color: whitesmoke;
-  color: white;
-  transition: color 0.3s ease, border-color 0.3s ease;
-  cursor: pointer;
-}
-
-/* Add button container */
-.movieview-Add-button-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+  object-fit: cover;     /* Ensures the image is cropped nicely */
+  border-radius: 50%;    /* Makes the image circular */
+  margin-bottom: 0.5rem; /* Optional spacing under the image */
 }

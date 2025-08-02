@@ -75,8 +75,8 @@ const Eventview = () => {
   return (
     <div className="eventview">
       <Navbar />
-      <div className="eventview-table-container">
-        <table className="eventview-table1">
+      <div className="table-container">
+        <table className="table1">
           <thead>
             <tr>
               <th>Poster</th>
@@ -110,7 +110,7 @@ const Eventview = () => {
                 <tr key={item._id}>
                   <td>
                     <img
-                      className="eventview-poster"
+                      className="table-imagesize"
                       src={item.image}
                       alt={item.eventName}
                     />
@@ -120,9 +120,9 @@ const Eventview = () => {
                   <td>{item.eventDuration}</td>
                   <td>
                     {item.eventArtist?.map((artist, i) => (
-                      <div key={i} className="eventview-cast-container-admin">
+                      <div key={i} className="cast-container-admin">
                         <img
-                          className="eventview-cast-image-admin"
+                          className="cast-image-admin"
                           src={artist.image}
                           alt={artist.name}
                         />
@@ -140,7 +140,7 @@ const Eventview = () => {
                   <td>
                     <Link to="/editevent">
                       <button
-                        className="eventview-update"
+                        className="update"
                         onClick={() =>
                           setID(
                             item._id,
@@ -164,7 +164,7 @@ const Eventview = () => {
                   </td>
                   <td>
                     <button
-                      className="eventview-delete"
+                      className="delete"
                       onClick={() => deleted(item._id)}
                     >
                       Delete
@@ -177,9 +177,9 @@ const Eventview = () => {
         </table>
       </div>
 
-      <div className="eventview-Add-button-container">
+      <div className="Add_button_container">
         <Link to="/addevent" style={{ textDecoration: "none" }}>
-          <button className="eventview-Addbutton">Add Event</button>
+          <button className="Addbutton">Add Event</button>
         </Link>
       </div>
     </div>

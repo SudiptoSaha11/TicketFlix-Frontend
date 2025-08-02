@@ -61,7 +61,7 @@ const Booking = () => {
                   <td>{new Date(item.bookingDate).toLocaleDateString()}</td>
                   <td>{item.status}</td>
                   <td>
-                    <button className="booking-delete" onClick={() => deleteBooking(item._id)}>
+                    <button className="delete" onClick={() => deleteBooking(item._id)}>
                       Cancel Booking
                     </button>
                   </td>

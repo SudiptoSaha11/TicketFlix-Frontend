@@ -1,131 +1,91 @@
 /* Apply background image only to the showtimepage */
 .showtimepage {
-    padding: 0 60px;
-    margin-top: 70px;
+    padding: 0 60px; /* Add horizontal padding */
+    margin-top: 60px; /* Adjust to match the height of the Navbar */
     background-image: url('./Image.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    min-height: calc(100vh - 60px);
-    box-sizing: border-box;
+    min-height: calc(100vh - 60px); /* Ensure content covers the rest of the viewport */
+    box-sizing: border-box; /* Ensure padding and borders are included in the element’s total width and height */
 }
 
-/* Updated container class */
-.showtime-table-container_1 {
-    max-height: 700px;
-    overflow-y: auto;
-    overflow-x: auto;
-    border: 2px solid black;
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2) !important;
+.table-container_1 {
+    max-height: 700px; /* Adjust height as needed */
+    overflow-y: auto; /* Adds vertical scrolling */
+    overflow-x: auto; /* Adds horizontal scrolling if needed */
+    border: 2px solid black; /* Black border for the container */
+    border-radius: 10px; /* Rounded corners */
+    background-color: rgba(255, 255, 255, 0.3) !important; /* Semi-transparent white background */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2) !important; /* Optional: Shadow for better visibility */
     backdrop-filter: blur(10px);
     padding: 20px !important;
 }
 
-/* Updated table class */
-.show-table_1 {
-    width: 100%;
-    border-collapse: collapse;
+.table_2 {
+    width: 100%; /* Ensure the table takes full width */
+    border-collapse: collapse; /* Merges borders for a cleaner look */
     padding: 20px !important;
     border-radius: 10px !important;
 }
 
-/* Image size (if used elsewhere) */
 .table-imagesize {
-    width: 100px;
+    width: 100px; /* Adjust width as needed */
     height: 100%;
 }
 
-/* Table border styling scoped only to showtimepage table */
-.showtimepage .show-table_1,
-.showtimepage .show-table_1 th,
-.showtimepage .show-table_1 td {
-    border: 2px solid black;
+/* Border for the whole table */
+table, th, td {
+    border: 2px solid black; /* Black border for the entire table, header cells, and data cells */
 }
 
-/* Header cell styling */
-.showtimepage .show-table_1 thead th {
-    padding: 10px;
-    color: white;
-    text-align: center;
-    vertical-align: middle;
-    color: black;
+/* Optional: Style table header cells */
+table thead th {
+    padding: 10px; /* Space inside header cells */
+    color: white; /* Text color */
+    text-align: center; /* Center text horizontally */
+    vertical-align: middle; /* Center text vertically */
 }
 
-/* Data cell styling */
-.showtimepage .show-table_1 tbody td {
-    padding: 10px;
-    color: white;
-    text-align: center;
-    vertical-align: middle;
-    color: black;
+/* Optional: Style table data cells */
+table tbody td {
+    padding: 10px; /* Space inside data cells */
+    color: white; /* Text color */
+    text-align: center; /* Center text horizontally */
+    vertical-align: middle; /* Center text vertically */
 }
 
-/* Update button styling */
-.showtime-update {
-    background: #ea1538;
-    color: black;
-    border: 2px solid black;
-    padding: 12px 30px;
-    border-radius: 50px;
-    font-weight: bold;
-    font-size: 15px;
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-    display: inline-block;
-    text-align: center;
+/* Button styling */
+/* Style for update button */
+.update {
+    background-color: #f39c12,#e74c3c;
+    color: black; /* Black text */
+    border: 2px solid black; /* Black border */
+    padding: 12px 30px; /* Padding inside the button */
+    border-radius: 50px; /* High border-radius for cylindrical shape */
+    font-weight: bold; /* Bold text */
+    font-size: 15px; /* Font size */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    display: inline-block; /* Keeps the button's inline-block shape */
+    text-align: center; /* Centers text horizontally */
 }
 
-.showtime-update:hover {
-    border-color: whitesmoke;
-    cursor: pointer;
-    color: whitesmoke;
+.update:hover {
+    background-color: black; /* Background color on hover */
+    color: white; /* Text color on hover */
+    border-color: darkorange; /* Border color on hover */
+    cursor: pointer; /* Pointer cursor on hover */
 }
 
-/* Delete button styling */
-.showtime-delete {
-   background: linear-gradient(45deg, #e74c3c, #c0392b);
-    color: black;
-    border: 2px solid black;
-    padding: 12px 30px;
-    border-radius: 50px;
-    font-weight: bold;
-    font-size: 15px;
-    transition: color 0.3s, border-color 0.3s;
+/* Centering the add button */
+.Addbutton {
+    display: flex;           
+    justify-content: center; 
+    align-items: center;
 }
 
-.showtime-delete:hover {
-    border-color: whitesmoke;
-    cursor: pointer;
-    color: whitesmoke;
-}
-
-/* Add button centering */
-.showtime-Addbutton {
-    background: #ea1538;
-    color: white;
-    padding: 15px 40px;
-    margin-bottom: 20px;
-    border-radius: 50px;
-    font-weight: bold;
-    font-size: 16px;
-    transition: color 0.3s;
-}
-
-.showtime-Addbutton:hover {
-    border-color: whitesmoke;
-    color: white;
-    transition: color 0.3s ease, border-color 0.3s ease;
-    cursor: pointer;
-}
-
-/* Optional utility class for the add button wrapper */
-.showtime-add-button-container {
+.add-button-screen-container{
     display: flex;
     justify-content: center;
-    margin-top: 20px;
-}
-
-.showtime-link {
-    text-decoration: none;
+    margin-top: 20px; /* Add margin if needed */
 }

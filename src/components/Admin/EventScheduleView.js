@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import axios from "axios";
-import "./EventScheduleView.css";  // reuse your existing table styles
+import "../Admin/Eventview.css";  // reuse your existing table styles
 import { Link } from "react-router-dom";
 
 const EventScheduleView = () => {
@@ -9,9 +9,11 @@ const EventScheduleView = () => {
 
   const fetchData = async () => {
     try {
+      // Clear any previous schedule-related localStorage keys
       ["scheduleId", "scheduleEventName", "scheduleVenues", "scheduleShowTime"]
         .forEach(k => localStorage.removeItem(k));
 
+      // Fetch schedules
       const response = await axios.get("https://ticketflix-backend.onrender.com/eventschedule");
       setData(response.data);
       console.log("Fetched schedules:", response.data);
@@ -24,6 +26,7 @@ const EventScheduleView = () => {
     fetchData();
   }, []);
 
+  // Store schedule data for editing
   const setID = (id, eventName, eventVenue, EventshowTime) => {
     localStorage.setItem("scheduleId", id);
     localStorage.setItem("scheduleEventName", eventName);
@@ -31,6 +34,7 @@ const EventScheduleView = () => {
     localStorage.setItem("scheduleShowTime", JSON.stringify(EventshowTime));
   };
 
+  // Delete a schedule then refresh
   const deleted = async (id) => {
     try {
       await axios.delete(`https://ticketflix-backend.onrender.com/eventschedule/delete/${id}`);
@@ -41,10 +45,10 @@ const EventScheduleView = () => {
   };
 
   return (
-    <div className="eventscheduleview">
+    <div className="eventview">
       <Navbar />
-      <div className="eventscheduleview-table-container">
-        <table className="eventscheduleview-table_1">
+      <div className="table-container">
+        <table className="table1">
           <thead>
             <tr>
               <th>Event Name</th>
@@ -64,22 +68,12 @@ const EventScheduleView = () => {
                     : item.eventVenue}
                 </td>
                 <td style={{ whiteSpace: "pre-wrap", textAlign: "left" }}>
-                  {item.EventshowTime?.map((showtime, index) => (
-                    <div key={index} style={{ marginBottom: "10px" }}>
-                      {Object.entries(showtime)
-                        .filter(([key]) => key !== "_id")
-                        .map(([key, value]) => (
-                          <div key={key}>
-                            <strong>{key}:</strong> {value}
-                          </div>
-                      ))}
-                    </div>
-                  ))}
+                  {JSON.stringify(item.EventshowTime, null, 2)}
                 </td>
                 <td>
                   <Link to="/editschedule">
                     <button
-                      className="eventscheduleview-update"
+                      className="update"
                       onClick={() =>
                         setID(
                           item._id,
@@ -95,7 +89,7 @@ const EventScheduleView = () => {
                 </td>
                 <td>
                   <button
-                    className="eventscheduleview-delete"
+                    className="delete"
                     onClick={() => deleted(item._id)}
                   >
                     Delete
@@ -107,9 +101,9 @@ const EventScheduleView = () => {
         </table>
       </div>
 
-      <div className="eventscheduleview-Add-button-container">
+      <div className="Add_button_container">
         <Link to="/addeventschedule" style={{ textDecoration: "none" }}>
-          <button className="eventscheduleview-Addbutton">Add Schedule</button>
+          <button className="Addbutton">Add Schedule</button>
         </Link>
       </div>
     </div>

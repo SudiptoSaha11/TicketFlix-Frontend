@@ -2,7 +2,7 @@
     position: fixed; /* Keep it fixed at the top */
     top: 0;
     left: 0;
-    height: 70px; /* Adjust height if necessary */
+    height: 60px; /* Adjust height if necessary */
     width: 100%;
     background: rgba(0, 0, 0, 0.8); /* Background color */
     display: flex;
@@ -64,6 +64,7 @@ ul li {
 }
 
 .Navbutton {
+    display: flex;
     border: none;
     background: #ea1538; /* Button color */
     padding: 10px 20px; /* Adjust padding */
