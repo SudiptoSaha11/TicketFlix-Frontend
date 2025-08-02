@@ -139,6 +139,7 @@ const MovieShowtime = () => {
       },
     });
   };
+  console.log(sessionStorage.getItem("bookingDetails"));
 
   // Filters
   const TIME_OPTIONS = ["All", "Morning", "Afternoon", "Evening", "Night"];
@@ -166,9 +167,8 @@ const MovieShowtime = () => {
     <div className="min-h-screen">
       <Usernavbar />
 
-      {/* Mobile View */}
-      <div className="lg:hidden max-w-screen-lg mx-auto mt-24 px-4 sm:px-6 md:px-4 font-sans">
-
+      {/* Mobile View - Fixed container */}
+      <div className="lg:hidden w-full max-w-screen-lg mx-auto mt-24 px-4 sm:px-6 md:px-4 font-sans overflow-x-hidden">
 
         {/* Title */}
         <h1 className="text-start text-2xl font-semibold text-gray-800 mb-4">
@@ -180,7 +180,7 @@ const MovieShowtime = () => {
         </h1>
 
         {/* Select Date */}
-        <div className="mb-4 bg-white  rounded-xl ">
+        <div className="mb-4 bg-white rounded-xl">
           <div className="flex items-start mb-1">
             <FiClock className="mr-2 text-gray-600 mt-[3px]" />
             <h2 className="text-sm font-semibold text-gray-700">Select Date</h2>
@@ -195,140 +195,171 @@ const MovieShowtime = () => {
             <h2 className="text-sm font-semibold text-gray-700">Filter By</h2>
           </div>
 
-          {/* Show Time */}
+          {/* Show Time - Fixed Swiper */}
           <div className="mb-4">
             <div className="flex items-center mb-2">
               <FiClock className="mr-2 text-gray-600 mb-[5px]" />
               <h3 className="text-sm font-medium text-gray-700">Show Time</h3>
             </div>
-            <Swiper slidesPerView="auto" spaceBetween={8} className="px-1">
-              {TIME_OPTIONS.map((opt) => (
-                <SwiperSlide key={opt} style={{ width: "auto" }}>
-                  <button
-                    onClick={() => setTimeFilter(opt)}
-                    className={`px-3 py-1 rounded-full text-sm border ${timeFilter === opt
+            <div className="w-full overflow-hidden">
+              <Swiper 
+                slidesPerView="auto" 
+                spaceBetween={8} 
+                className="!px-0 !mx-0"
+                style={{ 
+                  paddingLeft: 0, 
+                  paddingRight: 0,
+                  marginLeft: 0,
+                  marginRight: 0 
+                }}
+              >
+                {TIME_OPTIONS.map((opt) => (
+                  <SwiperSlide key={opt} style={{ width: "auto" }}>
+                    <button
+                      onClick={() => setTimeFilter(opt)}
+                      className={`px-3 py-1 rounded-full text-sm border ${timeFilter === opt
                         ? "bg-orange-400 text-white border-orange-400"
                         : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                      }`}
-                  >
-                    {opt}
-                  </button>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                        }`}
+                    >
+                      {opt}
+                    </button>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
           </div>
 
-          {/* Price Range */}
+          {/* Price Range - Fixed Swiper */}
           <div>
-      <div className="flex items-center mb-2">
-        <FiDollarSign className="mr-2 text-gray-600 mb-[6px]" />
-        <h3 className="text-sm font-medium text-gray-700">Price Range</h3>
-      </div>
+            <div className="flex items-center mb-2">
+              <FiDollarSign className="mr-2 text-gray-600 mb-[6px]" />
+              <h3 className="text-sm font-medium text-gray-700">Price Range</h3>
+            </div>
 
-      {/* Swiper container */}
-      <Swiper
-        spaceBetween={8}          // gap of 2 (8px) between slides
-        slidesPerView="auto"      // let slides size to content
-        freeMode={true}           // allow momentum scrolling
-        className="pb-1"          // keep same bottom padding
-      >
-        {PRICE_OPTIONS.map(({ key, label }) => (
-          <SwiperSlide
-            key={key}
-            style={{ width: 'auto' }}        // make slide size to content
-            className="!inline-flex"         // ensure inline container
-          >
-            <button
-              onClick={() => setPriceFilter(key)}
-              className={`
-                px-3 py-1 rounded-full text-sm border whitespace-nowrap
-                ${priceFilter === key
-                  ? 'bg-orange-400 text-white border-orange-400'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-                }
-              `}
-            >
-              {label}
-            </button>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </div>
+            <div className="w-full overflow-hidden">
+              <Swiper
+                spaceBetween={8}
+                slidesPerView="auto"
+                freeMode={true}
+                className="!px-0 !mx-0 pb-1"
+                style={{ 
+                  paddingLeft: 0, 
+                  paddingRight: 0,
+                  marginLeft: 0,
+                  marginRight: 0 
+                }}
+              >
+                {PRICE_OPTIONS.map(({ key, label }) => (
+                  <SwiperSlide
+                    key={key}
+                    style={{ width: 'auto' }}
+                    className="!inline-flex"
+                  >
+                    <button
+                      onClick={() => setPriceFilter(key)}
+                      className={`
+                        px-3 py-1 rounded-full text-sm border whitespace-nowrap
+                        ${priceFilter === key
+                          ? 'bg-orange-400 text-white border-orange-400'
+                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                        }
+                      `}
+                    >
+                      {label}
+                    </button>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          </div>
         </div>
 
-        {/* Schedule List */}
-        {schedules.length ? (
-          schedules.map((sch) => (
-            <div
-              key={sch._id}
-              className="border rounded-lg px-4 mb-3 shadow-sm bg-white"
-            >
-              {sch.hallName.map((hall, i) => {
-                const raw = sch.showTime[i];
-                const showObj = Array.isArray(raw) ? raw[0] : raw;
-                if (!showObj?.time || !priceMatch(showObj)) return null;
+        {/* Schedule List - Fixed container */}
+        <div className="w-full">
+          {schedules.length ? (
+            schedules.map((sch) => (
+              <div
+                key={sch._id}
+                className="border rounded-lg px-4 mb-3 shadow-sm bg-white w-full"
+              >
+                {sch.hallName.map((hall, i) => {
+                  const raw = sch.showTime[i];
+                  const showObj = Array.isArray(raw) ? raw[0] : raw;
+                  if (!showObj?.time || !priceMatch(showObj)) return null;
 
-                const times = Array.isArray(showObj.time)
-                  ? showObj.time
-                  : [showObj.time];
-                const filtered =
-                  timeFilter === "All"
-                    ? times
-                    : times.filter((t) => getTimePeriod(t) === timeFilter);
-                if (!filtered.length) return null;
+                  const times = Array.isArray(showObj.time)
+                    ? showObj.time
+                    : [showObj.time];
+                  const filtered =
+                    timeFilter === "All"
+                      ? times
+                      : times.filter((t) => getTimePeriod(t) === timeFilter);
+                  if (!filtered.length) return null;
 
-                return (
-                  <div
-                    key={i}
-                    className="py-4 border-b last:border-b-0"
-                  >
-                    <h2 className="text-lg font-semibold mb-2">{hall}</h2>
-                    <div className="flex flex-wrap gap-3">
-                      {filtered.map((t, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() =>
-                            handleShowtimeClick(hall, t, showObj)
-                          }
-                          className="group relative px-2 py-1.5 rounded-lg border border-green-500 text-green-500 hover:bg-green-500 hover:text-white transition text-xs"
-                        >
-                          {formatTime(t)}
-                          <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-52 bg-white border rounded-lg shadow-lg p-2 text-xs text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div>
-                              <strong>Recliner:</strong> ₹
-                              {showObj.GoldTicketPrice}{" "}
-                              <span className="text-green-500">
-                                Available
-                              </span>
-                            </div>
-                            <div>
-                              <strong>Royal:</strong> ₹
-                              {showObj.SilverTicketPrice}{" "}
-                              <span className="text-green-500">
-                                Available
-                              </span>
-                            </div>
-                            <div>
-                              <strong>Club:</strong> ₹
-                              {showObj.PlatinumTicketPrice}{" "}
-                              <span className="text-green-500">
-                                Available
-                              </span>
-                            </div>
-                          </div>
-                        </button>
-                      ))}
+                  return (
+                    <div
+                      key={i}
+                      className="py-4 border-b last:border-b-0 w-full"
+                    >
+                      <h2 className="text-lg font-semibold mb-2">{hall}</h2>
+                      <div className="flex flex-wrap gap-3 w-full">
+                        {filtered.map((timeSlot, idx) => {
+                          const uniqueKey = `${sch._id}-${hall}-${timeSlot}-${idx}`;
+                          return (
+                            <button
+                              key={uniqueKey}
+                              type="button"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+
+                                // Debug logging
+                                console.log('Button clicked:', {
+                                  hall,
+                                  time: timeSlot,
+                                  showObj,
+                                  index: idx
+                                });
+
+                                // Call with explicit values
+                                handleShowtimeClick(hall, timeSlot, showObj);
+                              }}
+                              className="group relative px-2 py-1.5 rounded-lg border border-green-500 text-green-500 hover:bg-green-500 hover:text-white transition text-xs touch-manipulation"
+                            >
+                              {formatTime(timeSlot)}
+                              <div
+                                className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-52 bg-white border rounded-lg shadow-lg p-2 text-xs text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                                style={{ zIndex: 10 }}
+                              >
+                                <div>
+                                  <strong>Recliner:</strong> ₹{showObj.GoldTicketPrice}{" "}
+                                  <span className="text-green-500">Available</span>
+                                </div>
+                                <div>
+                                  <strong>Royal:</strong> ₹{showObj.SilverTicketPrice}{" "}
+                                  <span className="text-green-500">Available</span>
+                                </div>
+                                <div>
+                                  <strong>Club:</strong> ₹{showObj.PlatinumTicketPrice}{" "}
+                                  <span className="text-green-500">Available</span>
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-600 bg-white p-6 rounded-lg shadow-sm">
-            No showtimes available.
-          </p>
-        )}
+                  );
+                })}
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-600 bg-white p-6 rounded-lg shadow-sm w-full">
+              No showtimes available.
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Desktop View */}
@@ -398,8 +429,8 @@ const MovieShowtime = () => {
                           <button
                             onClick={() => setTimeFilter(opt)}
                             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${timeFilter === opt
-                                ? "bg-orange-500 text-white shadow-md"
-                                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                              ? "bg-orange-500 text-white shadow-md"
+                              : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
                               }`}
                           >
                             {opt}
@@ -420,8 +451,8 @@ const MovieShowtime = () => {
                           key={key}
                           onClick={() => setPriceFilter(key)}
                           className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${priceFilter === key
-                              ? "bg-orange-500 text-white shadow-md"
-                              : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                            ? "bg-orange-500 text-white shadow-md"
+                            : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
                             }`}
                         >
                           {label}

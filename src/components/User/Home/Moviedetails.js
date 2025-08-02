@@ -9,6 +9,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import Card from "./Card";
 import { FaTheaterMasks } from 'react-icons/fa';
+import { Navigation, A11y } from "swiper/modules";
+
 
 // Helper to extract the YouTube ID from any common YouTube URL
 function getYouTubeID(url) {
@@ -173,6 +175,8 @@ function Moviedetails() {
       .finally(() => setIsLoadingRec(false));
   }, [paramId]);
 
+  
+
   // Convert rawTrailerLink into an embed URL for desktop if needed
   useEffect(() => {
     if (!rawTrailerLink) return;
@@ -257,6 +261,19 @@ function Moviedetails() {
       alert("Error submitting review. Please try again.");
     }
   };
+
+  // Scroll the reviews row by one “card + gap” at a time
+function scrollSlider(direction) {
+  const slider = reviewsSliderRef.current;
+  if (!slider) return;
+
+  const card = slider.querySelector("li");
+  const gap  = parseInt(getComputedStyle(slider).columnGap, 10) || 24;
+  const step = card.getBoundingClientRect().width + gap;
+
+  slider.scrollBy({ left: direction * step, behavior: "smooth" });
+}
+
 
   // Carousel handlers for recommended (desktop)
   const cardsPerSlideRec = 4;
@@ -652,58 +669,64 @@ function Moviedetails() {
       </div>
 
       {/* Movie Reviews */}
-      <div className="px-4 mb-[-4px] lg:mx-[155px] lg:mb-12 xl:mx-[185px] xl:mb-12 antarikh:mx-[220px] 2xl:ml-[195px] antarikh:mb-12">
-        <h2 className="text-xl text-[#135058] font-bold mb-4 border-b-2 border-[#135058] pb-2 lg:text-2xl lg:mb-6">
-          Reviews
-        </h2>
-        {reviews.length > 0 ? (
-          <div className="relative ">
-            <button
-              onClick={handleArrowClick}
-              className={`
-                max-lg:hidden absolute top-1/2 transform -translate-y-1/2
-                bg-gray-200 rounded-full w-8 h-8 text-lg opacity-80 hover:opacity-100
-                ${arrowPosition === "right" ? "right-2" : "left-2"}
-                lg:w-10 lg:h-10 lg:text-xl
-                xl:w-10 xl:h-10 xl:text-xl
-                antarikh:w-10 antarikh:h-10 antarikh:text-xl
-                
-              `}
-            >
-              {arrowPosition === "right" ? ">" : "<"}
-            </button>
-            <div
-              ref={reviewsSliderRef}
-              onScroll={handleScroll}
-              className="
-                overflow-x-auto whitespace-nowrap scroll-snap-x-mandatory scroll-smooth no-scrollbar py-2
-                lg:py-4 lg:overflow-x-hidden
-              "
-            >
-              <ul className="inline-flex gap-4 p-0 m-0">
-                {reviews.map((item, idx) => (
-                  <li
-                    key={idx}
-                    className="
-                      flex-none w-[280px] bg-white rounded-lg shadow p-4 scroll-snap-start hover:-translate-y-1 hover:shadow-lg transition
-                      lg:w-[320px] lg:p-6
-                      xl:w-[320px] xl:p-6
-                      antarikh:w-[320px] antarikh:p-6
-                    "
-                  >
-                    <p className="font-semibold text-[#135058] mb-2">
-                      {item.user || "Anonymous"} rated it ⭐ {item.rating}/10
-                    </p>
-                    {item.review && <p>{item.review}</p>}
-                  </li>
-                ))}
-              </ul>
-            </div>
+      {/* ======== Movie Reviews ======== */}
+<div className="px-4 lg:mx-[155px] lg:mb-12 xl:mx-[185px] xl:mb-12 antarikh:mx-[220px] 2xl:ml-[195px] antarikh:mb-12">
+  <h2 className="text-xl text-[#135058] font-bold mb-4 border-b-2 border-[#135058] pb-2 lg:text-2xl lg:mb-6">
+    Reviews
+  </h2>
+
+  {reviews.length > 0 ? (
+    <Swiper
+      // register modules
+      modules={[Navigation, A11y]}
+      // number of cards visible at once
+      slidesPerView={1}
+      spaceBetween={24}
+      // enable navigation arrows
+      navigation
+      // loop if you want infinite scroll
+      loop={false}
+      // responsive breakpoints
+      breakpoints={{
+        640: { slidesPerView: 1.2, spaceBetween: 24 },
+        768: { slidesPerView: 2,   spaceBetween: 32 },
+        1024:{ slidesPerView: 3,   spaceBetween: 32 },
+        1280:{ slidesPerView: 3.5, spaceBetween: 40 },
+      }}
+      // accessibility props
+      a11y={{ prevSlideMessage: "Previous reviews", nextSlideMessage: "Next reviews" }}
+      className="py-4"
+    >
+      {reviews.map((item, idx) => (
+        <SwiperSlide key={idx} className="snap-start">
+          <div
+            className="
+              w-full
+              bg-white rounded-2xl shadow-md p-6
+              hover:-translate-y-1 hover:shadow-lg
+              transition-transform duration-200
+            "
+          >
+            <p className="font-semibold text-[#135058] mb-3 break-words whitespace-normal">
+              {item.user || "Anonymous"} rated it{" "}
+              <span className="inline-flex items-center text-yellow-500 font-semibold">
+                {/* Using react-icon star */}
+                <FaStar className="inline-block mr-1" />
+                {item.rating}/10
+              </span>
+            </p>
+            <p className="text-gray-700 leading-relaxed break-words whitespace-normal">
+              {item.review}
+            </p>
           </div>
-        ) : (
-          <p className="text-center">No reviews available.</p>
-        )}
-      </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  ) : (
+    <p className="text-center">No reviews available.</p>
+  )}
+</div>
+
 
       {/* Submit Review Button */}
       <div className="px-4 mb-8 lg:px-40 lg:mb-12">
