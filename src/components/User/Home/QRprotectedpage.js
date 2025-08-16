@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../../Utils/api';
 import QRPage from './QRpage'; // QRPage expects an `id` prop
 
 const QRProtectedPage = () => {
@@ -17,7 +17,7 @@ const QRProtectedPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('https://ticketflix-backend.onrender.com/staff/login', formData);
+      const res = await api.post('/staff/login', formData);
       sessionStorage.setItem('staffId', res.data.staffId); // You can remove this line if you want zero persistence
       setLoggedIn(true);
     } catch (err) {

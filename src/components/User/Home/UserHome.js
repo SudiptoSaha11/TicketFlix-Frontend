@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useHref, useNavigate } from "react-router-dom";
 import Usernavbar from './Usernavbar';
-import axios from 'axios';
 import Card from './Card';
 import EventCard from './EventCard';
 import Chatbot from './Chatbot';
@@ -12,6 +11,7 @@ import LoadingSpinner from '../../UIElements/LoadingSpinner';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import api from '../../../Utils/api';
 
 const sliderImages = [
   'https://assets-in-gm.bmscdn.com/promotions/cms/creatives/1742293928527_generalsale1240x300.jpeg',
@@ -35,7 +35,7 @@ const UserHome = () => {
 
 useEffect(() => {
     setIsLoadingMovies(true);
-    axios.get('https://ticketflix-backend.onrender.com/movieview')
+    api.get('/movieview')
       .then(res => {
        
         const sorted = res.data.slice().sort((a, b) =>
@@ -47,7 +47,7 @@ useEffect(() => {
       .finally(() => setIsLoadingMovies(false));
 
     setIsLoadingEvents(true);
-    axios.get('https://ticketflix-backend.onrender.com/event')
+    api.get('/event')
       .then(res => {
         
         const sortedE = res.data.slice().sort((a, b) =>

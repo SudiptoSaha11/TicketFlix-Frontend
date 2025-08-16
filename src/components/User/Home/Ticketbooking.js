@@ -12,11 +12,11 @@ import {
   FaEdit,
   FaTicketAlt
 } from 'react-icons/fa';
-import axios from 'axios';
+import api from '../../../Utils/api';
 
 Modal.setAppElement('#root');
 
-const API_BASE_URL = 'https://ticketflix-backend.onrender.com';
+// const API_BASE_URL = 'https://ticketflix-backend.onrender.com';
 
 const seatIcons = [
   null,
@@ -73,20 +73,29 @@ const Ticketbooking = () => {
 
   // Check login status
   useEffect(() => {
-    const email = localStorage.getItem('userEmail');
-    const type  = localStorage.getItem('usertype');
-    setIsLoggedIn(!!email && type === 'user');
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const userObj = JSON.parse(storedUser);
+        setIsLoggedIn(!!userObj.email && userObj.type === 'user');
+      } catch {
+        setIsLoggedIn(false);
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
   }, []);
+  
 
   // Create axios instance with proper configuration
-  const axiosInstance = axios.create({
-    baseURL: API_BASE_URL,
-    timeout: 10000,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  });
+  // const axiosInstance = axios.create({
+  //   baseURL: API_BASE_URL,
+  //   timeout: 10000,
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //     'Accept': 'application/json'
+  //   }
+  // });
 
   // Fetch already-booked seats
   useEffect(() => {
@@ -106,7 +115,7 @@ const Ticketbooking = () => {
           Time: Time.trim()
         };
 
-        const response = await axiosInstance.post('/booking/seats', requestData);
+        const response = await api.post('/booking/seats', requestData);
         if (response.data && Array.isArray(response.data.bookedSeats)) {
           setBookedSeats(response.data.bookedSeats);
         } else {
@@ -170,9 +179,12 @@ const Ticketbooking = () => {
       return;
     }
     if (!isLoggedIn) {
-      setModalMessage('You must be logged in to proceed.');
-      setIsModalOpen(true);
-      return;
+      const storedUser = localStorage.getItem('user');
+      if (!storedUser) {
+        setModalMessage('You must be logged in to proceed.');
+        setIsModalOpen(true);
+        return;
+      }
     }
 
     const bundle = {

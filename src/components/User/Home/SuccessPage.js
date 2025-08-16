@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
+import api from '../../../Utils/api';
 import Lottie from 'lottie-react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
@@ -61,8 +61,8 @@ const SuccessPage = () => {
       status: 'confirmed',
     };
 
-    axios
-      .post('https://ticketflix-backend.onrender.com/booking/add', payload)
+    api
+      .post('/booking/add', payload)
       .then((res) => {
         console.log('Booking saved:', res.data);
         setBookingMessage('Your booking has been confirmed! 🎉');

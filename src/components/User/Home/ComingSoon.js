@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from '../../../Utils/api';
 import { Link,useNavigate } from "react-router-dom";
 import Usernavbar from "../Home/Usernavbar";
 import BottomNav from "./BottomNav";
@@ -11,8 +11,8 @@ const ComingSoon = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get("https://ticketflix-backend.onrender.com/movieview")
+    api
+      .get("/movieview")
       .then((res) => setMovies(res.data))
       .catch((err) => console.error("Error fetching movies:", err));
   }, []);

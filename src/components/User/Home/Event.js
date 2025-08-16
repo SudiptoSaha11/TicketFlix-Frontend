@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from '../../../Utils/api';
 import { Link } from "react-router-dom";
 import Usernavbar from "./Usernavbar";   
 import "./Event.css"
@@ -13,7 +13,7 @@ const Event = ({ searchTerm, setSearchTerm }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("https://ticketflix-backend.onrender.com/event");
+        const response = await api.get("/event");
         setData(response.data);
       } catch (error) {
         console.error("Error fetching events:", error);

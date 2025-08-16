@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import DatePicker from "./DatePicker";
 import DatePickerMobile from "./DatePickerMobile";
-import axios from "axios";
+import api from '../../../Utils/api';
 import Usernavbar from "./Usernavbar";
 import Footer from "./Footer";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -42,8 +42,8 @@ const MovieShowtime = () => {
     if (!posterURL) {
       const movieId = localStorage.getItem("id");
       if (movieId) {
-        axios
-          .get("https://ticketflix-backend.onrender.com/movieview")
+        api
+          .get("/movieview")
           .then((res) => {
             const mv = res.data.find((m) => m._id === movieId);
             if (mv?.image) setPosterURL(mv.image);
@@ -67,8 +67,8 @@ const MovieShowtime = () => {
   // Fetch schedules for this movie
   useEffect(() => {
     if (Name) {
-      axios
-        .get("https://ticketflix-backend.onrender.com/Scheduleschema")
+      api
+        .get("/Scheduleschema")
         .then((res) => {
           setSchedules(
             res.data.filter(

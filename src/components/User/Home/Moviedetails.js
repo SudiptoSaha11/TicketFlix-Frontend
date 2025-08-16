@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
-import axios from "axios";
+import api from '../../../Utils/api';
 import Usernavbar from "./Usernavbar";
 import { FaFilm, FaStar } from "react-icons/fa";
 import Footer from "./Footer";
@@ -96,7 +96,7 @@ function Moviedetails() {
   const fetchData = async (movieId) => {
     const localKey = "moviereviews_" + movieId;
     try {
-      const response = await axios.get(`https://ticketflix-backend.onrender.com/getmovieview/${movieId}`);
+      const response = await api.get(`/getmovieview/${movieId}`);
       const {
         movieName,
         movieGenre,
@@ -165,8 +165,8 @@ function Moviedetails() {
 
   useEffect(() => {
     setIsLoadingRec(true);
-    axios
-      .get("https://ticketflix-backend.onrender.com/movieview")
+    api
+      .get("/movieview")
       .then((res) => {
         const others = res.data.filter((m) => m._id !== (paramId || localStorage.getItem("id")));
         setRecommended(others.slice(0, 8));
@@ -241,8 +241,8 @@ function Moviedetails() {
       return;
     }
     try {
-      const response = await axios.post(
-        `https://ticketflix-backend.onrender.com/movieview/review/${id}`,
+      const response = await api.post(
+        `/movieview/review/${id}`,
         {
           rating: parseInt(reviewRating, 10),
           review: reviewText,

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../../Utils/api';
 
 const QRpage = () => {
   const { pid } = useParams(); // ✅ Use correct param name
@@ -14,7 +14,7 @@ const QRpage = () => {
   useEffect(() => {
     const fetchBooking = async () => {
       try {
-        const res = await axios.get(`https://ticketflix-backend.onrender.com/booking/${pid}`);
+        const res = await api.get(`/booking/${pid}`);
         setBooking(res.data);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch booking');
@@ -33,7 +33,7 @@ const QRpage = () => {
     }
 
     try {
-      const res = await axios.patch(`https://ticketflix-backend.onrender.com/qrupdate/${pid}`, {
+      const res = await api.patch(`/qrupdate/${pid}`, {
         status: newStatus,
       });
       setBooking(res.data.booking);

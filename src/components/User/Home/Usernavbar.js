@@ -1,38 +1,35 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import debounce from 'lodash.debounce';
+import UserLogin from '../Login/UserAuth';
+import { AuthContext } from '../AuthContext'
+import api from '../../../Utils/api';
+
 
 const Usernavbar = () => {
+  const { user, token, logout } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(!!token);
+  const [username, setUsername] = useState(user?.name || "");
 
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
 
   const [showPopup, setShowPopup] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   // Check login on load
   useEffect(() => {
-    const userType = localStorage.getItem('usertype');
-    if (userType === 'user') {
+    if (user && token) {
       setIsLoggedIn(true);
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        try {
-          const userObj = JSON.parse(storedUser);
-          setUsername(userObj.name);
-        } catch (err) {
-          console.error('Error parsing user data:', err);
-        }
-      }
+      setUsername(user.name || "");
     } else {
       setIsLoggedIn(false);
+      setUsername("");
     }
-  }, []);
+  }, [user, token]);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -56,8 +53,8 @@ const Usernavbar = () => {
 
     try {
       const [movieRes, eventRes] = await Promise.all([
-        axios.get(`https://ticketflix-backend.onrender.com/api/autocomplete?search=${query}`),
-        axios.get(`https://ticketflix-backend.onrender.com/api/eventcomplete?search=${query}`)
+        api.get(`/api/autocomplete?search=${query}`),
+        api.get(`/api/eventcomplete?search=${query}`)
       ]);
 
       const movieResults = movieRes.data.map(item => ({ ...item, type: 'movie' }));
@@ -97,10 +94,10 @@ const Usernavbar = () => {
       if (searchTerm.trim() === '') return;
 
       if (isMoviePage) {
-        const res = await axios.get(`https://ticketflix-backend.onrender.com/movieview?search=${searchTerm}`);
+        const res = await api.get(`/movieview?search=${searchTerm}`);
         navigate('/MoviePage', { state: { searchResults: res.data } });
       } else {
-        const res = await axios.get(`https://ticketflix-backend.onrender.com/event?search=${searchTerm}`);
+        const res = await api.get(`/event?search=${searchTerm}`);
         navigate('/event', { state: { searchResults: res.data } });
       }
     } catch (err) {
@@ -112,7 +109,7 @@ const Usernavbar = () => {
     <>
       <div className="fixed top-0 w-full h-[65px] lg:h-[80px] bg-[#fff] px-[2px] py-3 z-[1000] flex justify-between items-center shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-colors duration-300 ease md:gap-[10px]">
         <div
-  className="flex items-center cursor-pointer
+          className="flex items-center cursor-pointer
              sm:left-0
              md:ml-[8rem]
              lg:ml-[10rem]
@@ -120,17 +117,17 @@ const Usernavbar = () => {
              2xl:ml-[12.4rem]
              antarikh:ml-[14.2rem]
              debojit:ml-[17rem]"
-  onClick={goToHome}
->
-  <div className="h-[70px] w-[70px] lg:h-[85px] lg:w-[85px] pb-2 flex items-center justify-center">
-  <img
-    src={require('./logo-png.png')}
-    alt="Your Logo"
-    className="h-full w-auto object-contain"
-  />
-</div>
-<div className='lg:hidden'>
-  <span className={`
+          onClick={goToHome}
+        >
+          <div className="h-[70px] w-[70px] lg:h-[85px] lg:w-[85px] pb-2 flex items-center justify-center">
+            <img
+              src={require('./logo-png.png')}
+              alt="Your Logo"
+              className="h-full w-auto object-contain"
+            />
+          </div>
+          <div className='lg:hidden'>
+            <span className={`
         font-winky-sans
         not-italic
         font-optical-auto
@@ -144,8 +141,8 @@ const Usernavbar = () => {
         text-orange-500
         font-semibold
       `}>Flix</span>
-</div>
-</div>
+          </div>
+        </div>
 
 
         <div className="flex items-center gap-[2px] hidden
@@ -167,18 +164,18 @@ const Usernavbar = () => {
             Events
           </NavLink>
         </div>
-      <div className='w-full flex justify-end lg:hidden'>
-        {/* SEARCH BAR */}
-        <img
-          src={require('./search.png')}
-          onClick={() => { navigate("/search") }}
-          alt="Search"
-          className="w-[23px] h-[23px] mb-[10px] ml-auto mr-4
+        <div className='w-full flex justify-end lg:hidden'>
+          {/* SEARCH BAR */}
+          <img
+            src={require('./search.png')}
+            onClick={() => { navigate("/search") }}
+            alt="Search"
+            className="w-[23px] h-[23px] mb-[10px] ml-auto mr-4
                            sm:w-[20px] sm:h-[20px] sm:mr-[15px] sm:ml-[35rem] sm:mb-[10px]
                            md:w-[25px] md:h-[25px] md:mr-[18px] md:ml-[230px] md:mb-[10px] md:hidden
                            debojit:w-[30px] debojit:h-[30px] debojit:mr-[20px]"
-        />
-      </div>
+          />
+        </div>
         <div className="flex-1 flex justify-center max-lg:hidden">
 
           <div className="relative flex items-center w-full max-w-[250px] bg-white border border-[#cccccc] rounded-none px-[15px] py-[5px] shadow-[0_2px_5px_rgba(0,0,0,0.1)]
@@ -330,7 +327,14 @@ const Usernavbar = () => {
                 <li className="w-full px-[20px] py-[12px]">
                   <button
                     type="button"
-                    onClick={isLoggedIn ? handleLogout : () => navigate('/trylogin')}
+                    onClick={() => {
+                      if (isLoggedIn) {
+                        handleLogout();
+                      } else {
+                        setShowPopup(false);
+                        setShowLoginForm(true);
+                      }
+                    }}
                     className="
                       w-full
                       bg-[#e8e8e8]
@@ -361,7 +365,7 @@ const Usernavbar = () => {
                 className="block box-border border-2 border-[#000000] rounded-[0.75em] px-[1.5em] py-[0.75em] bg-[#e8e8e8] text-[#000000] transform -translate-y-[0.2em] transition-transform duration-100 ease-in hover:-translate-y-[0.33em] active:translate-y-0"
                 onClick={() => {
                   setShowPopup(false);
-                  navigate('/trylogin');
+                  setShowLoginForm(true);
                 }}
               >
                 <span className="text-[17px] font-bold">Login</span>
@@ -373,6 +377,22 @@ const Usernavbar = () => {
                 <span className="text-[17px] font-bold">Cancel</span>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {showLoginForm && (
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[1000]">
+          <div className="bg-white p-6 rounded-lg w-[400px] shadow-lg relative">
+            <button
+              onClick={() => setShowLoginForm(false)}
+              className="absolute top-2 right-2 text-gray-600 hover:text-black text-xl font-bold"
+            >
+              &times;
+            </button>
+            <UserLogin onSuccess={() => {
+              setIsLoggedIn(true);
+              setShowLoginForm(false);
+            }} />
           </div>
         </div>
       )}

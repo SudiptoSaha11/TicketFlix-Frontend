@@ -1,6 +1,6 @@
 // src/pages/EventSuccess.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import api from '../../../Utils/api';
 import Lottie from 'lottie-react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
@@ -58,8 +58,8 @@ const EventSuccess = () => {
     };
 
     console.log('Payload to /booking/add:', payload);
-    axios
-      .post('https://ticketflix-backend.onrender.com/booking/add', payload)
+    api
+      .post('/booking/add', payload)
       .then(() => {
         setBookingMessage('Your event booking has been confirmed! 🎉');
         sessionStorage.setItem('bookingProcessed', 'true');

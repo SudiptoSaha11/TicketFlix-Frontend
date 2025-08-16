@@ -10,7 +10,6 @@ import Screen from './components/Admin/Screen';
 import Addscreen from './components/Admin/Addscreen'
 import Editscreen from './components/Admin/Editscreen'
 import Editshow from './components/Admin/Editshow';
-import Userlogin from './components/User/Login/Userlogin';
 import Booking from './components/Admin/Booking';
 import { Logout } from "./Logout";
 import UserHome from './components/User/Home/UserHome';
@@ -50,10 +49,8 @@ import StaffLogin from './components/User/Home/StaffLogin';
 const App=()=> {
 return (
   <>
-  <Router>
   <Routes>
-          <Route path = '/Userlogin'
-            element = {<Logout/>}/>
+          
           <Route path = '/login'
             element = {<Login/>}/>
           <Route path = '/movie'
@@ -74,8 +71,6 @@ return (
             element = {<Showtime/>}/>
           <Route path = '/editshow'
             element = {<Editshow/>}/>
-          <Route path='/userlogin' 
-            element={<Userlogin />} /> 
           <Route path = '/booking'
             element = {<Booking/>}/>
           <Route path = '/'
@@ -145,7 +140,6 @@ return (
           <Route path = '/staff/login'
             element = {<StaffLogin/>}/>
         </Routes>
-        </Router>
   </>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from '../../../Utils/api';
 import Usernavbar from "./Usernavbar";
 import { QRCodeCanvas } from "qrcode.react";
 import dayjs from "dayjs";
@@ -43,9 +43,9 @@ const MyBooking = () => {
 
   try {
     const [{ data: allBookings }, res1, res2] = await Promise.all([
-      axios.get("https://ticketflix-backend.onrender.com/booking"),
-      axios.get("https://ticketflix-backend.onrender.com/movieview"),
-      axios.get("https://ticketflix-backend.onrender.com/event"),
+      api.get("/booking"),
+      api.get("/movieview"),
+      api.get("/event"),
     ]);
 
     const sortedBookings = allBookings
@@ -83,8 +83,8 @@ const MyBooking = () => {
 
       await Promise.all(
         toDelete.map(b =>
-          axios
-            .delete(`https://ticketflix-backend.onrender.com/booking/delete/${b._id}`)
+          api
+            .delete(`/booking/delete/${b._id}`)
             .catch(err => console.error("Delete failed", b._id, err))
         )
       );
@@ -101,7 +101,7 @@ const MyBooking = () => {
 
   const handleCardClick = async (id) => {
     try {
-      const response = await axios.get(`https://ticketflix-backend.onrender.com/booking/${id}`);
+      const response = await api.get(`/booking/${id}`);
       setBookingDetails(response.data);
       setIsDetailModalOpen(true);
     } catch (err) {
@@ -123,7 +123,7 @@ const MyBooking = () => {
 
   const handleDelete = async (booking) => {
     try {
-      await axios.patch(`https://ticketflix-backend.onrender.com/booking/${booking._id}/cancel`);
+      await api.patch(`/booking/${booking._id}/cancel`);
       await load();
       setShowModal(false);
       setSelectedBooking(null);
@@ -166,7 +166,7 @@ const MyBooking = () => {
               const imageUrl = match?.image
                 ? match.image.startsWith("http")
                   ? match.image
-                  : `https://ticketflix-backend.onrender.com/${match.image}`
+                  : `/${match.image}`
                 : "";
 
               const isCancelled = booking.status?.toLowerCase() === "cancelled";
@@ -238,7 +238,7 @@ const MyBooking = () => {
           const imageUrl = match?.image
             ? match.image.startsWith("http")
               ? match.image
-              : `https://ticketflix-backend.onrender.com/${match.image}`
+              : `/${match.image}`
             : "https://via.placeholder.com/80x120";
 
           return (
@@ -423,7 +423,7 @@ const MyBooking = () => {
             const match = movies.find((m) => m.movieName === name || m.eventName === name);
             const imageUrl = match?.image?.startsWith("http")
               ? match.image
-              : `https://ticketflix-backend.onrender.com/${match?.image}`;
+              : `/${match?.image}`;
             const isCancelled = booking.status?.toLowerCase() === "cancelled";
 
             return (

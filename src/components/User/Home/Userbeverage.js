@@ -1,7 +1,7 @@
 // src/UserBeverage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../../Utils/api';
 import { loadStripe } from '@stripe/stripe-js';
 
 const stripePromise = loadStripe(
@@ -37,8 +37,8 @@ const UserBeverage = () => {
   const bookingTotal = booking.totalAmount || 0;
 
   useEffect(() => {
-    axios
-      .get('https://ticketflix-backend.onrender.com/beverages')
+    api
+      .get('/beverages')
       .then(res => {
         setItems(res.data);
         const init = {};

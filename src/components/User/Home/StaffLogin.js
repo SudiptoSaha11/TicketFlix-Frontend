@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../../Utils/api';
 
 const StaffLogin = () => {
   const [formData, setFormData] = useState({ username: '', password: '' });
@@ -22,7 +22,7 @@ const StaffLogin = () => {
     }
 
     try {
-      const res = await axios.post('https://ticketflix-backend.onrender.com/staff/login', formData);
+      const res = await api.post('/staff/login', formData);
       setSuccess(res.data.message);
       // You can store staffId in localStorage/sessionStorage if needed
       // localStorage.setItem('staffId', res.data.staffId);

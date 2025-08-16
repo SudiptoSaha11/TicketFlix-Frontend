@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
+import api from '../../../Utils/api';
 import Usernavbar from "./Usernavbar"; // If you have a shared navbar component
 
 // Import the CSS file
@@ -35,8 +35,8 @@ function ReviewForm() {
 
     try {
       // POST the review to the server
-      const response = await axios.post(
-        `https://ticketflix-backend.onrender.com/movieview/review/${movieId}`,
+      const response = await api.post(
+        `/movieview/review/${movieId}`,
         {
           rating: parseInt(reviewRating, 10),
           review: reviewText,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../../Utils/api';
 import debounce from 'lodash.debounce';
 
 const SearchPage = () => {
@@ -15,7 +15,7 @@ const SearchPage = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get('https://ticketflix-backend.onrender.com/movieview');
+        const res = await api.get('/movieview');
         setAllMovies(res.data);
       } catch (err) {
         console.error('Failed to fetch movie list:', err);
@@ -38,8 +38,8 @@ const SearchPage = () => {
     if (!q) return setSuggestions([]);
     try {
       const [movR, evtR] = await Promise.all([
-        axios.get(`https://ticketflix-backend.onrender.com/api/autocomplete?search=${encodeURIComponent(q)}`),
-        axios.get(`https://ticketflix-backend.onrender.com/api/eventcomplete?search=${encodeURIComponent(q)}`)
+        api.get(`/api/autocomplete?search=${encodeURIComponent(q)}`),
+        api.get(`/api/eventcomplete?search=${encodeURIComponent(q)}`)
       ]);
       const movies = movR.data.map(i => ({
         _id: i._id,

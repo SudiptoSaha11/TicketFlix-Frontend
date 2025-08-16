@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from '../../../Utils/api';
 import Footer from "./Footer";
 
 function Eventdetails() {
@@ -36,8 +36,8 @@ function Eventdetails() {
   const fetchData = async (eventID) => {
     try {
       // Fetch event details
-      const eventResponse = await axios.get(
-        `https://ticketflix-backend.onrender.com/getevent/${eventID}`
+      const eventResponse = await api.get(
+        `/getevent/${eventID}`
       );
 
       const {
@@ -67,8 +67,8 @@ function Eventdetails() {
       setlocation(location);
 
       // Fetch event schedule
-      const scheduleResponse = await axios.get(
-        `https://ticketflix-backend.onrender.com/eventschedule`
+      const scheduleResponse = await api.get(
+        `/eventschedule`
       );
       const matchedSchedule = scheduleResponse.data.find(
         (schedule) => schedule.eventName === Name

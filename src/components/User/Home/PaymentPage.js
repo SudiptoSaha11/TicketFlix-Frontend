@@ -2,7 +2,7 @@
 import React from 'react';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import axios from 'axios';
+import api from '../../../Utils/api';
 import { useLocation } from 'react-router-dom'; // Import useLocation
 
 // Replace with your Stripe publishable key
@@ -32,7 +32,7 @@ const CheckoutForm = ({ bookingDetails }) => {
 
       // Send paymentMethod.id and bookingDetails to your server for processing
       try {
-        await axios.post('https://ticketflix-backend.onrender.com/payment', {
+        await api.post('/payment', {
           paymentMethodId: paymentMethod.id,
           amount: bookingDetails.totalAmount * 100, // Amount in cents
           bookingDetails,
