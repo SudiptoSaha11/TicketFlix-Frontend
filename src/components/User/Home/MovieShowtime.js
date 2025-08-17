@@ -11,6 +11,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import Modal from "react-modal";
 import { FiClock, FiDollarSign, FiFilter, FiX } from "react-icons/fi";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 Modal.setAppElement("#root");
 
@@ -64,6 +66,11 @@ const MovieShowtime = () => {
   const [pendingShow, setPendingShow] = useState(null);
   const [hoveredCount, setHoveredCount] = useState(1);
 
+  // "show started recently" confirmation modal
+  const [isStartedModalOpen, setIsStartedModalOpen] = useState(false);
+  // temporary storage for the show that triggered the "started" confirmation
+  const [tempPendingShow, setTempPendingShow] = useState(null);
+
   // Fetch schedules for this movie
   useEffect(() => {
     if (Name) {
@@ -108,11 +115,51 @@ const MovieShowtime = () => {
     }
   };
 
-  // Showtime click
+  // Showtime click with time checks:
+  // - If show started >= 30 minutes ago -> toast error, do not proceed
+  // - If show started < 30 minutes ago (i.e. showtime < now && diff > -30) -> confirmation modal
+  // - Otherwise -> open seat-count modal normally
   const handleShowtimeClick = (Venue, timeStr, pricing) => {
+    // Build show datetime from selectedDate + timeStr
+    const showDateTime = dayjs(`${selectedDate.format("YYYY-MM-DD")} ${timeStr}`);
+    const now = dayjs();
+    const diffMinutes = showDateTime.diff(now, "minute"); // positive = future minutes, negative = minutes past
+
+    // If show started >= 30 minutes ago
+    if (diffMinutes <= -30) {
+      toast.error("This show started more than 30 minutes ago. Booking is closed.");
+      return;
+    }
+
+    // If show started less than 30 minutes ago (i.e., started recently)
+    if (diffMinutes < 0 && diffMinutes > -30) {
+      // Show the confirmation modal
+      setTempPendingShow({ Venue, timeStr, pricing });
+      setIsStartedModalOpen(true);
+      return;
+    }
+
+    // Normal flow (show in future or exactly now)
     setPendingShow({ Venue, timeStr, pricing });
     setHoveredCount(1);
     setIsCountModalOpen(true);
+  };
+
+  // If user confirms to continue booking for a show that already started recently
+  const handleConfirmContinue = () => {
+    setIsStartedModalOpen(false);
+    if (tempPendingShow) {
+      setPendingShow(tempPendingShow);
+      setHoveredCount(1);
+      setIsCountModalOpen(true);
+      setTempPendingShow(null);
+    }
+  };
+
+  // If user cancels booking for the recently-started show
+  const handleCancelContinue = () => {
+    setIsStartedModalOpen(false);
+    setTempPendingShow(null);
   };
 
   // Confirm seat count & navigate
@@ -166,6 +213,9 @@ const MovieShowtime = () => {
   return (
     <div className="min-h-screen">
       <Usernavbar />
+
+      {/* Toast container (react-toastify) */}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
 
       {/* Mobile View - Fixed container */}
       <div className="lg:hidden w-full max-w-screen-lg mx-auto mt-24 px-4 sm:px-6 md:px-4 font-sans overflow-x-hidden">
@@ -504,24 +554,6 @@ const MovieShowtime = () => {
                             className="group relative px-2.5 py-1 rounded-lg border-2 z-1000 border-green-400 text-green-400 hover:bg-green-400 transition-all duration-300 hover:text-white"
                           >
                             <span className="font-semibold text-sm  ">{formatTime(t)}</span>
-                            {/* <div className="absolute bottom-full mb-3 left-1/2 transform -translate-x-1/2 w-60 bg-white border border-gray-200 rounded-xl shadow-xl p-4 text-left text-sm text-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
-                              <div className="flex justify-between mb-1">
-                                <span className="font-medium">Recliner:</span>
-                                <span>₹{showObj.GoldTicketPrice}</span>
-                                <span className="text-green-500 font-medium">Available</span>
-                              </div>
-                              <div className="flex justify-between mb-1">
-                                <span className="font-medium">Royal:</span>
-                                <span>₹{showObj.SilverTicketPrice}</span>
-                                <span className="text-green-500 font-medium">Available</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="font-medium">Club:</span>
-                                <span>₹{showObj.PlatinumTicketPrice}</span>
-                                <span className="text-green-500 font-medium">Available</span>
-                              </div>
-                              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>
-                            </div> */}
                           </button>
                         ))}
                       </div>
@@ -612,6 +644,39 @@ const MovieShowtime = () => {
             className="w-full bg-orange-500 text-white lg:py-3 max-lg:py-2 rounded-xl font-bold hover:bg-orange-600 transition-colors shadow-md"
           >
             Select Seats
+          </button>
+        </div>
+      </Modal>
+
+      {/* Confirmation modal shown when the show started less than 30 minutes ago */}
+      <Modal
+        isOpen={isStartedModalOpen}
+        onRequestClose={() => setIsStartedModalOpen(false)}
+        contentLabel="Show Already Started"
+        overlayClassName="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+        className="w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl outline-none p-6"
+      >
+        <div className="flex justify-between items-start mb-4">
+          <h3 className="text-lg font-semibold">The show has already started</h3>
+          <button onClick={() => setIsStartedModalOpen(false)} className="text-gray-500 hover:text-gray-800">
+            <FiX size={20} />
+          </button>
+        </div>
+        <p className="text-gray-700 mb-6">
+          The show has already started less than 30 minutes ago. Do you want to continue booking?
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={handleConfirmContinue}
+            className="flex-1 bg-orange-500 text-white py-2 rounded-xl font-semibold hover:bg-orange-600 transition"
+          >
+            Yes, continue
+          </button>
+          <button
+            onClick={handleCancelContinue}
+            className="flex-1 bg-gray-100 text-gray-800 py-2 rounded-xl font-semibold hover:bg-gray-200 transition"
+          >
+            No, cancel
           </button>
         </div>
       </Modal>
