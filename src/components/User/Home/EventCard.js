@@ -9,6 +9,7 @@ const EventCard = ({ image, eventName, eventVenue, onClick }) => {
         <img
           src={image}
           alt={eventName}
+          loading="lazy"
           class="w-[220px] aspect-[12/17] object-cover rounded-[8px]
            border-none outline-none shadow-none transition-transform duration-300 ease-in-out hover:scale-105"
           

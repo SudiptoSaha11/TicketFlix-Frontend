@@ -13,6 +13,7 @@ const Card = ({ image, movieName, movieGenre, onClick }) => {
       <img
         src={image}
         alt={movieName}
+        loading="lazy"
         className="w-[220px] aspect-[12/17] object-cover rounded-[8px] border-none outline-none shadow-none transition-transform duration-300 ease-in-out hover:scale-105"
       />
       <div className="p-1  flex flex-col items-start text-start 
