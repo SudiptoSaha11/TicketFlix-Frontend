@@ -156,7 +156,7 @@ const Eventticketbooking = () => {
   const makePayment = async ({ seatsBooked: seatsArg, userEmail: emailArg } = {}) => {
     setLoading(true);
     try {
-      const baseUrl = process.env.REACT_APP_API_BASE || 'http://localhost:5000';
+      const baseUrl = process.env.REACT_APP_API_BASE || 'https://ticketflix-backend.onrender.com';
       const url = `${baseUrl}/api/event/create-checkout-session`;
 
       // If caller passed string seats use them, otherwise derive from selectedSeats objects

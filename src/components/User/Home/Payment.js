@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
+import api from '../../../Utils/api';
 
 const stripePromise = loadStripe('pk_test_51PyTTVBPFFoOUNzJLfc5ptRLapKTmjsd0weZJdHrSBV6IvsCafsdthGEsNw92wlp8Agg1VV8fDYqudB4fLLjOymd004Zx6Yw6c');
 
@@ -177,7 +178,7 @@ const Payment = () => {
 
         try {
             setIsApplying(true); setError('');
-            const response = await axios.post('http://localhost:5000/api/promocode/apply', { code, orderTotal: subtotal });
+            const response = await api.post('/api/promocode/apply', { code, orderTotal: subtotal });
             const data = response.data;
             const discount = Number(data.discount ?? data.discountAmount ?? 0);
             const finalPayable = Math.max(0, subtotal - discount) + extras;
@@ -246,7 +247,7 @@ const Payment = () => {
           const payload = { Name: bookingDetails?.Name, seats: bookingDetails?.seats, food, totalAmount: finalAmount, promo, bookingDate: bookingDetails?.date };
       
           // 1) create order on server
-          const resp = await fetch('http://localhost:5000/api/razorpay/create-order', {
+          const resp = await fetch('https://ticketflix-backend.onrender.com/api/razorpay/create-order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
@@ -277,7 +278,7 @@ const Payment = () => {
                 const paymentId = response.razorpay_payment_id;
                 try {
                   // Try to verify immediately on server (best-effort)
-                  const verifyResp = await fetch('http://localhost:5000/api/razorpay/verify-payment', {
+                  const verifyResp = await fetch('https://ticketflix-backend.onrender.com/api/razorpay/verify-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(response),
@@ -313,7 +314,7 @@ const Payment = () => {
         try {
             const finalAmount = Number(summary?.finalPayable ?? summary?.total ?? 0);
             const promo = appliedCode || safeGet('appliedPromo');
-            const resp = await fetch('http://localhost:5000/api/create-checkout-session', {
+            const resp = await fetch('https://ticketflix-backend.onrender.com/api/create-checkout-session', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ Name: bookingDetails?.Name, seats: bookingDetails?.seats, food, totalAmount: finalAmount, promo }),

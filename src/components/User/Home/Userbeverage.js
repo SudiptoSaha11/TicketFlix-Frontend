@@ -89,7 +89,7 @@ const UserBeverage = () => {
         subTotal: bookingDetails.totalAmount,
       };
 
-      const resp = await fetch('http://localhost:5000/api/calculate-summary', {
+      const resp = await fetch('https://ticketflix-backend.onrender.com/api/calculate-summary', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -138,7 +138,7 @@ const UserBeverage = () => {
         subTotal: bookingDetails.totalAmount,
       };
 
-      const resp = await fetch('http://localhost:5000/api/calculate-summary', {
+      const resp = await fetch('https://ticketflix-backend.onrender.com/api/calculate-summary', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

@@ -6,6 +6,7 @@ import styled, { keyframes } from "styled-components";
 import axios from "axios";
 import { getBotReply } from "./getbotreply";
 import { Link } from "react-router-dom";
+import api from "../../../Utils/api";
 
 const CHAT_LOTTIE_URL = "https://lottie.host/26a714a7-6c3b-42e6-82d1-fbf5915e1c5e/EwZuIQZQpu.lottie";
 
@@ -91,7 +92,7 @@ const Chatbot = () => {
 
   // Fetch movie titles from backend once
   useEffect(() => {
-    axios.get("http://localhost:5000/movieview")
+    api.get("/movieview")
       .then(res => setMovieList(res.data.map(m => m.movieName)))
       .catch(err => console.error("Movie fetch error:", err));
   }, []);

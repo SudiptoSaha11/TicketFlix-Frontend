@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import styled from 'styled-components';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthContext } from '../AuthContext';
+import api from '../../../Utils/api';
 
 const UserAuth = ({ onSuccess }) => {
   const [toggleSignUp, setToggleSignUp] = useState(false); // login or signup
@@ -108,7 +109,7 @@ const UserAuth = ({ onSuccess }) => {
     }
     try {
       setIsLoading(true);
-      const response = await axios.post('http://localhost:5000/auth/register', {
+      const response = await api.post('/auth/register', {
         name: signupName,
         email: signupEmail,
         password: signupPassword,
@@ -137,7 +138,7 @@ const UserAuth = ({ onSuccess }) => {
     }
     try {
       setIsLoading(true);
-      const response = await axios.post('http://localhost:5000/auth/verifyEmail', {
+      const response = await api.post('/auth/verifyEmail', {
         code: otp, // ✅ backend expects "code"
       });
       if (response.data.success) {
