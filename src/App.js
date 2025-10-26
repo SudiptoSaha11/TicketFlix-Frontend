@@ -45,12 +45,12 @@ import UserBeverage from './components/User/Home/Userbeverage';
 import QRpage from './components/User/Home/QRpage';
 import QRProtectedPage from './components/User/Home/QRprotectedpage';
 import StaffLogin from './components/User/Home/StaffLogin';
+import Payment from './components/User/Home/Payment';
 
 const App=()=> {
 return (
   <>
   <Routes>
-          
           <Route path = '/login'
             element = {<Login/>}/>
           <Route path = '/movie'
@@ -71,6 +71,7 @@ return (
             element = {<Showtime/>}/>
           <Route path = '/editshow'
             element = {<Editshow/>}/>
+
           <Route path = '/booking'
             element = {<Booking/>}/>
           <Route path = '/'
@@ -139,6 +140,8 @@ return (
             element = {<QRProtectedPage/>}/>
           <Route path = '/staff/login'
             element = {<StaffLogin/>}/>
+          <Route path="/payment"
+            element={<Payment />} />
         </Routes>
   </>
   );

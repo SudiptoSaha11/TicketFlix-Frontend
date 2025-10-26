@@ -1,22 +1,28 @@
 // src/components/User/Home/MovieShowtime.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import DatePicker from "./DatePicker";
 import DatePickerMobile from "./DatePickerMobile";
-import api from '../../../Utils/api';
 import Usernavbar from "./Usernavbar";
 import Footer from "./Footer";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import Modal from "react-modal";
 import { FiClock, FiDollarSign, FiFilter, FiX } from "react-icons/fi";
-import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import { FaRupeeSign } from "react-icons/fa";
+import api from "../../../Utils/api";
 
 Modal.setAppElement("#root");
 
-// Icons for seat preview
+// Endpoints
+const ENDPOINTS = {
+  schedulesByMovie: (movieName) =>
+    `/Scheduleschema/movie/${encodeURIComponent(movieName)}`,
+  movieList: "/movieview",
+};
+
+// Icons (unchanged)
 const seatIcons = [
   null,
   "https://t3.ftcdn.net/jpg/01/17/76/26/360_F_117762685_qn25zluBo4fI4hnMYSvMAlxrzqbQIDrz.jpg",
@@ -32,20 +38,19 @@ const seatIcons = [
 ];
 
 const MovieShowtime = () => {
-  // Get movie info passed via Link state
   const { state } = useLocation();
-  const { movieName: Name, chosenLanguage, image: PosterFromState } = state || {};
+  const { movieId, movieName: Name, chosenLanguage, image: PosterFromState } = state || {};
+
   const navigate = useNavigate();
 
-  // Poster URL state: first from state, fallback by fetching movie list and matching by ID in localStorage
+  // Poster (unchanged)
   const [posterURL, setPosterURL] = useState(PosterFromState || "");
-
   useEffect(() => {
     if (!posterURL) {
       const movieId = localStorage.getItem("id");
       if (movieId) {
         api
-          .get("/movieview")
+          .get(ENDPOINTS.movieList)
           .then((res) => {
             const mv = res.data.find((m) => m._id === movieId);
             if (mv?.image) setPosterURL(mv.image);
@@ -55,172 +60,353 @@ const MovieShowtime = () => {
     }
   }, [posterURL]);
 
-  // Schedule state
-  const [schedules, setSchedules] = useState([]);
+  // Data
+  const [occurrences, setOccurrences] = useState([]); // list of show instances from backend
+  const [loadingSch, setLoadingSch] = useState(false);
+  const [errorSch, setErrorSch] = useState(null);
+
+  useEffect(() => {
+    if (!Name) return;
+    let cancelled = false;
+
+    (async () => {
+      setLoadingSch(true);
+      setErrorSch(null);
+      try {
+        const res = await api.get(ENDPOINTS.schedulesByMovie(Name));
+        const rows = Array.isArray(res.data) ? res.data : [];
+        if (!cancelled) setOccurrences(rows);
+      } catch (err) {
+        const msg =
+          err?.response?.data?.message || err?.message || "Failed to fetch schedules";
+        if (!cancelled) {
+          if (String(err?.response?.status) === "404") setOccurrences([]);
+          else setErrorSch(msg);
+        }
+      } finally {
+        if (!cancelled) setLoadingSch(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [Name]);
+
+  // UI state
   const [selectedDate, setSelectedDate] = useState(dayjs().startOf("day"));
   const [timeFilter, setTimeFilter] = useState("All");
   const [priceFilter, setPriceFilter] = useState("All");
 
-  // Modal & seat count
   const [isCountModalOpen, setIsCountModalOpen] = useState(false);
   const [pendingShow, setPendingShow] = useState(null);
   const [hoveredCount, setHoveredCount] = useState(1);
 
-  // "show started recently" confirmation modal
-  const [isStartedModalOpen, setIsStartedModalOpen] = useState(false);
-  // temporary storage for the show that triggered the "started" confirmation
-  const [tempPendingShow, setTempPendingShow] = useState(null);
+  // ---------- Helpers ----------
+  const formatTimeFromStartAt = (isoOrDate) => dayjs(isoOrDate).format("hh:mm A");
 
-  // Fetch schedules for this movie
-  useEffect(() => {
-    if (Name) {
-      api
-        .get("/Scheduleschema")
-        .then((res) => {
-          setSchedules(
-            res.data.filter(
-              (sch) => sch.MovieName?.toLowerCase() === Name.toLowerCase()
-            )
-          );
-        })
-        .catch((err) => console.error(err));
-    }
-  }, [Name]);
-
-  // Helpers
-  const formatTime = (t) => {
-    let [h, m] = t.split(":").map(Number);
-    const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
-    return `${h}:${m.toString().padStart(2, "0")} ${ampm}`;
-  };
-  const getTimePeriod = (timeStr) => {
-    const hr = +timeStr.split(":")[0];
-    if (hr < 12 && hr >= 5) return "Morning";
+  const getTimePeriodFromStartAt = (isoOrDate) => {
+    const hr = dayjs(isoOrDate).hour();
+    if (hr >= 5 && hr < 12) return "Morning";
     if (hr < 16) return "Afternoon";
     if (hr < 20) return "Evening";
     return "Night";
   };
-  const priceMatch = ({ GoldTicketPrice, SilverTicketPrice, PlatinumTicketPrice }) => {
-    const arr = [GoldTicketPrice, SilverTicketPrice, PlatinumTicketPrice];
+
+  const extractPrices = (row = {}) => {
+    const g = typeof row.RoyalTicketPrice === "number" ? row.RoyalTicketPrice : undefined;
+    const s = typeof row.ClubTicketPrice === "number" ? row.ClubTicketPrice : undefined;
+    const p = typeof row.ExecutiveTicketPrice === "number" ? row.ExecutiveTicketPrice : undefined;
+    const arr = [g, s, p].filter((x) => typeof x === "number");
+    const min = arr.length ? Math.min(...arr) : 0;
+    const max = arr.length ? Math.max(...arr) : 0;
+    return { g, s, p, min, max, isRange: arr.length ? min !== max : false };
+  };
+
+  // ---------- Filter by selected day and build hall map ----------
+  // Map: hallName -> { rows: [occurrence], pricesHint: from first row }
+  const hallMap = useMemo(() => {
+    const map = new Map();
+
+    const filteredByDay = occurrences.filter((row) =>
+      dayjs(row.startAt || row.startAtISO).isSame(selectedDate, "day")
+    );
+
+    filteredByDay.sort(
+      (a, b) =>
+        dayjs(a.startAt || a.startAtISO).valueOf() -
+        dayjs(b.startAt || b.startAtISO).valueOf()
+    );
+
+    for (const row of filteredByDay) {
+      const hall = row.hallName || "Unknown Hall";
+      if (!map.has(hall)) map.set(hall, { rows: [], pricesHint: row });
+      map.get(hall).rows.push(row);
+    }
+
+    return map;
+  }, [occurrences, selectedDate]);
+
+  // Price filtering per hall row
+  const passPriceFilter = (row) => {
+    const { min } = extractPrices(row);
     switch (priceFilter) {
       case "Below200":
-        return arr.some((p) => p < 200);
+        return min <= 200;
       case "200to400":
-        return arr.some((p) => p >= 200 && p <= 400);
+        return min >= 200 && min <= 400;
       case "Above400":
-        return arr.some((p) => p > 400);
+        return min >= 400;
       default:
         return true;
     }
   };
 
-  // Showtime click with time checks:
-  // - If show started >= 30 minutes ago -> toast error, do not proceed
-  // - If show started < 30 minutes ago (i.e. showtime < now && diff > -30) -> confirmation modal
-  // - Otherwise -> open seat-count modal normally
-  const handleShowtimeClick = (Venue, timeStr, pricing) => {
-    // Build show datetime from selectedDate + timeStr
-    const showDateTime = dayjs(`${selectedDate.format("YYYY-MM-DD")} ${timeStr}`);
-    const now = dayjs();
-    const diffMinutes = showDateTime.diff(now, "minute"); // positive = future minutes, negative = minutes past
-
-    // If show started >= 30 minutes ago
-    if (diffMinutes <= -30) {
-      toast.error("This show started more than 30 minutes ago. Booking is closed.");
-      return;
-    }
-
-    // If show started less than 30 minutes ago (i.e., started recently)
-    if (diffMinutes < 0 && diffMinutes > -30) {
-      // Show the confirmation modal
-      setTempPendingShow({ Venue, timeStr, pricing });
-      setIsStartedModalOpen(true);
-      return;
-    }
-
-    // Normal flow (show in future or exactly now)
-    setPendingShow({ Venue, timeStr, pricing });
+  // Click -> open modal
+  const handleShowtimeClick = (row) => {
+    setPendingShow({
+      hallName: row.hallName,
+      startAt: row.startAt || row.startAtISO,
+      displayTime: formatTimeFromStartAt(row.startAt || row.startAtISO),
+      pricing: {
+        RoyalTicketPrice: row.RoyalTicketPrice,
+        ClubTicketPrice: row.ClubTicketPrice,
+        ExecutiveTicketPrice: row.ExecutiveTicketPrice,
+      },
+    });
     setHoveredCount(1);
     setIsCountModalOpen(true);
   };
 
-  // If user confirms to continue booking for a show that already started recently
-  const handleConfirmContinue = () => {
-    setIsStartedModalOpen(false);
-    if (tempPendingShow) {
-      setPendingShow(tempPendingShow);
-      setHoveredCount(1);
-      setIsCountModalOpen(true);
-      setTempPendingShow(null);
-    }
+  // Confirm seats
+  // Confirm seats
+const handleSelectSeats = () => {
+  setIsCountModalOpen(false);
+  const startAt = pendingShow.startAt;
+  const d = dayjs(startAt);
+
+  const bundle = {
+    movieId,                     // ✅ Add movieId here
+    Name,
+    Venue: pendingShow.hallName,
+    Time: d.format("hh:mm A"),
+    date: d.format("YYYY-MM-DD"),
+    chosenLanguage,
+    seats: [],
+    totalAmount: 0,
+    pricing: pendingShow.pricing,
+    startAtISO: dayjs(startAt).toISOString(), // keep the exact instant
   };
 
-  // If user cancels booking for the recently-started show
-  const handleCancelContinue = () => {
-    setIsStartedModalOpen(false);
-    setTempPendingShow(null);
-  };
+  sessionStorage.setItem("bookingDetails", JSON.stringify(bundle));
 
-  // Confirm seat count & navigate
-  const handleSelectSeats = () => {
-    setIsCountModalOpen(false);
-    const bundle = {
+  navigate("/ticketbooking", {
+    state: {
+      movieId,                   // ✅ Pass it forward
       Name,
-      Venue: pendingShow.Venue,
-      Time: formatTime(pendingShow.timeStr),
-      date: selectedDate.format("YYYY-MM-DD"),
       chosenLanguage,
-      seats: [],
-      totalAmount: 0,
+      Venue: pendingShow.hallName,
+      date: d.format("YYYY-MM-DD"),
+      time: d.format("hh:mm A"),
+      startAtISO: dayjs(startAt).toISOString(),
+      seatCount: hoveredCount,
       pricing: pendingShow.pricing,
-    };
-    sessionStorage.setItem("bookingDetails", JSON.stringify(bundle));
-    navigate("/ticketbooking", {
-      state: {
-        Name,
-        chosenLanguage,
-        ...pendingShow,
-        date: selectedDate.format("YYYY-MM-DD"),
-        seatCount: hoveredCount,
-      },
-    });
-  };
-  console.log(sessionStorage.getItem("bookingDetails"));
+    },
+  });
+};
 
-  // Filters
+
   const TIME_OPTIONS = ["All", "Morning", "Afternoon", "Evening", "Night"];
   const PRICE_OPTIONS = [
-    { key: "All", label: "All" },
-    { key: "Below200", label: "₹0–₹100" },
-    { key: "200to400", label: "₹101–₹200" },
-    { key: "Above400", label: "₹201–₹400" },
+    { key: "All", label: "₹ All" },
+    { key: "Below200", label: "₹0–₹200" },
+    { key: "200to400", label: "₹200–₹400" },
+    { key: "Above400", label: "₹400+" },
   ];
 
-  // Price range in modal
+  // Modal prices
   const { min, max, isRange } = (() => {
     if (!pendingShow) return { min: 0, max: 0, isRange: false };
-    const vals = [
-      pendingShow.pricing.GoldTicketPrice,
-      pendingShow.pricing.SilverTicketPrice,
-      pendingShow.pricing.PlatinumTicketPrice,
-    ];
-    const mn = Math.min(...vals),
-      mx = Math.max(...vals);
-    return { min: mn, max: mx, isRange: mn !== mx };
+    const stats = extractPrices(pendingShow.pricing);
+    return { min: stats.min, max: stats.max, isRange: stats.isRange };
   })();
 
+  // Render a hall block
+  // Replace your current renderHallBlock with this:
+  const renderHallBlock = (hall, entry, isMobile) => {
+    const rowsAll = entry.rows || [];
+    const rowsTimeFiltered =
+      timeFilter === "All"
+        ? rowsAll
+        : rowsAll.filter(
+          (r) =>
+            getTimePeriodFromStartAt(r.startAt || r.startAtISO) === timeFilter
+        );
+    const rows = rowsTimeFiltered.filter(passPriceFilter);
+    if (!rows.length) return null;
+
+    if (isMobile) {
+      return (
+        <div key={hall} className="py-2">
+          {/* header */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2">
+              {/* logo (optional) */}
+              <div className="h-6 w-6 rounded bg-gray-100 ring-1 ring-gray-200 flex-shrink-0" />
+              <h3 className="text-sm font-semibold text-gray-900">{hall}</h3>
+            </div>
+            <button
+              className="text-gray-300 active:scale-95 px-4 py-2 rounded"
+              aria-label="Favourite"
+              onClick={(e) => {
+                const svg = e.currentTarget.querySelector('svg');
+                svg.classList.toggle('text-red-500');
+                svg.classList.toggle('text-gray-300');
+              }}
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current text-gray-300">
+                <path d="M12.1 21.35l-1.1-1.01C5.14 15.24 2 12.39 2 8.98 2 6.24 4.24 4 6.98 4c1.66 0 3.27.78 4.27 2.05C12.25 4.78 13.86 4 15.52 4 18.26 4 20.5 6.24 20.5 8.98c0 3.41-3.14 6.26-8.99 11.36l-.41.37z" />
+              </svg>
+            </button>
+
+          </div>
+
+          {/* note */}
+          <p className="text-[11px] text-gray-500 mt-2">Cancellation available</p>
+
+          {/* showtimes grid */}
+          <div
+            className="
+              mt-2 grid gap-2
+              grid-cols-2
+              min-[380px]:grid-cols-3
+              min-[520px]:grid-cols-4
+            "
+          >
+            {rows.map((row, idx) => {
+              const key = `${hall}-${row.startAt || row.startAtISO}-${idx}`;
+              const time = formatTimeFromStartAt(row.startAt || row.startAtISO);
+
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleShowtimeClick(row);
+                  }}
+                  className="
+                    w-full h-11
+                    rounded-md border-[1.5px] border-green-500
+                    text-gray-900
+                    active:scale-[0.99]
+                    transition
+                    flex flex-col items-center justify-center
+                  "
+                >
+                  <span className="text-xs font-medium leading-none">{time}</span>
+                  {/* show a tiny sublabel only if you have one; otherwise keep height consistent */}
+                  {row.label ? (
+                    <span className="mt-1 text-[10px] uppercase tracking-wide text-gray-500">
+                      {row.label}
+                    </span>
+                  ) : (
+                    <span className="mt-1 text-[10px] opacity-0 select-none">.</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // ---------- desktop (your previous right-aligned row style) ----------
+    return (
+      // Desktop (isMobile === false): fixed left column, flexible right column
+      <div key={hall} className="p-4 border-b last:border-b-0">
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4 items-start">
+          {/* LEFT: hall name (fixed width on lg+) */}
+          <div className="flex items-center gap-2 min-h-[44px]">
+            {/* optional logo slot */}
+            {/* <img src={logoUrl} className="h-6 w-6 object-contain" alt="" /> */}
+            <h3 className="text-lg font-semibold text-gray-900 leading-tight break-words">
+              {hall}
+            </h3>
+            {/* optional info/heart icons */}
+            {/* <span className="text-gray-400 text-sm">ⓘ</span> */}
+          </div>
+
+          {/* RIGHT: showtimes (wrap, always align to left edge of right column) */}
+          <div className="flex gap-4 items-start p-4 rounded-md">
+            {/* Favourite Heart */}
+            <div className="pt-1">
+              <button
+                className="text-gray-300"
+                aria-label="Favourite"
+                onClick={(e) => {
+                  const svg = e.currentTarget.querySelector('svg');
+                  svg.classList.toggle('text-red-500');
+                  svg.classList.toggle('text-gray-300');
+                }}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5 fill-current text-gray-300"
+                >
+                  <path d="M12.1 21.35l-1.1-1.01C5.14 15.24 2 12.39 2 8.98 2 6.24 4.24 4 6.98 4c1.66 0 3.27.78 4.27 2.05C12.25 4.78 13.86 4 15.52 4 18.26 4 20.5 6.24 20.5 8.98c0 3.41-3.14 6.26-8.99 11.36l-.41.37z" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1">
+              {/* Showtimes */}
+              <div className="flex flex-wrap gap-2 mb-1">
+                {rows.map((row, idx) => {
+                  const key = `${hall}-${row.startAt || row.startAtISO}-${idx}`;
+                  const time = formatTimeFromStartAt(row.startAt || row.startAtISO);
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleShowtimeClick(row);
+                      }}
+                      className="px-3 py-1.5 rounded-md border border-green-500 text-green-600 text-sm font-medium hover:bg-green-500 hover:text-white transition"
+                    >
+                      {time}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Cancellation info */}
+              <div className="text-xs text-gray-500 mt-1">
+                Cancellation available
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+
+    );
+  };
+
+
+  // -------- UI --------
   return (
     <div className="min-h-screen">
       <Usernavbar />
 
-      {/* Toast container (react-toastify) */}
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
-
-      {/* Mobile View - Fixed container */}
+      {/* Mobile View */}
       <div className="lg:hidden w-full max-w-screen-lg mx-auto mt-24 px-4 sm:px-6 md:px-4 font-sans overflow-x-hidden">
-
-        {/* Title */}
         <h1 className="text-start text-2xl font-semibold text-gray-800 mb-4">
           {Name}
           <div className="mt-1">
@@ -235,35 +421,27 @@ const MovieShowtime = () => {
             <FiClock className="mr-2 text-gray-600 mt-[3px]" />
             <h2 className="text-sm font-semibold text-gray-700">Select Date</h2>
           </div>
-          <DatePickerMobile onDateSelect={setSelectedDate} />
+          <DatePickerMobile
+            onDateSelect={(d) => setSelectedDate(dayjs(d).startOf("day"))}
+          />
         </div>
 
-        {/* Filter By */}
+        {/* Filters */}
         <div className="rounded-xl mb-6">
           <div className="flex items-start mb-3">
             <FiFilter className="mr-2 text-gray-600 mt-[3px]" />
             <h2 className="text-sm font-semibold text-gray-700">Filter By</h2>
           </div>
 
-          {/* Show Time - Fixed Swiper */}
+          {/* Time Filter */}
           <div className="mb-4">
             <div className="flex items-center mb-2">
               <FiClock className="mr-2 text-gray-600 mb-[5px]" />
               <h3 className="text-sm font-medium text-gray-700">Show Time</h3>
             </div>
             <div className="w-full overflow-hidden">
-              <Swiper 
-                slidesPerView="auto" 
-                spaceBetween={8} 
-                className="!px-0 !mx-0"
-                style={{ 
-                  paddingLeft: 0, 
-                  paddingRight: 0,
-                  marginLeft: 0,
-                  marginRight: 0 
-                }}
-              >
-                {TIME_OPTIONS.map((opt) => (
+              <Swiper slidesPerView="auto" spaceBetween={8} className="!px-0 !mx-0">
+                {["All", "Morning", "Afternoon", "Evening", "Night"].map((opt) => (
                   <SwiperSlide key={opt} style={{ width: "auto" }}>
                     <button
                       onClick={() => setTimeFilter(opt)}
@@ -280,41 +458,27 @@ const MovieShowtime = () => {
             </div>
           </div>
 
-          {/* Price Range - Fixed Swiper */}
+          {/* Price Filter */}
           <div>
             <div className="flex items-center mb-2">
               <FiDollarSign className="mr-2 text-gray-600 mb-[6px]" />
               <h3 className="text-sm font-medium text-gray-700">Price Range</h3>
             </div>
-
             <div className="w-full overflow-hidden">
-              <Swiper
-                spaceBetween={8}
-                slidesPerView="auto"
-                freeMode={true}
-                className="!px-0 !mx-0 pb-1"
-                style={{ 
-                  paddingLeft: 0, 
-                  paddingRight: 0,
-                  marginLeft: 0,
-                  marginRight: 0 
-                }}
-              >
-                {PRICE_OPTIONS.map(({ key, label }) => (
-                  <SwiperSlide
-                    key={key}
-                    style={{ width: 'auto' }}
-                    className="!inline-flex"
-                  >
+              <Swiper spaceBetween={8} slidesPerView="auto" freeMode className="!px-0 !mx-0 pb-1">
+                {[
+                  { key: "All", label: "All" },
+                  { key: "Below200", label: "₹0–₹200" },
+                  { key: "200to400", label: "₹200–₹400" },
+                  { key: "Above400", label: "₹400+" },
+                ].map(({ key, label }) => (
+                  <SwiperSlide key={key} style={{ width: "auto" }} className="!inline-flex">
                     <button
                       onClick={() => setPriceFilter(key)}
-                      className={`
-                        px-3 py-1 rounded-full text-sm border whitespace-nowrap
-                        ${priceFilter === key
-                          ? 'bg-orange-400 text-white border-orange-400'
-                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-                        }
-                      `}
+                      className={`px-3 py-1 rounded-full text-sm border whitespace-nowrap ${priceFilter === key
+                        ? "bg-orange-400 text-white border-orange-400"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                        }`}
                     >
                       {label}
                     </button>
@@ -325,127 +489,55 @@ const MovieShowtime = () => {
           </div>
         </div>
 
-        {/* Schedule List - Fixed container */}
+        {/* Schedule List */}
         <div className="w-full">
-          {schedules.length ? (
-            schedules.map((sch) => (
-              <div
-                key={sch._id}
-                className="border rounded-lg px-4 mb-3 shadow-sm bg-white w-full"
-              >
-                {sch.hallName.map((hall, i) => {
-                  const raw = sch.showTime[i];
-                  const showObj = Array.isArray(raw) ? raw[0] : raw;
-                  if (!showObj?.time || !priceMatch(showObj)) return null;
-
-                  const times = Array.isArray(showObj.time)
-                    ? showObj.time
-                    : [showObj.time];
-                  const filtered =
-                    timeFilter === "All"
-                      ? times
-                      : times.filter((t) => getTimePeriod(t) === timeFilter);
-                  if (!filtered.length) return null;
-
-                  return (
-                    <div
-                      key={i}
-                      className="py-4 border-b last:border-b-0 w-full"
-                    >
-                      <h2 className="text-lg font-semibold mb-2">{hall}</h2>
-                      <div className="flex flex-wrap gap-3 w-full">
-                        {filtered.map((timeSlot, idx) => {
-                          const uniqueKey = `${sch._id}-${hall}-${timeSlot}-${idx}`;
-                          return (
-                            <button
-                              key={uniqueKey}
-                              type="button"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-
-                                // Debug logging
-                                console.log('Button clicked:', {
-                                  hall,
-                                  time: timeSlot,
-                                  showObj,
-                                  index: idx
-                                });
-
-                                // Call with explicit values
-                                handleShowtimeClick(hall, timeSlot, showObj);
-                              }}
-                              className="group relative px-2 py-1.5 rounded-lg border border-green-500 text-green-500 hover:bg-green-500 hover:text-white transition text-xs touch-manipulation"
-                            >
-                              {formatTime(timeSlot)}
-                              <div
-                                className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 w-52 bg-white border rounded-lg shadow-lg p-2 text-xs text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-                                style={{ zIndex: 10 }}
-                              >
-                                <div>
-                                  <strong>Recliner:</strong> ₹{showObj.GoldTicketPrice}{" "}
-                                  <span className="text-green-500">Available</span>
-                                </div>
-                                <div>
-                                  <strong>Royal:</strong> ₹{showObj.SilverTicketPrice}{" "}
-                                  <span className="text-green-500">Available</span>
-                                </div>
-                                <div>
-                                  <strong>Club:</strong> ₹{showObj.PlatinumTicketPrice}{" "}
-                                  <span className="text-green-500">Available</span>
-                                </div>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ))
-          ) : (
+          {loadingSch && (
+            <p className="text-center text-gray-600 bg-white p-6 rounded-lg shadow-sm w-full">
+              Loading showtimes…
+            </p>
+          )}
+          {errorSch && (
+            <p className="text-center text-red-600 bg-white p-6 rounded-lg shadow-sm w-full">
+              {errorSch}
+            </p>
+          )}
+          {!loadingSch && !errorSch && hallMap.size === 0 && (
             <p className="text-center text-gray-600 bg-white p-6 rounded-lg shadow-sm w-full">
               No showtimes available.
             </p>
           )}
+          {!loadingSch &&
+            !errorSch &&
+            Array.from(hallMap.entries()).map(([hall, entry]) => (
+              <div key={hall} className="border rounded-lg px-4 mb-3 shadow-sm bg-white w-full">
+                {renderHallBlock(hall, entry, true)}
+              </div>
+            ))}
         </div>
       </div>
 
       {/* Desktop View */}
       <div className="hidden lg:block max-w-screen-xl mx-44 w-full px-4 py-6 sm:px-6 lg:px-8 mt-16">
-        {/* name and language div */}
         <div className="mb-2">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {Name}
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{Name}</h1>
           <div className="flex flex-wrap gap-2 mb-1">
             {chosenLanguage && (
               <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">
                 {chosenLanguage}
               </span>
             )}
-            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-              2D
-            </span>
+            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">2D</span>
           </div>
         </div>
-        {/* image div */}
+
         <div className="flex flex-col lg:flex-row gap-1 ml-[-40px] mt-[15px]">
           {posterURL && (
             <div className="lg:w-[20rem] h-[22.3rem] flex justify-center">
-              <img
-                src={posterURL}
-                alt={`${Name} Poster`}
-                className="rounded-xl object-fit"
-              />
+              <img src={posterURL} alt={`${Name} Poster`} className="rounded-xl object-fit" />
             </div>
           )}
 
           <div className="lg:w-2/3 mt-[4px]">
-
-
-            {/* Date & Filter Panel */}
             <div className="space-y-4">
               <div>
                 <h2 className="flex items-center text-lg font-semibold text-gray-800 mb-1">
@@ -453,7 +545,9 @@ const MovieShowtime = () => {
                   Select Date
                 </h2>
                 <div className="bg-white rounded-xl px-1">
-                  <DatePicker onDateSelect={setSelectedDate} />
+                  <DatePicker
+                    onDateSelect={(d) => setSelectedDate(dayjs(d).startOf("day"))}
+                  />
                 </div>
               </div>
 
@@ -469,13 +563,9 @@ const MovieShowtime = () => {
                       <FiClock className="mr-2 text-gray-600 mt-[2px]" />
                       Show Time
                     </h4>
-                    <Swiper
-                      slidesPerView="auto"
-                      spaceBetween={12}
-                      className="px-1"
-                    >
-                      {TIME_OPTIONS.map((opt) => (
-                        <SwiperSlide key={opt} style={{ width: 'auto' }}>
+                    <Swiper slidesPerView="auto" spaceBetween={12} className="px-1">
+                      {["All", "Morning", "Afternoon", "Evening", "Night"].map((opt) => (
+                        <SwiperSlide key={opt} style={{ width: "auto" }}>
                           <button
                             onClick={() => setTimeFilter(opt)}
                             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${timeFilter === opt
@@ -492,11 +582,16 @@ const MovieShowtime = () => {
 
                   <div>
                     <h4 className="flex items-center text-base font-medium text-gray-700 mb-2">
-                      <FiDollarSign className="mr-2 text-gray-600 mt-[3px]" />
+                      <FaRupeeSign className="mr-2 text-gray-600 mt-[3px]" />
                       Price Range
                     </h4>
                     <div className="flex flex-wrap gap-3 pb-1.5">
-                      {PRICE_OPTIONS.map(({ key, label }) => (
+                      {[
+                        { key: "All", label: "All" },
+                        { key: "Below200", label: "₹0–₹200" },
+                        { key: "200to400", label: "₹200–₹400" },
+                        { key: "Above400", label: "₹400+" },
+                      ].map(({ key, label }) => (
                         <button
                           key={key}
                           onClick={() => setPriceFilter(key)}
@@ -512,6 +607,9 @@ const MovieShowtime = () => {
                   </div>
                 </div>
               </div>
+
+              {loadingSch && <p className="text-gray-600">Loading showtimes…</p>}
+              {errorSch && <p className="text-red-600">{errorSch}</p>}
             </div>
           </div>
         </div>
@@ -520,54 +618,24 @@ const MovieShowtime = () => {
         <section className="mt-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Available Showtimes</h2>
 
-          {schedules.length ? (
-            schedules.map((sch) => (
-              <div
-                key={sch._id}
-                className="bg-white rounded-xl shadow-md overflow-hidden mb-3 mr-[6.2rem] "
-              >
-                {sch.hallName.map((hall, i) => {
-                  const raw = sch.showTime[i];
-                  const showObj = Array.isArray(raw) ? raw[0] : raw;
-                  if (!showObj?.time || !priceMatch(showObj)) return null;
-
-                  const times = Array.isArray(showObj.time)
-                    ? showObj.time
-                    : [showObj.time];
-                  const filtered =
-                    timeFilter === "All"
-                      ? times
-                      : times.filter((t) => getTimePeriod(t) === timeFilter);
-                  if (!filtered.length) return null;
-
-                  return (
-                    <div key={i} className="p-3 border-b last:border-b-0">
-                      <div className="flex items-center mb-2">
-                        <div className="w-3 h-3 bg-orange-500 rounded-full mr-3 mb-[5px]"></div>
-                        <h3 className="text-xl font-bold text-gray-900">{hall}</h3>
-                      </div>
-                      <div className="flex flex-wrap gap-3 ml-[1.3rem]">
-                        {filtered.map((t, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => handleShowtimeClick(hall, t, showObj)}
-                            className="group relative px-2.5 py-1 rounded-lg border-2 z-1000 border-green-400 text-green-400 hover:bg-green-400 transition-all duration-300 hover:text-white"
-                          >
-                            <span className="font-semibold text-sm  ">{formatTime(t)}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ))
-          ) : (
+          {!loadingSch && !errorSch && hallMap.size === 0 && (
             <div className="bg-white rounded-xl shadow-md p-12 text-center">
               <p className="text-xl text-gray-600">No showtimes available for this movie.</p>
-              <p className="text-gray-500 mt-2">Please check back later or try another date.</p>
+              <p className="text-gray-500 mt-2">Booking not started for this date please check back later.</p>
             </div>
           )}
+
+          {!loadingSch &&
+            !errorSch &&
+            Array.from(hallMap.entries()).map(([hall, entry]) => (
+              <div
+                key={hall}
+                className="bg-white rounded-xl shadow-md p-4 mb-3 mr-[6.2rem]"
+              >
+                {renderHallBlock(hall, entry, false)}
+              </div>
+
+            ))}
         </section>
       </div>
 
@@ -584,25 +652,16 @@ const MovieShowtime = () => {
         <div className="lg:p-6 max-lg:px-4 max-lg:py-2">
           <div className="flex justify-between items-center lg:mb-4 max-lg:mb-1">
             <h2 className="lg:text-2xl max-lg:text-xl font-bold text-gray-900 max-lg:font-semibold">How Many Seats?</h2>
-            <button
-              onClick={() => setIsCountModalOpen(false)}
-              className="text-gray-500 hover:text-gray-800"
-            >
+            <button onClick={() => setIsCountModalOpen(false)} className="text-gray-500 hover:text-gray-800">
               <FiX size={24} />
             </button>
           </div>
 
-          <p className="text-gray-600 text-center lg:mb-2 max-lg:mb-[5px]">
-            Book the best seats at no extra cost!
-          </p>
+          <p className="text-gray-600 text-center lg:mb-2 max-lg:mb-[5px]">Book the best seats at no extra cost!</p>
 
           <div className="flex justify-center lg:mb-3 max-lg:mb-3">
             <div className="bg-white rounded-xl lg:p-4 lg:w-40 lg:h-40 max-lg:w-24 max-lg:h-24 max-lg:p-0 flex items-center justify-center">
-              <img
-                src={seatIcons[hoveredCount]}
-                alt={`${hoveredCount} seats`}
-                className="h-24 object-contain"
-              />
+              <img src={seatIcons[hoveredCount]} alt={`${hoveredCount} seats`} className="h-24 object-contain" />
             </div>
           </div>
 
@@ -614,13 +673,8 @@ const MovieShowtime = () => {
                   key={num}
                   onMouseEnter={() => setHoveredCount(num)}
                   onClick={() => setHoveredCount(num)}
-                  className={`
-                    lg:w-9 lg:h-9 max-lg:w-7 max-lg:h-7 rounded-full flex items-center justify-center text-sm font-medium
-                    transition-all ${hoveredCount === num
-                      ? "bg-orange-500 text-white scale-110"
-                      : "bg-gray-100 text-gray-700"
-                    }
-                  `}
+                  className={`lg:w-9 lg:h-9 max-lg:w-7 max-lg:h-7 rounded-full flex items-center justify-center text-sm font-medium transition-all ${hoveredCount === num ? "bg-orange-500 text-white scale-110" : "bg-gray-100 text-gray-700"
+                    }`}
                 >
                   {num}
                 </button>
@@ -644,39 +698,6 @@ const MovieShowtime = () => {
             className="w-full bg-orange-500 text-white lg:py-3 max-lg:py-2 rounded-xl font-bold hover:bg-orange-600 transition-colors shadow-md"
           >
             Select Seats
-          </button>
-        </div>
-      </Modal>
-
-      {/* Confirmation modal shown when the show started less than 30 minutes ago */}
-      <Modal
-        isOpen={isStartedModalOpen}
-        onRequestClose={() => setIsStartedModalOpen(false)}
-        contentLabel="Show Already Started"
-        overlayClassName="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-        className="w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl outline-none p-6"
-      >
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-lg font-semibold">The show has already started</h3>
-          <button onClick={() => setIsStartedModalOpen(false)} className="text-gray-500 hover:text-gray-800">
-            <FiX size={20} />
-          </button>
-        </div>
-        <p className="text-gray-700 mb-6">
-          The show has already started less than 30 minutes ago. Do you want to continue booking?
-        </p>
-        <div className="flex gap-3">
-          <button
-            onClick={handleConfirmContinue}
-            className="flex-1 bg-orange-500 text-white py-2 rounded-xl font-semibold hover:bg-orange-600 transition"
-          >
-            Yes, continue
-          </button>
-          <button
-            onClick={handleCancelContinue}
-            className="flex-1 bg-gray-100 text-gray-800 py-2 rounded-xl font-semibold hover:bg-gray-200 transition"
-          >
-            No, cancel
           </button>
         </div>
       </Modal>

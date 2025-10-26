@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import api from '../../../Utils/api';
+import axios from "axios";
 import { Link } from "react-router-dom";
 import Usernavbar from "./Usernavbar";   
 import "./Event.css"
 import BottomNav from "./BottomNav";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import api from "../../../Utils/api";
 
 const Event = ({ searchTerm, setSearchTerm }) => {
   const [data, setData] = useState([]);
@@ -13,7 +14,7 @@ const Event = ({ searchTerm, setSearchTerm }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await api.get("/event");
+        const response = await api.get("https://ticketflix-backend.onrender.com/event");
         setData(response.data);
       } catch (error) {
         console.error("Error fetching events:", error);

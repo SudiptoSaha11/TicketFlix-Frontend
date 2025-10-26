@@ -1,123 +1,99 @@
-// src/components/User/Home/DatePicker.js
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 
-export default function DatePicker({ onDateSelect }) {
-  const daysPerSlide = 7;
-  const totalSlides = 2; // exactly 2 slides (7 + 7 = 14 days)
+export default function DatePicker({ onDateSelect, disabledDate }) {
+  const daysToShow = 7;
   const today = dayjs().startOf('day');
 
-  const [page, setPage] = useState(0); // 0 = first 7 days, 1 = next 7 days
+  // allow booking up to N days ahead (inclusive)
+  const bookableDaysAhead = 3;
+  const maxBookableDate = today.add(bookableDaysAhead, 'day');
+
+  const [startDate] = useState(today);
   const [selectedDate, setSelectedDate] = useState(today);
 
-  const startDateForPage = today.add(page * daysPerSlide, 'day');
+  const dates = useMemo(() => {
+    return Array.from({ length: daysToShow }).map((_, i) => {
+      const currentDay = startDate.add(i, 'day');
+      return {
+        day: currentDay.format('ddd'),
+        dateNum: currentDay.format('D'),
+        month: currentDay.format('MMM'),
+        fullDate: currentDay,
+      };
+    });
+  }, [startDate, daysToShow]);
 
-  const dates = Array.from({ length: daysPerSlide }).map((_, i) => {
-    const currentDay = startDateForPage.add(i, 'day');
-    return {
-      day: currentDay.format('ddd'),
-      dateNum: currentDay.format('D'),
-      month: currentDay.format('MMM'),
-      fullDate: currentDay,
-    };
-  });
+  useEffect(() => {
+    const isSelDisabled =
+      selectedDate.isAfter(maxBookableDate, 'day') ||
+      (typeof disabledDate === 'function' && disabledDate(selectedDate));
 
-  const isLeftDisabled = page === 0;
-  const isRightDisabled = page === totalSlides - 1;
+    if (!isSelDisabled) return;
 
-  const handlePrevious = () => {
-    if (!isLeftDisabled) setPage((p) => Math.max(0, p - 1));
-  };
+    const firstEnabled = dates.find(
+      (d) =>
+        !d.fullDate.isAfter(maxBookableDate, 'day') &&
+        !(typeof disabledDate === 'function' && disabledDate(d.fullDate))
+    );
 
-  const handleNext = () => {
-    if (!isRightDisabled) setPage((p) => Math.min(totalSlides - 1, p + 1));
-  };
+    if (firstEnabled) {
+      setSelectedDate(firstEnabled.fullDate);
+      onDateSelect?.(firstEnabled.fullDate);
+    }
+  }, [dates, disabledDate, onDateSelect, selectedDate, maxBookableDate]);
 
   const handleDateClick = (date) => {
+    const beyondWindow = date.fullDate.isAfter(maxBookableDate, 'day');
+    const customDisabled =
+      typeof disabledDate === 'function' ? disabledDate(date.fullDate) : false;
+
+    if (beyondWindow || customDisabled) return;
+
     setSelectedDate(date.fullDate);
-    if (typeof onDateSelect === 'function') onDateSelect(date.fullDate);
+    onDateSelect?.(date.fullDate);
   };
 
   return (
-    <div
-      className="
-        flex items-center justify-center 
-        w-full
-        my-2
-      "
-    >
-      <button
-        onClick={handlePrevious}
-        disabled={isLeftDisabled}
-        aria-label="Previous week"
-        className={`
-          text-2xl
-          sm:text-3xl
-          select-none
-          ${isLeftDisabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}
-        `}
-      >
-        &lsaquo;
-      </button>
+    <div className="flex items-center justify-center w-full my-2">
+      <div className="flex flex-1 justify-between px-2 sm:px-4 py-2 bg-white rounded-md">
+        {dates.map((item, idx) => {
+          const beyondWindow = item.fullDate.isAfter(maxBookableDate, 'day');
+          const customDisabled =
+            typeof disabledDate === 'function' ? disabledDate(item.fullDate) : false;
+          const isDisabled = beyondWindow || customDisabled;
 
-      <div
-        className="
-          flex 
-          flex-1             
-          justify-between    
-          px-2              
-          sm:px-4
-          py-2
-          bg-white
-          rounded-md
-          mx-3
-        "
-      >
-        {dates.map((item, idx) => (
-          <button
-            key={idx}
-            type="button"
-            onClick={() => handleDateClick(item)}
-            className={` 
-              flex flex-col items-center justify-center 
-              w-full       
-              px-3         
-              sm:px-4
-              py-2
-              rounded-lg
-              cursor-pointer
-              transition-colors duration-200
-              focus:outline-none
-              ${selectedDate.isSame(item.fullDate, 'day')
-                ? 'bg-gradient-to-r from-amber-300 to-orange-500 text-white'
-                : 'bg-white hover:bg-gray-100 text-gray-800'
-              }
-            `}
-            style={{ flex: '1 1 0' }}
-            aria-pressed={selectedDate.isSame(item.fullDate, 'day')}
-            aria-label={`${item.day} ${item.dateNum} ${item.month}`}
-          >
-            <div className="font-medium">{item.day}</div>
-            <div className="font-bold text-lg">{item.dateNum}</div>
-            <div className="text-xs sm:text-sm">{item.month}</div>
-          </button>
-        ))}
+          return (
+            <div
+              key={idx}
+              onClick={() => !isDisabled && handleDateClick(item)}
+              className={`
+        flex flex-col items-center justify-center 
+        w-full px-3 sm:px-4 py-2 rounded-lg
+        ${isDisabled
+                  ? 'cursor-not-allowed text-gray-400'
+                  : 'cursor-pointer bg-white text-gray-800'
+                }
+        transition-colors duration-200
+        ${selectedDate.isSame(item.fullDate, 'day') && !isDisabled
+                  ? 'bg-gradient-to-r from-amber-300 to-orange-500 text-white'
+                  : ''
+                }
+      `}
+              style={{ flex: '1 1 0' }}
+              role="button"
+              aria-disabled={isDisabled ? 'true' : 'false'}
+              title={isDisabled ? 'Booking not open for this date' : undefined}
+            >
+              <div className="font-medium">{item.day}</div>
+              <div className="font-bold text-lg">{item.dateNum}</div>
+              <div className="text-xs sm:text-sm">{item.month}</div>
+            </div>
+          );
+        })}
+
+
       </div>
-
-      <button
-        onClick={handleNext}
-        disabled={isRightDisabled}
-        aria-label="Next week"
-        className={`
-          text-2xl
-          sm:text-3xl
-          px-1
-          select-none
-          ${isRightDisabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}
-        `}
-      >
-        &rsaquo;
-      </button>
     </div>
   );
 }

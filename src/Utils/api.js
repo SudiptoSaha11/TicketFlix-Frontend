@@ -2,8 +2,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://ticketflix-backend.onrender.com'||'http://localhost:5000'
-
+  baseURL: 'http://localhost:5000', // or use an env variable (explained below)
+  // You can also set default headers here if needed
 });
 
 export default api;

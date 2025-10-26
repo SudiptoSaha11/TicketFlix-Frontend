@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../../Utils/api';
+import axios from 'axios';
 import debounce from 'lodash.debounce';
+import api from '../../../Utils/api';
 
 const SearchPage = () => {
   const navigate = useNavigate();

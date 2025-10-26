@@ -12,10 +12,10 @@ const AddEventSchedule = () => {
     {
       VIPPrice: "",
       MIPTicketPrice: "",
-      PlatinumTicketPrice: "",
+      ExecutiveTicketPrice: "",
       DiamondTicketPrice: "",
-      GoldTicketPrice: "",
-      SilverTicketPrice: "",
+      RoyalTicketPrice: "",
+      ExecutiveTicketPrice: "",
       BronzeTicketPrice: "",
     },
   ]);
@@ -40,10 +40,10 @@ const AddEventSchedule = () => {
       {
         VIPPrice: "",
         MIPTicketPrice: "",
-        PlatinumTicketPrice: "",
+        ExecutiveTicketPrice: "",
         DiamondTicketPrice: "",
-        GoldTicketPrice: "",
-        SilverTicketPrice: "",
+        RoyalTicketPrice: "",
+        ExecutiveTicketPrice: "",
         BronzeTicketPrice: "",
       },
     ]);
@@ -144,11 +144,11 @@ const AddEventSchedule = () => {
                 <input
                   type="number"
                   className="form-control_movie"
-                  value={block.PlatinumTicketPrice}
+                  value={block.ExecutiveTicketPrice}
                   onChange={(e) =>
                     handleShowTimeChange(
                       idx,
-                      "PlatinumTicketPrice",
+                      "ExecutiveTicketPrice",
                       e.target.value
                     )
                   }
@@ -176,9 +176,9 @@ const AddEventSchedule = () => {
                 <input
                   type="number"
                   className="form-control_movie"
-                  value={block.GoldTicketPrice}
+                  value={block.RoyalTicketPrice}
                   onChange={(e) =>
-                    handleShowTimeChange(idx, "GoldTicketPrice", e.target.value)
+                    handleShowTimeChange(idx, "RoyalTicketPrice", e.target.value)
                   }
                   required
                 />
@@ -188,11 +188,11 @@ const AddEventSchedule = () => {
                 <input
                   type="number"
                   className="form-control_movie"
-                  value={block.SilverTicketPrice}
+                  value={block.ExecutiveTicketPrice}
                   onChange={(e) =>
                     handleShowTimeChange(
                       idx,
-                      "SilverTicketPrice",
+                      "ExecutiveTicketPrice",
                       e.target.value
                     )
                   }

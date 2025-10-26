@@ -2,8 +2,9 @@
 import React from 'react';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import api from '../../../Utils/api';
+import axios from 'axios';
 import { useLocation } from 'react-router-dom'; // Import useLocation
+import api from '../../../Utils/api';
 
 // Replace with your Stripe publishable key
 const stripePromise = loadStripe('your-publishable-key-here');

@@ -5,7 +5,6 @@ import UserLogin from '../Login/UserAuth';
 import { AuthContext } from '../AuthContext'
 import api from '../../../Utils/api';
 
-
 const Usernavbar = () => {
   const { user, token, logout } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);

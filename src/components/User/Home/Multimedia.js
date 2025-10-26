@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Usernavbar from "./Usernavbar";
 import Footer from "./Footer";
+import api from "../../../Utils/api";
 
 const Multimedia = () => {
   const { trailerLink: rawTrailerLink, movieName } = useLocation().state || {};

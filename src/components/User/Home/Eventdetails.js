@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from '../../../Utils/api';
+import api from "../../../Utils/api";
 import Footer from "./Footer";
 
 function Eventdetails() {
-  // Event detail states
   const [eventImage, setEventImage] = useState("");
   const [Name, seteventName] = useState("");
   const [eventLanguage, seteventLanguage] = useState("");
@@ -12,79 +11,130 @@ function Eventdetails() {
   const [eventArtist, seteventArtist] = useState([]);
   const [Venue, seteventVenue] = useState("");
   const [eventAbout, seteventAbout] = useState("");
-  const [eventDate, seteventDate] = useState("");
-  const [Time, seteventTime] = useState([]); // Now an array
+  const [eventDate, seteventDate] = useState(null);
+  const [Time, seteventTime] = useState([]); // array of times (from event or schedule)
   const [eventType, seteventType] = useState("");
   const [eventSchedule, setEventSchedule] = useState(null);
   const [eventPricing, setEventPricing] = useState(null);
   const [location, setlocation] = useState(null);
+  const [ageLimit, setAgeLimit] = useState(null);
+  const [interestedCount, setInterestedCount] = useState(null);
+  const [otherVenuesCount, setOtherVenuesCount] = useState(null);
 
-  // Popups
   const [eventtimePopup, seteventtimePopup] = useState(false);
-
   const [id, setId] = useState("");
   const navigate = useNavigate();
 
-  // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  /**
-   * Fetch event details by ID from the server.
-   */
+  // Helper: robustly get [lat, lng] from different backend formats
+  const getLatLng = (loc) => {
+    if (!loc) return null;
+    if (typeof loc.latitude === "number" && typeof loc.longitude === "number") {
+      return [loc.latitude, loc.longitude];
+    }
+    if (typeof loc.lat === "number" && typeof loc.lng === "number") {
+      return [loc.lat, loc.lng];
+    }
+    if (Array.isArray(loc.coordinates) && loc.coordinates.length >= 2) {
+      const a = Number(loc.coordinates[0]);
+      const b = Number(loc.coordinates[1]);
+      if (!isNaN(a) && !isNaN(b)) {
+        if (a >= -90 && a <= 90 && b >= -180 && b <= 180) return [a, b];
+        if (b >= -90 && b <= 90 && a >= -180 && a <= 180) return [b, a];
+        return [a, b];
+      }
+    }
+    return null;
+  };
+
   const fetchData = async (eventID) => {
     try {
-      // Fetch event details
-      const eventResponse = await api.get(
-        `/getevent/${eventID}`
-      );
+      const eventResponse = await api.get(`/getevent/${eventID}`);
+      console.log(eventResponse);
+      const data = eventResponse.data || {};
 
+      // map fields coming from your backend - adjust if keys differ
       const {
-        eventName: Name,
+        eventName,
+        name,
         eventLanguage,
         eventDuration,
         eventArtist,
-        eventVenue: Venue,
+        eventVenue,
+        venue,
         imageURL,
         eventAbout,
+        description,
         eventDate,
-        eventTime: Time,
+        date,
+        eventTime,
+        times,
         eventType,
+        type,
         location,
-      } = eventResponse.data;
+        ageLimit,
+        interestedCount,
+      } = data;
 
-      setEventImage(imageURL);
-      seteventName(Name);
-      seteventLanguage(eventLanguage);
-      seteventDuration(eventDuration);
-      seteventArtist(eventArtist || []);
-      seteventVenue(Venue);
-      seteventAbout(eventAbout);
-      seteventDate(eventDate);
-      seteventTime(Array.isArray(Time) ? Time : []);
-      seteventType(eventType);
-      setlocation(location);
+      setEventImage( imageURL);
+      seteventName(eventName || name || "");
+      seteventLanguage(eventLanguage || "");
+      seteventDuration(eventDuration || "");
+      seteventArtist(Array.isArray(eventArtist) ? eventArtist : []);
+      seteventVenue(eventVenue || venue || "");
+      seteventAbout(eventAbout || description || "");
+      seteventDate(eventDate || date || null);
+      seteventTime(Array.isArray(eventTime) ? eventTime : Array.isArray(times) ? times : []);
+      seteventType(eventType || type || "");
+      setlocation(location || null);
+      setAgeLimit(ageLimit || null);
+      setInterestedCount(interestedCount || null);
 
-      // Fetch event schedule
-      const scheduleResponse = await api.get(
-        `/eventschedule`
-      );
-      const matchedSchedule = scheduleResponse.data.find(
-        (schedule) => schedule.eventName === Name
-      );
-
-      if (matchedSchedule) {
-        setEventSchedule(matchedSchedule);
-        const pricingData = matchedSchedule.EventshowTime?.[0] || {};
-        setEventPricing(pricingData);
+      // optional schedule fetch (non-blocking)
+      try {
+        const scheduleResponse = await api.get(`/eventschedule`);
+        const schedules = scheduleResponse.data || [];
+        const matchedSchedule = schedules.find(
+          (s) =>
+            (s.eventName && (s.eventName === (eventName || name))) ||
+            (s.name && (s.name === (eventName || name)))
+        );
+        if (matchedSchedule) {
+          setEventSchedule(matchedSchedule);
+          const showTimes = matchedSchedule.EventshowTime || matchedSchedule.showTimes || [];
+          if (Array.isArray(showTimes) && showTimes.length > 0) {
+            const allTimes = showTimes.flatMap((st) =>
+              Array.isArray(st.times) ? st.times : st.time ? [st.time] : []
+            ).filter(Boolean);
+            const simpleTimes =
+              allTimes.length > 0
+                ? allTimes
+                : showTimes.map((st) => (typeof st === "string" ? st : st.time || st.showTime || null)).filter(Boolean);
+            seteventTime((prev) => (simpleTimes.length ? simpleTimes : prev));
+            const firstPricing = showTimes[0] || matchedSchedule.EventshowTime?.[0] || {};
+            setEventPricing(firstPricing);
+            if (Array.isArray(matchedSchedule.otherVenues)) {
+              setOtherVenuesCount(matchedSchedule.otherVenues.length);
+            } else if (typeof matchedSchedule.otherVenuesCount === "number") {
+              setOtherVenuesCount(matchedSchedule.otherVenuesCount);
+            }
+          } else {
+            if (matchedSchedule.EventshowTime && matchedSchedule.EventshowTime[0]) {
+              setEventPricing(matchedSchedule.EventshowTime[0]);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Error fetching schedule:", err);
       }
     } catch (error) {
       console.error("Error fetching event data:", error);
     }
   };
 
-  // On mount, get event ID from localStorage then fetch details.
   useEffect(() => {
     const eventID = localStorage.getItem("id");
     if (!eventID) {
@@ -95,9 +145,12 @@ function Eventdetails() {
     fetchData(eventID);
   }, [navigate]);
 
-  // Handle Event Time popup
   const handleClick = () => {
-    seteventtimePopup(true);
+    if (Time && Time.length > 1) {
+      seteventtimePopup(true);
+    } else {
+      handleTimeSelect(Time && Time.length === 1 ? Time[0] : null);
+    }
   };
 
   const handleTimeSelect = (chosenTime) => {
@@ -120,196 +173,230 @@ function Eventdetails() {
     seteventtimePopup(false);
   };
 
+  const formatDate = (d) => {
+    if (!d) return "TBA";
+    try {
+      const dateObj = new Date(d);
+      if (!isNaN(dateObj)) return dateObj.toDateString();
+      return d;
+    } catch {
+      return d;
+    }
+  };
+
+  const getPriceText = () => {
+    if (eventPricing) {
+      const priceKeys = ["BronzeTicketPrice", "price", "ticketPrice", "minPrice", "lowestPrice"];
+      for (const k of priceKeys) {
+        if (eventPricing[k]) return `₹${eventPricing[k]} onwards`;
+      }
+    }
+    return "Lowest Price: N/A";
+  };
+
+  const latlng = getLatLng(location);
+
+  // open maps centered on coords if available, otherwise search by address or venue name
+  const openMapsAtVenue = () => {
+    let url = "https://www.google.com/maps";
+    if (latlng && latlng.length === 2) {
+      url = `https://www.google.com/maps/search/?api=1&query=${latlng[0]},${latlng[1]}`;
+    } else if (location && location.address) {
+      url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`;
+    } else if (Venue) {
+      url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(Venue)}`;
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   return (
-    <div className="bg-gray-50 min-h-screen font-sans max-xl:pb-16">
-      <div className="container mx-auto px-4 xl:px-24 
-                      2xl:px-48 pt-4 flex flex-col gap-4">
-        {/* Banner */}
-        <div className="w-full h-64 xl:h-80 xl:shadow
-                        2xl:h-[380px] rounded-lg bg-gray-200 overflow-hidden">
-          <img
-            src={eventImage}
-            alt={Name}
-            className="w-full h-full object-cover"
-          />
-        </div>
-
-        {/* Event Details */}
-        <div className="relative bg-white p-4 md:p-6 
-                        xl:p-8 rounded-lg xl:shadow">
-          <h2 className="text-xl sm:text-2xl xl:text-3xl text-gray-800 font-bold mb-1">
-            {Name}
-          </h2>
-          <p className="text-sm sm:text-base xl:text-lg text-gray-600 mb-2">
-            {eventType} | {eventLanguage} | {eventDuration}
-          </p>
-          <div className="flex flex-wrap items-center gap-3 mb-2 text-sm xl:text-base text-gray-600">
-            <span className="flex items-center">🗓 {new Date(eventDate).toDateString()}</span>
-            <span className="flex items-center">📍 {Venue}</span>
-          </div>
-          <p className="text-sm xl:text-base text-gray-600 mb-4">
-            🎟 {eventSchedule?.EventshowTime?.[0]?.BronzeTicketPrice
-              ? `₹${eventSchedule.EventshowTime[0].BronzeTicketPrice} onwards`
-              : "Lowest Price: N/A"}
-          </p>
-
-          {/* Book button for md+ */}
-          <button
-            onClick={handleClick}
-            className="hidden md:block absolute top-4 right-4 bg-red-500 text-white px-5 py-2 xl:px-6 xl:py-3 xl:text-base rounded-md font-medium hover:bg-red-600 transition"
-          >
-            Book
-          </button>
-        </div>
-
-        {/* MIDDLE COLUMN: About Phone */}
-          <div className="bg-white rounded-lg p-4 md:p-6 xl:hidden">
-            <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2">About</h3>
-            <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-              {eventAbout}
-            </p>
-          </div>
-
-        {/* THREE-COLUMN GRID: Artist + Share | About | Map */}
-        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-4 xl:gap-6 ">
-          {/* LEFT COLUMN: Artist + Share */}
-          <div className="flex flex-col gap-3 xl:mb-4">
-            {/* Artist Panel */}
-            <div className="bg-white rounded-lg p-3 md:p-4 xl:p-6 flex flex-col items-center xl:shadow">
-              {eventArtist.length > 0 ? (
-                eventArtist.map((artist, idx) => (
-                  <div
-                    key={idx}
-                    className="w-full flex flex-col items-center mb-4"
-                  >
-                    <img
-                      src={artist.image}
-                      alt={artist.name}
-                      className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover mb-2"
-                    />
-                    <p className="text-sm md:text-base font-semibold text-gray-700">
-                      {artist.artist}
-                    </p>
-                    <p className="text-xs md:text-sm text-gray-600">{artist.name}</p>
-                  </div>
-                ))
+    <div className="bg-gray-50 min-h-screen font-sans">
+      <div className="container mx-auto px-4 xl:px-24 2xl:px-48 pt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="lg:col-span-8">
+            <div className="rounded-lg overflow-hidden bg-gray-200">
+              {eventImage ? (
+                <img src={eventImage} alt={Name} className="w-full h-80 object-cover lg:h-[420px]" />
               ) : (
-                <p className="text-sm text-gray-500">No artist info</p>
+                <div className="w-full h-80 lg:h-[420px] flex items-center justify-center text-gray-400">No image available</div>
               )}
             </div>
 
-            {/* Share This Event */}
-            <div className="bg-white rounded-lg p-3 md:p-4 xl:p-6 text-center max-xl:hidden xl:shadow">
-              <h6 className="font-bold text-sm xl:text-base mb-2">Share This Event</h6>
-              <div className="flex justify-center gap-4">
-                <a
-                  href="https://www.facebook.com"
-                  className="text-gray-700 hover:text-yellow-500 transition text-lg xl:text-xl"
-                >
-                  <i className="fab fa-facebook-f" />
-                </a>
-                <a
-                  href="https://www.twitter.com"
-                  className="text-gray-700 hover:text-yellow-500 transition text-lg xl:text-xl"
-                >
-                  <i className="fab fa-twitter" />
-                </a>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
+              <div>
+                <h1 className="text-2xl lg:text-3xl font-extrabold text-gray-900">{Name || "Event Title"}</h1>
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  {eventType && <span className="text-xs bg-gray-800 text-white px-3 py-1 rounded-full">{eventType}</span>}
+                  {eventLanguage && <span className="text-xs bg-gray-200 text-gray-800 px-3 py-1 rounded-full">{eventLanguage}</span>}
+                  {eventDuration && <span className="text-xs bg-gray-200 text-gray-800 px-3 py-1 rounded-full">{eventDuration}</span>}
+                </div>
               </div>
+
+              <div className="flex items-center gap-3">
+                {interestedCount ? (
+                  <div className="flex items-center gap-2 text-green-600">
+                    <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-10.707a1 1 0 00-1.414-1.414L9 9.586 7.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l5-5z" /></svg>
+                    <span className="text-sm text-gray-700">{interestedCount}</span>
+                  </div>
+                ) : null}
+                <button className="text-sm border border-red-400 text-red-600 px-3 py-1 rounded-md">I'm Interested</button>
+              </div>
+            </div>
+
+            <div className="mt-6 bg-white p-4 rounded-lg shadow-sm">
+              <h2 className="text-lg font-bold text-gray-800 mb-2">About The Event</h2>
+              <p className="text-sm text-gray-600 leading-relaxed">{eventAbout || "Description not available."}</p>
             </div>
           </div>
 
-          {/* MIDDLE COLUMN: About PC*/}
-          <div className="bg-white rounded-lg shadow-md px-4 pt-3 pb-1 flex flex-col w-[450px] mb-[14px] max-xl:hidden">
-            <h3 className="text-lg font-extrabold text-[#333333] mb-1">
-              About
-            </h3>
-            <p className="text-sm text-[#555555] leading-relaxed">
-              {eventAbout}
-            </p>
-          </div>
+          <aside className="lg:col-span-4">
+            <div className="sticky top-20">
+              <div className="bg-white border rounded-lg p-5 shadow-sm">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="text-gray-500">
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M7 11h10M7 15h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" /></svg>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-700">{formatDate(eventDate)}</div>
+                    <div className="text-xs text-gray-400">Dates</div>
+                  </div>
+                </div>
 
-          {/* ── RIGHT COLUMN: Map Panel ── PC*/}
-          {location?.coordinates && (
-            <div className="bg-white rounded-lg shadow-md p-3 flex items-center flex-col w-auto mb-[14px] ml-[40px] xl:shadow max-xl:hidden">
-              <div className="w-[100%] h-[160px] rounded-md overflow-hidden mb-2">
-                <iframe
-                  title="Event location"
-                  src={`https://maps.google.com/maps?q=${location.coordinates[0]},${location.coordinates[1]}&z=15&output=embed`}
-                  loading="lazy"
-                  allowFullScreen
-                  className="w-full h-full"
-                  style={{ border: 0 }}
-                />
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="text-gray-500">
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" /></svg>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-700">{Time && Time.length > 0 ? Time[0] : "TBA"}</div>
+                    <div className="text-xs text-gray-400">Time</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="text-gray-500">
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 18v4M4.2 5.3l2.8 2.8M17 16.9l2.8 2.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.5" /></svg>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-700">{eventDuration || "TBA"}</div>
+                    <div className="text-xs text-gray-400">Duration</div>
+                  </div>
+                </div>
+
+                {ageLimit && (
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="text-gray-500">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M12 12v.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" stroke="currentColor" strokeWidth="1.5" /></svg>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-700">{ageLimit}</div>
+                      <div className="text-xs text-gray-400">Age Limit</div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="text-gray-500">
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-700">{eventLanguage || "TBA"}</div>
+                    <div className="text-xs text-gray-400">Language</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="text-gray-500">
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-700">{eventType || "TBA"}</div>
+                    <div className="text-xs text-gray-400">Genre</div>
+                  </div>
+                </div>
+
+                {/* Venue row: text + compact map icon (opens Google Maps) */}
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <div className="flex items-start gap-3">
+                    <div className="text-gray-500">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 11 7 11s7-5.75 7-11c0-3.87-3.13-7-7-7z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.5" /></svg>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-700">{Venue || "Venue TBA"}</div>
+                      {typeof otherVenuesCount === "number" && (
+                        <div className="text-xs text-red-500">View {otherVenuesCount} Other Cities</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* compact, accessible map icon button */}
+                  <div>
+                    <button
+                      onClick={openMapsAtVenue}
+                      title="Open in Google Maps"
+                      aria-label="Open venue in Google Maps"
+                      className="p-2 rounded-full hover:bg-gray-100 transition flex items-center justify-center"
+                      style={{ width: 36, height: 36 }}
+                    >
+                      {/* map-pin icon */}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 21s6-4.35 6-10a6 6 0 10-12 0c0 5.65 6 10 6 10z" />
+                        <path d="M12 11.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="border-t my-3" />
+
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">{getPriceText()}</div>
+                    <div className="text-xs text-yellow-600"></div>
+                  </div>
+                  <div>
+                    <button onClick={handleClick} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">Book Now</button>
+                  </div>
+                </div>
               </div>
-              {location.address && (
-                <p className="text-sm text-[#444444]">{location.address}</p>
-              )}
+
+              {/* ARTIST SECTION MOVED HERE (to the right/map area) */}
+              <div className="mt-4 bg-white border rounded-lg p-4 shadow-sm">
+                <h4 className="font-semibold text-gray-800 mb-3">Artist</h4>
+                {eventArtist && eventArtist.length > 0 ? (
+                  <div className="flex flex-col gap-3">
+                    {eventArtist.map((artist, idx) => (
+                      <div key={idx} className="flex items-center gap-3">
+                        {artist.image ? (
+                          <img src={artist.image} alt={artist.name || artist.artist} className="w-12 h-12 rounded-full object-cover" />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">N/A</div>
+                        )}
+                        <div>
+                          <div className="text-sm font-semibold text-gray-800">{artist.artist || artist.name || "Artist"}</div>
+                          {artist.name && <div className="text-xs text-gray-500">{artist.name}</div>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-sm text-gray-500">No artist info available.</div>
+                )}
+              </div>
+
             </div>
-          )}
+          </aside>
         </div>
       </div>
 
-
-      {/* RIGHT COLUMN: Map  Phone*/}
-          {location?.coordinates && (
-              <div className="bg-white rounded-lg my-4 mx-4 p-3 flex flex-col items-center xl:hidden">
-                <div className="w-full h-40 rounded overflow-hidden mb-2">
-                  <iframe
-                    title="Event location"
-                    src={`https://maps.google.com/maps?q=${location.coordinates[0]},${location.coordinates[1]}&z=15&output=embed`}
-                    loading="lazy"
-                    allowFullScreen
-                    className="w-full h-full border-0"
-                  />
-                </div>
-                {location.address && (
-                  <p className="text-sm text-gray-700 text-center">
-                    {location.address}
-                  </p>
-                )}
-              </div>
-            )}
-
-
-            {/* Share This Event phone*/}
-            <div className="bg-white rounded-lg my-4 mx-4 p-3 md:p-4 xl:p-6 text-center xl:hidden">
-              <h6 className="font-bold text-sm xl:text-base mb-2">Share This Event</h6>
-              <div className="flex justify-center gap-4">
-                <a
-                  href="https://www.facebook.com"
-                  className="text-gray-700 hover:text-yellow-500 transition text-lg xl:text-xl"
-                >
-                  <i className="fab fa-facebook-f" />
-                </a>
-                <a
-                  href="https://www.twitter.com"
-                  className="text-gray-700 hover:text-yellow-500 transition text-lg xl:text-xl"
-                >
-                  <i className="fab fa-twitter" />
-                </a>
-              </div>
-            </div>
-      
-
-      {/* Time Popup */}
       {eventtimePopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
           <div className="bg-white rounded-lg p-4 xl:p-6 w-full max-w-xs xl:max-w-md 2xl:max-w-lg relative">
-            <button
-              className="absolute top-2 right-2 text-gray-700 hover:text-gray-500 text-xl"
-              onClick={closeTimePopup}
-            >
-              &times;
-            </button>
+            <button className="absolute top-2 right-2 text-gray-700 hover:text-gray-500 text-xl" onClick={closeTimePopup}>&times;</button>
             <h4 className="text-lg md:text-xl font-bold mb-3">Select Event Time</h4>
             <div className="flex flex-wrap justify-center gap-2">
-              {Time.length > 0 ? (
+              {Time && Time.length > 0 ? (
                 Time.map((time, i) => (
-                  <button
-                    key={i}
-                    className="border-2 border-blue-500 rounded-full px-3 py-1 md:px-4 md:py-2 xl:px-5 xl:py-3 text-sm md:text-base hover:bg-blue-500 hover:text-white transition"
-                    onClick={() => handleTimeSelect(time)}
-                  >
+                  <button key={i} className="border rounded-full px-3 py-1 md:px-4 md:py-2 xl:px-5 xl:py-3 text-sm md:text-base hover:bg-gray-800 hover:text-white transition" onClick={() => handleTimeSelect(time)}>
                     {time}
                   </button>
                 ))
@@ -321,17 +408,16 @@ function Eventdetails() {
         </div>
       )}
 
-   
-          
+      {/* bottom area kept minimal since artist moved to right column */}
+      <div className="container mx-auto px-4 xl:px-24 2xl:px-48 pb-12">
+        <div className="grid grid-cols-1 gap-6 mt-8">
+          {/* reserved for additional content if needed */}
+        </div>
+      </div>
 
-      {/* Fixed bottom Book button on mobile */}
+      {/* mobile fixed book button */}
       <div className="fixed bottom-0 left-0 right-0 bg-white p-3 shadow-inner flex justify-center md:hidden">
-        <button
-          onClick={handleClick}
-          className="bg-red-500 text-white w-full max-w-md xl:max-w-lg 2xl:max-w-xl py-2 xl:py-3 rounded-md text-base font-semibold hover:bg-red-600 transition"
-        >
-          Book
-        </button>
+        <button onClick={handleClick} className="bg-red-500 text-white w-full max-w-md py-2 rounded-md text-base font-semibold hover:bg-red-600 transition">Book</button>
       </div>
 
       <Footer />

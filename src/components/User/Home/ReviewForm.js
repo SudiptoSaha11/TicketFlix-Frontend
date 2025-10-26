@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import api from '../../../Utils/api';
+import axios from "axios";
 import Usernavbar from "./Usernavbar"; // If you have a shared navbar component
+import api from "../../../Utils/api";
 
 // Import the CSS file
 import "./ReviewForm.css";
@@ -35,8 +36,7 @@ function ReviewForm() {
 
     try {
       // POST the review to the server
-      const response = await api.post(
-        `/movieview/review/${movieId}`,
+      const response = await api.post(`/movieview/review/${movieId}`,
         {
           rating: parseInt(reviewRating, 10),
           review: reviewText,

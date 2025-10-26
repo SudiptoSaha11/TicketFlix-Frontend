@@ -1,8 +1,9 @@
 // src/components/Footer.jsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from '../../../Utils/api';
+import axios from "axios";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import api from "../../../Utils/api";
 
 const Footer = () => {
   const [data, setData] = useState([]);

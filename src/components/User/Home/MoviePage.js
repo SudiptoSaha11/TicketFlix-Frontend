@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import api from '../../../Utils/api';
+import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import "./MoviePage.css";
 import BottomNav from "./BottomNav";
 import Usernavbar from "../Home/Usernavbar";
+import api from "../../../Utils/api";
 
 const MoviePage = () => {
   const [movies, setMovies] = useState([]);

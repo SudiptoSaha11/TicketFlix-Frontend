@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
-import api from '../../../Utils/api';
+import axios from "axios";
 import Usernavbar from "./Usernavbar";
 import { FaFilm, FaStar } from "react-icons/fa";
 import Footer from "./Footer";
@@ -10,6 +10,7 @@ import "swiper/css";
 import Card from "./Card";
 import { FaTheaterMasks } from 'react-icons/fa';
 import { Navigation, A11y } from "swiper/modules";
+import api from "../../../Utils/api";
 
 
 // Helper to extract the YouTube ID from any common YouTube URL
@@ -207,10 +208,18 @@ function Moviedetails() {
   const handleLanguageSelect = (chosenLanguage) => {
     const storedEmail = localStorage.getItem("userEmail") || "";
     navigate("/movieShowtime", {
-      state: { movieName, userEmail: storedEmail, chosenLanguage },
+      state: { 
+        movieId: id,               // 👈 add this
+        movieName, 
+        userEmail: storedEmail, 
+        chosenLanguage,
+        image: movieImage,         // optional, so you don't refetch poster
+        movieCensor,               // optional, if you want certification later
+      },
     });
     setShowLanguagePopup(false);
   };
+  
 
   // Split languages
   const splittedLangs = movieLanguage

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import api from '../../../Utils/api';
+import axios from 'axios';
 import QRPage from './QRpage'; // QRPage expects an `id` prop
+import api from '../../../Utils/api';
 
 const QRProtectedPage = () => {
   const { id } = useParams();

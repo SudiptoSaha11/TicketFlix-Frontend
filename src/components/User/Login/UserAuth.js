@@ -460,3 +460,4 @@ const StyledWrapper = styled.div`
             cursor: pointer;
             align-item:center ;
           }`;
+

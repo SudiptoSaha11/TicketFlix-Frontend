@@ -1,128 +1,151 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import api from "../../Utils/api";
 import "./Addshow.css";
 
+/**
+ * Aligned with backend per-time pricing
+ *
+ * Your backend accepts either:
+ * 1) time: ["10:00", "14:00"], plus top-level prices per hall (same price for all times)
+ * 2) time: [{ at, RoyalTicketPrice, ExecutiveTicketPrice, ExecutiveTicketPrice }, ...] (DIFFERENT price per time)
+ *
+ * This UI implements #2 so you can set different prices for each showtime.
+ */
+
 const Addshow = () => {
-  // Movie name input
-  const [MovieName, setMovieName] = useState("");
+  // Movies list and selection (Product1 docs)
+  const [movies, setMovies] = useState([]);
+  const [selectedMovieId, setSelectedMovieId] = useState("");
+
   // Array of hall names
   const [hallNames, setHallNames] = useState([]);
   // Input for a new hall name
   const [newHallName, setNewHallName] = useState("");
 
-  // showTimes: object mapping each hall name to an array of time strings
-  const [showTimes, setShowTimes] = useState({});
-  // newTimeInput: object mapping each hall name to the current new time (a string)
-  const [newTimeInput, setNewTimeInput] = useState({});
+  // timeRows: { [hallName]: Array<{ at: string, RoyalTicketPrice?: number|string, ExecutiveTicketPrice?: number|string, ExecutiveTicketPrice?: number|string }> }
+  const [timeRows, setTimeRows] = useState({});
 
-  // hallPricing: object mapping each hall name to its pricing object
-  // Pricing object: { GoldTicketPrice, SilverTicketPrice, PlatinumTicketPrice }
-  const [hallPricing, setHallPricing] = useState({});
+  // UI state
+  const [submitting, setSubmitting] = useState(false);
+
+  // --- Load movies so we can send Movie:ObjectId as backend expects ---
+  useEffect(() => {
+    const loadMovies = async () => {
+      try {
+        // Adjust this path if your movie list route differs (e.g., "/movies/all").
+        const res = await api.get("/movieview");
+        setMovies(res.data || []);
+      } catch (e) {
+        console.error("Failed to fetch movies", e);
+      }
+    };
+    loadMovies();
+  }, []);
 
   // Handler to add a new hall
   const addHallHandler = () => {
     const trimmedHall = newHallName.trim();
     if (trimmedHall !== "" && !hallNames.includes(trimmedHall)) {
-      setHallNames([...hallNames, trimmedHall]);
-      // Initialize an empty array for showtimes for this hall
-      setShowTimes({ ...showTimes, [trimmedHall]: [] });
-      // Initialize new time input for this hall
-      setNewTimeInput({ ...newTimeInput, [trimmedHall]: "" });
-      // Initialize pricing for this hall (pricing applies to all showtimes in this hall)
-      setHallPricing({
-        ...hallPricing,
-        [trimmedHall]: { GoldTicketPrice: "", SilverTicketPrice: "", PlatinumTicketPrice: "" },
-      });
+      setHallNames((prev) => [...prev, trimmedHall]);
+      setTimeRows((prev) => ({ ...prev, [trimmedHall]: [emptyTimeRow()] }));
       setNewHallName("");
     }
   };
 
-  // Handler to add a new showtime (time only) for a given hall
-  const addTimeHandler = (hall) => {
-    const time = newTimeInput[hall];
-    if (time && time.trim() !== "") {
-      setShowTimes({
-        ...showTimes,
-        [hall]: [...(showTimes[hall] || []), time.trim()],
-      });
-      setNewTimeInput({
-        ...newTimeInput,
-        [hall]: "",
-      });
-    }
+  const emptyTimeRow = () => ({ at: "", RoyalTicketPrice: "", ExecutiveTicketPrice: "", ExecutiveTicketPrice: "" });
+
+  const addTimeRow = (hall) => {
+    setTimeRows((prev) => ({ ...prev, [hall]: [...(prev[hall] || []), emptyTimeRow()] }));
   };
 
-  // Handler to remove a showtime from a hall
-  const removeTimeHandler = (hall, index) => {
-    const updatedTimes = showTimes[hall].filter((_, i) => i !== index);
-    setShowTimes({ ...showTimes, [hall]: updatedTimes });
+  const removeTimeRow = (hall, index) => {
+    setTimeRows((prev) => ({
+      ...prev,
+      [hall]: (prev[hall] || []).filter((_, i) => i !== index),
+    }));
   };
 
-  // Handler to update pricing for a hall
-  const updatePricing = (hall, field, value) => {
-    setHallPricing({
-      ...hallPricing,
-      [hall]: {
-        ...hallPricing[hall],
-        [field]: value,
-      },
+  const updateTimeRow = (hall, index, field, value) => {
+    setTimeRows((prev) => {
+      const copy = { ...prev };
+      const rows = [...(copy[hall] || [])];
+      rows[index] = { ...rows[index], [field]: value };
+      copy[hall] = rows;
+      return copy;
     });
   };
 
-  // Handler to submit the form
+  // Build payload aligned to backend normalizeShows() expectations (per-time objects with prices)
+  const buildShowsPayload = () => {
+    return hallNames.map((hall) => ({
+      hallName: hall,
+      time: (timeRows[hall] || [])
+        .filter((r) => r.at) // ignore empty rows
+        .map((r) => ({
+          at: r.at,
+          RoyalTicketPrice: Number(r.RoyalTicketPrice || 0),
+          ExecutiveTicketPrice: Number(r.ExecutiveTicketPrice || 0),
+          ExecutiveTicketPrice: Number(r.ExecutiveTicketPrice || 0),
+        })),
+    }));
+  };
+
+  // Handler to submit the form (Create schedule)
   const addRowHandler = async (event) => {
     event.preventDefault();
 
-    // Build the showTime array so that its order matches hallNames.
-    // Each element corresponds to one hall and has:
-    // { time: [array of time strings], GoldTicketPrice, SilverTicketPrice, PlatinumTicketPrice }
-    const payloadShowTime = hallNames.map((hall) => {
-      return {
-        time: showTimes[hall] || [],
-        GoldTicketPrice: Number(hallPricing[hall]?.GoldTicketPrice),
-        SilverTicketPrice: Number(hallPricing[hall]?.SilverTicketPrice),
-        PlatinumTicketPrice: Number(hallPricing[hall]?.PlatinumTicketPrice),
-      };
-    });
-
-    const newShow = {
-      MovieName,
-      hallName: hallNames,
-      showTime: payloadShowTime,
-    };
-
-    console.log("Submitting New Show:", newShow);
-    try {
-      const response = await axios.post("https://ticketflix-backend.onrender.com/Scheduleschema/add", newShow);
-      console.log("Response:", response.data);
-      alert("Show added successfully!");
-    } catch (err) {
-      console.error("Error creating schedule:", err);
+    if (!selectedMovieId) {
+      alert("Please select a movie.");
+      return;
     }
 
-    // Reset form fields
-    setMovieName("");
-    setHallNames([]);
-    setNewHallName("");
-    setShowTimes({});
-    setNewTimeInput({});
-    setHallPricing({});
+    const payload = {
+      Movie: selectedMovieId, // ObjectId (string)
+      shows: buildShowsPayload(),
+    };
+
+    try {
+      setSubmitting(true);
+      const response = await api.post("/Scheduleschema/add", payload);
+      console.log("Response:", response.data);
+      alert("Schedule created successfully!");
+
+      // Reset form fields
+      setSelectedMovieId("");
+      setHallNames([]);
+      setNewHallName("");
+      setTimeRows({});
+    } catch (err) {
+      console.error("Error creating schedule:", err);
+      alert(
+        err?.response?.data?.message || "Creating schedule failed. Check console for details."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="Show_body">
       <form className="form_class_show" style={{ margin: "5rem" }} onSubmit={addRowHandler}>
-        {/* Movie Name */}
+        {/* Movie Selector (uses Movie _id) */}
         <div className="mb-6">
-          <label className="Label_Show">Enter Movie Name</label>
-          <input
-            type="text"
+          <label className="Label_Show">Select Movie</label>
+          <select
             className="form-control_Show"
-            placeholder="Enter Movie Name"
-            value={MovieName}
-            onChange={(e) => setMovieName(e.target.value)}
+            value={selectedMovieId}
+            onChange={(e) => setSelectedMovieId(e.target.value)}
             required
-          />
+          >
+            <option value="" disabled>
+              -- Choose a movie --
+            </option>
+            {movies.map((m) => (
+              <option key={m._id} value={m._id}>
+                {m.movieName || m.title || m.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Hall Name Input */}
@@ -140,77 +163,72 @@ const Addshow = () => {
           </button>
         </div>
 
-        {/* For each hall, allow adding multiple showtimes and enter pricing */}
+        {/* Per-hall, per-time price rows */}
         {hallNames.length > 0 && (
           <div className="mb-6">
             <label className="Label_Show">Halls, Show Times & Pricing</label>
             {hallNames.map((hall, index) => (
               <div key={index} style={{ marginBottom: "10px", padding: "10px", border: "1px solid #ccc" }}>
                 <strong>{hall}</strong>
-                {/* Show Time Input */}
-                <div style={{ marginTop: "5px" }}>
-                  <label>Show Time:</label>
-                  <input
-                    type="time"
-                    className="form-control_Show"
-                    value={newTimeInput[hall] || ""}
-                    onChange={(e) =>
-                      setNewTimeInput({
-                        ...newTimeInput,
-                        [hall]: e.target.value,
-                      })
-                    }
-                  />
-                  <button type="button" onClick={() => addTimeHandler(hall)}>
+
+                {(timeRows[hall] || []).map((row, i) => (
+                  <div key={i} style={{ marginTop: "10px", padding: "10px", border: "1px dashed #bbb" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr auto", gap: "8px" }}>
+                      <div>
+                        <label>Show Time</label>
+                        <input
+                          type="time"
+                          className="form-control_Show"
+                          value={row.at}
+                          onChange={(e) => updateTimeRow(hall, i, "at", e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label>Gold Price</label>
+                        <input
+                          type="number"
+                          min="0"
+                          className="form-control_Show"
+                          placeholder="Gold"
+                          value={row.RoyalTicketPrice}
+                          onChange={(e) => updateTimeRow(hall, i, "RoyalTicketPrice", e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label>Silver Price</label>
+                        <input
+                          type="number"
+                          min="0"
+                          className="form-control_Show"
+                          placeholder="Silver"
+                          value={row.ExecutiveTicketPrice}
+                          onChange={(e) => updateTimeRow(hall, i, "ExecutiveTicketPrice", e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label>Platinum Price</label>
+                        <input
+                          type="number"
+                          min="0"
+                          className="form-control_Show"
+                          placeholder="Platinum"
+                          value={row.ExecutiveTicketPrice}
+                          onChange={(e) => updateTimeRow(hall, i, "ExecutiveTicketPrice", e.target.value)}
+                        />
+                      </div>
+                      <div style={{ display: "flex", alignItems: "end" }}>
+                        <button type="button" onClick={() => removeTimeRow(hall, i)}>
+                          ❌
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <div style={{ marginTop: "8px" }}>
+                  <button type="button" onClick={() => addTimeRow(hall)}>
                     Add Time
                   </button>
-                </div>
-                {/* Display Added Show Times */}
-                <div style={{ marginTop: "5px" }}>
-                  {showTimes[hall] && showTimes[hall].length > 0 && (
-                    <span>
-                      <strong>Added Times:</strong>
-                      {showTimes[hall].map((time, i) => (
-                        <div key={i}>
-                          {time}{" "}
-                          <button type="button" onClick={() => removeTimeHandler(hall, i)}>
-                            ❌
-                          </button>
-                        </div>
-                      ))}
-                    </span>
-                  )}
-                </div>
-                {/* Pricing Inputs for this hall */}
-                <div style={{ marginTop: "5px" }}>
-                  <label>Recliner Ticket Price:</label>
-                  <input
-                    type="number"
-                    className="form-control_Show"
-                    placeholder="Enter Recliner Ticket Price"
-                    value={hallPricing[hall]?.GoldTicketPrice || ""}
-                    onChange={(e) => updatePricing(hall, "GoldTicketPrice", e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label>Royal Ticket Price:</label>
-                  <input
-                    type="number"
-                    className="form-control_Show"
-                    placeholder="Enter Royal Ticket Price"
-                    value={hallPricing[hall]?.SilverTicketPrice || ""}
-                    onChange={(e) => updatePricing(hall, "SilverTicketPrice", e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label>Club Ticket Price:</label>
-                  <input
-                    type="number"
-                    className="form-control_Show"
-                    placeholder="Enter Club Ticket Price"
-                    value={hallPricing[hall]?.PlatinumTicketPrice || ""}
-                    onChange={(e) => updatePricing(hall, "PlatinumTicketPrice", e.target.value)}
-                  />
                 </div>
               </div>
             ))}
@@ -218,8 +236,8 @@ const Addshow = () => {
         )}
 
         <div className="submit-2">
-          <button className="Button_Show" type="submit">
-            Submit
+          <button className="Button_Show" type="submit" disabled={submitting}>
+            {submitting ? "Submitting..." : "Submit"}
           </button>
         </div>
       </form>

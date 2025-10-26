@@ -1,3 +1,4 @@
+// src/pages/Eventticketbooking.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
@@ -5,7 +6,12 @@ import { loadStripe } from '@stripe/stripe-js';
 
 Modal.setAppElement('#root');
 
-const stripePromise = loadStripe('pk_test_51PyTTVBPFFoOUNzJLfc5ptRLapKTmjsd0weZJdHrSBV6IvsCafsdthGEsNw92wlp8Agg1VV8fDYqudB4fLLjOymd004Zx6Yw6c');
+// Prefer env variable for publishable key; fallback to previous test key if not set
+const PUBLISHABLE_KEY =
+  process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY ||
+  'pk_test_51PyTTVBPFFoOUNzJLfc5ptRLapKTmjsd0weZJdHrSBV6IvsCafsdthGEsNw92wlp8Agg1VV8fDYqudB4fLLjOymd004Zx6Yw6c';
+
+const stripePromise = loadStripe(PUBLISHABLE_KEY);
 
 const categoryMapping = {
   VIPPrice: 'VIP',
@@ -22,14 +28,14 @@ const Eventticketbooking = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Ticketbooking location.state:", location.state);
+    console.log('Ticketbooking location.state:', location.state);
   }, [location.state]);
 
   const {
-    eventName = location.state.Name,
-    eventVenue = location.state.Venue,
-    eventDate = '',
-    pricing = {
+    eventName = (location.state && location.state.Name) || '',
+    eventVenue = (location.state && location.state.Venue) || '',
+    eventDate = (location.state && location.state.Date) || '',
+    pricing = (location.state && location.state.pricing) || {
       VIPPrice: 0,
       MIPTicketPrice: 0,
       PlatinumTicketPrice: 0,
@@ -38,9 +44,8 @@ const Eventticketbooking = () => {
       SilverTicketPrice: 0,
       BronzeTicketPrice: 0,
     },
-    chosenTime = '',
+    chosenTime = (location.state && location.state.chosenTime) || '',
   } = location.state || {};
-
 
   const [ticketPrices] = useState(pricing);
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -51,7 +56,7 @@ const Eventticketbooking = () => {
   const [loading, setLoading] = useState(false);
   const [highlightCategory, setHighlightCategory] = useState(null);
 
-  // Refs for scrolling
+  // Refs for scrolling to sections
   const sectionRefs = {
     VIP: useRef(null),
     MIP: useRef(null),
@@ -66,6 +71,7 @@ const Eventticketbooking = () => {
     const storedEmail = localStorage.getItem('userEmail');
     const userType = localStorage.getItem('usertype');
 
+    // clear previous session booking state
     sessionStorage.removeItem('selectedSeats');
     sessionStorage.removeItem('totalAmount');
     setSelectedSeats([]);
@@ -87,7 +93,7 @@ const Eventticketbooking = () => {
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [navigate]);
+  }, []);
 
   const handleSeatSelection = (seatType, price, seatNumber) => {
     const seat = `${seatType}${seatNumber}`;
@@ -95,15 +101,18 @@ const Eventticketbooking = () => {
       setIsModalOpen(true);
       return;
     }
+
     setSelectedSeats((prev) => {
       let updated;
       let newTotal = totalAmount;
       if (prev.find((s) => s.seatNumber === seat)) {
+        // deselect
         updated = prev.filter((s) => s.seatNumber !== seat);
-        newTotal -= price;
+        newTotal = Math.max(0, newTotal - price);
       } else {
+        // select
         updated = [...prev, { seatType, seatNumber: seat, price }];
-        newTotal += price;
+        newTotal = newTotal + price;
       }
       sessionStorage.setItem('selectedSeats', JSON.stringify(updated));
       sessionStorage.setItem('totalAmount', JSON.stringify(newTotal));
@@ -113,56 +122,116 @@ const Eventticketbooking = () => {
   };
 
   const handleBooking = () => {
-  if (!userEmail) {
-    setIsModalOpen(true);
-    return;
-  }
+    if (!userEmail) {
+      setIsModalOpen(true);
+      return;
+    }
 
-  if (selectedSeats.length === 0) {
-    alert("Please select at least one seat before booking!");
-    return;
-  }
+    if (selectedSeats.length === 0) {
+      alert('Please select at least one seat before booking!');
+      return;
+    }
 
-  const bookingDetails = {
-    userEmail,
-    eventName,
-    eventVenue,
-    chosenTime,
-    eventDate,
-    seatsBooked: selectedSeats.map((s) => s.seatNumber), // ✅ FIXED HERE
-    totalAmount,
-    bookingDate: eventDate,
+    // send plain seat strings (["B6", ...]) — backend accepts both objects and strings
+    const seatsOnly = selectedSeats.map((s) => s.seatNumber);
+
+    const bookingDetails = {
+      userEmail,
+      eventName,
+      eventVenue,
+      chosenTime,
+      eventDate,
+      seatsBooked: seatsOnly,
+      totalAmount,
+      bookingDate: eventDate || new Date().toISOString(),
+    };
+
+    console.log('Booking details to store:', bookingDetails);
+    sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+
+    // call makePayment with explicit seats and user email
+    makePayment({ seatsBooked: seatsOnly, userEmail });
   };
 
-  console.log("Booking details to store:", bookingDetails);
-
-  sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
-  makePayment();
-};
-
-
-  const makePayment = async () => {
+  const makePayment = async ({ seatsBooked: seatsArg, userEmail: emailArg } = {}) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await fetch('https://ticketflix-backend.onrender.com/api/event/create-checkout-session', {
+      const baseUrl = process.env.REACT_APP_API_BASE || 'http://localhost:5000';
+      const url = `${baseUrl}/api/event/create-checkout-session`;
+
+      // If caller passed string seats use them, otherwise derive from selectedSeats objects
+      const seatsToSend =
+        Array.isArray(seatsArg) && seatsArg.length
+          ? seatsArg
+          : selectedSeats.map((s) => s.seatNumber || s.name || s);
+
+      const payloadBody = {
+        eventName,
+        seatsBooked: seatsToSend,
+        totalAmount,
+        userEmail: emailArg || userEmail || '',
+      };
+
+      console.log('Creating checkout session — POST', url, payloadBody);
+
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          eventName,
-          seatsBooked: selectedSeats,
-          totalAmount,
-        }),
+        body: JSON.stringify(payloadBody),
       });
-      if (!response.ok) throw new Error('Network response was not ok.');
-      const session = await response.json();
-      if (!session.id) throw new Error('Invalid session ID.');
+
+      console.log('Fetch response status:', response.status, response.statusText);
+
+      // read raw text then parse to prevent json parse error surprises
+      const text = await response.text();
+      let payload = null;
+      try {
+        payload = text ? JSON.parse(text) : null;
+      } catch (jsonErr) {
+        console.error('Response is not valid JSON:', text);
+        alert('Server sent invalid response. See console for details.');
+        throw new Error('Invalid JSON response from server');
+      }
+
+      if (!response.ok) {
+        console.error('Server returned error payload:', payload);
+        const serverMsg = (payload && payload.error) || `HTTP ${response.status}`;
+        // surface server message to user for debugging
+        alert(`Payment API error: ${serverMsg}`);
+        return;
+      }
+
+      console.log('Server payload:', payload);
+
+      if (!payload || !payload.id) {
+        console.error('Missing session id in response', payload);
+        alert('Unable to create payment session. Try again later.');
+        return;
+      }
+
       const stripe = await stripePromise;
-      const result = await stripe.redirectToCheckout({ sessionId: session.id });
-      if (result.error) console.error(result.error.message);
-      else navigate('/success');
+      if (!stripe) {
+        console.error('Stripe not initialized in frontend (stripePromise resolved falsy)');
+        alert('Stripe not initialized in this browser. Contact support.');
+        return;
+      }
+
+      // redirectToCheckout will navigate away. It only resolves with an object when there's an error.
+      const result = await stripe.redirectToCheckout({ sessionId: payload.id });
+
+      if (result && result.error) {
+        console.error('stripe.redirectToCheckout returned error:', result.error);
+        alert(result.error.message || 'Stripe checkout failed');
+        return;
+      }
+
+      // if redirectToCheckout didn't redirect (unexpected), fallback to success route
+      console.log('redirectToCheckout did not redirect (unexpected) — navigating to success as fallback');
+      navigate('/success');
     } catch (error) {
-      console.error('Error during payment:', error);
-      navigate('/error');
+      console.error('Error during payment flow (frontend):', error);
+      alert(`Payment failed: ${error.message || error}`);
+      // navigate('/error'); // optional: enable if you want to keep site-wide error page behavior
     } finally {
       setLoading(false);
     }
@@ -192,10 +261,10 @@ const Eventticketbooking = () => {
       <div className="w-full md:w-1/3 bg-white p-4 md:p-6 rounded-lg shadow-sm flex flex-col md:sticky md:top-10 md:self-start">
         <h2 className="text-2xl font-bold mb-2">{eventName}</h2>
         <p className="text-gray-600 mb-1">{eventVenue}</p>
-        <p className="text-gray-600 mb-4">{new Date(eventDate).toDateString()} | {chosenTime}</p>
-        <p className="text-sm text-gray-500 mb-4">
-          Select a category to highlight its seats below.
+        <p className="text-gray-600 mb-4">
+          {eventDate ? new Date(eventDate).toDateString() : ''} {chosenTime ? `| ${chosenTime}` : ''}
         </p>
+        <p className="text-sm text-gray-500 mb-4">Select a category to highlight its seats below.</p>
 
         <div className="flex flex-col gap-3 mb-6">
           {Object.entries(ticketPrices)
@@ -207,14 +276,9 @@ const Eventticketbooking = () => {
                 <div
                   key={key}
                   onClick={() => handlePriceClick(key)}
-                  className={`
-                    cursor-pointer
-                    px-4 py-3
-                    rounded-md
-                    transition
-                    text-base font-medium
-                    ${isActive ? 'bg-blue-100 border border-blue-300' : 'bg-gray-100 border border-gray-200'}
-                  `}
+                  className={`cursor-pointer px-4 py-3 rounded-md transition text-base font-medium ${
+                    isActive ? 'bg-blue-100 border border-blue-300' : 'bg-gray-100 border border-gray-200'
+                  }`}
                 >
                   {cat} – ₹{price}
                 </div>
@@ -226,16 +290,9 @@ const Eventticketbooking = () => {
         <button
           onClick={handlePayClick}
           disabled={loading}
-          className={`
-            hidden lg:block
-            mt-auto
-            w-full py-3
-            text-lg font-semibold
-            text-white
-            rounded-md
-            transition
-            ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}
-          `}
+          className={`hidden lg:block mt-auto w-full py-3 text-lg font-semibold text-white rounded-md transition ${
+            loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
+          }`}
         >
           {loading ? 'Processing...' : `PAY ₹${totalAmount}`}
         </button>
@@ -258,14 +315,9 @@ const Eventticketbooking = () => {
         <button
           onClick={handlePayClick}
           disabled={loading}
-          className={`
-            w-full py-3
-            text-lg font-semibold
-            text-white
-            rounded-md
-            transition
-            ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}
-          `}
+          className={`w-full py-3 text-lg font-semibold text-white rounded-md transition ${
+            loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
+          }`}
         >
           {loading ? 'Processing...' : `PAY ₹${totalAmount}`}
         </button>
@@ -318,16 +370,12 @@ const SeatSelection = ({ ticketPrices, onSeatSelect, selectedSeats, highlightCat
   const isSelected = (seat) => selectedSeats.some((s) => s.seatNumber === seat);
   const sectionClasses = (section) =>
     `mb-6 p-4 rounded-md transition ${
-      highlightCategory === section
-        ? 'border-2 border-orange-500 bg-orange-50'
-        : 'border border-gray-200 bg-white'
+      highlightCategory === section ? 'border-2 border-orange-500 bg-orange-50' : 'border border-gray-200 bg-white'
     }`;
 
   return (
     <div className="flex flex-col items-center space-y-6">
-      <div className="w-full bg-gray-400 text-center py-2 rounded-md text-white font-bold mb-4">
-        STAGE
-      </div>
+      <div className="w-full bg-gray-400 text-center py-2 rounded-md text-white font-bold mb-4">STAGE</div>
 
       {Object.entries({
         VIP: ['A', 'B', ticketPrices.VIPPrice],
@@ -339,7 +387,9 @@ const SeatSelection = ({ ticketPrices, onSeatSelect, selectedSeats, highlightCat
         Bronze: ['M', 'N', ticketPrices.BronzeTicketPrice],
       }).map(([section, [row1, row2, price]]) => (
         <div key={section} ref={sectionRefs[section]} className={sectionClasses(section)}>
-          <h4 className="text-lg font-semibold mb-2">{section} – ₹{price}</h4>
+          <h4 className="text-lg font-semibold mb-2">
+            {section} – ₹{price}
+          </h4>
           {[row1, row2].map((row) => (
             <div key={row} className="flex flex-wrap justify-center mb-2">
               <span className="w-full text-center font-medium mb-1">{row}</span>
@@ -350,11 +400,9 @@ const SeatSelection = ({ ticketPrices, onSeatSelect, selectedSeats, highlightCat
                   <div
                     key={seatId}
                     onClick={() => onSeatSelect(row, price, num)}
-                    className={`
-                      w-8 h-8 m-1 flex items-center justify-center text-sm font-bold rounded-sm transition
-                      ${selected ? 'bg-green-600 text-white' : 'bg-white border border-yellow-300'}
-                      hover:bg-yellow-400 hover:text-white
-                    `}
+                    className={`w-8 h-8 m-1 flex items-center justify-center text-sm font-bold rounded-sm transition ${
+                      selected ? 'bg-green-600 text-white' : 'bg-white border border-yellow-300'
+                    } hover:bg-yellow-400 hover:text-white`}
                   >
                     {num}
                   </div>

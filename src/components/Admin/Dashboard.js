@@ -34,7 +34,7 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const [usersRes, statsRes, moviesRes] = await Promise.all([
-          axios.get("https://ticketflix-backend.onrender.com/users"),
+          axios.get("https://ticketflix-backend.onrender.com/auth/users"),
           axios.get("https://ticketflix-backend.onrender.com/dashboard/stats"),
           axios.get("https://ticketflix-backend.onrender.com/movieview"),
         ]);
