@@ -52,8 +52,8 @@ const UserAuth = ({ onSuccess }) => {
     try {
       setIsLoading(true);
   
-      const response = await axios.post(
-        'http://localhost:5000/auth/login',
+      const response = await api.post(
+        '/auth/login',
         { email, password },
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -319,7 +319,7 @@ const VerifyOTP = ({ email, otp, setOtp, onVerifyOtp, isLoading, onResendOtp }) 
 
   const handleResend = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/auth/resendVerificationCode", {
+      const res = await api.post("/auth/resendVerificationCode", {
         email,
       });
 
